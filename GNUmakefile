@@ -176,7 +176,9 @@ build-all:
 	$(MAKE) run-windows
 
 edk2-ovmf-bins:
-	curl -L https://github.com/osdev0/edk2-ovmf-stable-bins/releases/latest/download/edk2-ovmf-bins.tar.gz | gunzip | tar -xf -
+	@test -d edk2-ovmf-bins || { \
+		curl -L https://github.com/osdev0/edk2-ovmf-stable-bins/releases/latest/download/edk2-ovmf-bins.tar.gz | tar -xz; \
+	}
 
 limine-binary/limine:
 	@test -f limine-binary/limine || { \
@@ -274,4 +276,4 @@ clean:
 .PHONY: distclean
 distclean:
 	$(MAKE) -C kernel distclean
-	rm -rf iso_root *.iso *.hdd edk2-ovmf-bins
+	rm -rf iso_root *.iso *.hdd
