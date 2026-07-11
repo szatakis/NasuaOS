@@ -1,0 +1,10 @@
+/edk2-ovmf-bins
+/.vscode
+
+# Pliki binarne i obrazy systemu
+*.iso
+*.hdd
+kernel/bin-x86_64/kernel
+
+# Foldery z plikami obiektowymi i zależnościami
+kernel/obj-x86_64/

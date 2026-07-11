@@ -1,0 +1,100 @@
+#include "idt.h"
+#include "isr.h"
+
+#include "system/drivers/uart/driver.h"
+#include "kernel/include/logger/logger.hpp"
+
+extern "C" void irq0();
+
+
+struct IDTEntry
+{
+    uint16_t offset_low;
+    uint16_t selector;
+    uint8_t ist;
+    uint8_t type_attr;
+    uint16_t offset_mid;
+    uint32_t offset_high;
+    uint32_t zero;
+} __attribute__((packed));
+
+struct IDTR
+{
+    uint16_t limit;
+    uint64_t base;
+} __attribute__((packed));
+
+static IDTEntry idt[256];
+static IDTR idtr;
+
+static void set_gate(uint8_t vector, void* handler)
+{
+    uint64_t addr = (uint64_t)handler;
+
+    idt[vector].offset_low = addr & 0xFFFF;
+    idt[vector].selector = 0x28;
+    idt[vector].ist = 0;
+    idt[vector].type_attr = 0x8E;
+    idt[vector].offset_mid = (addr >> 16) & 0xFFFF;
+    idt[vector].offset_high = (addr >> 32) & 0xFFFFFFFF;
+    idt[vector].zero = 0;
+}
+
+void idt_init()
+{
+    Uart::puts("[IDT] Initializing...\n");
+    log(INFO,"IDT","Initializing...");
+
+    // Wszystkie wektory na default handler
+
+    for(int i = 0; i < 256; i++)
+    {
+        set_gate(
+            i,
+            (void*)isr_default
+        );
+    }
+
+    // CPU Exceptions
+
+    set_gate(0, (void*)isr_divide_error);
+
+    set_gate(14, (void*)isr_page_fault);
+
+    // IRQ0 - PIT Timer
+
+    extern void irq0();
+
+    set_gate(32, (void*)irq0);
+
+    Uart::puts("[IDT] IRQ0 installed\n");
+    log(INFO,"IDT","IRQ0 installed");
+
+    idtr.limit = sizeof(idt) - 1;
+    idtr.base = (uint64_t)&idt;
+
+    Uart::puts("[IDT] Loading...\n");
+    log(INFO,"IDT","Loading...");
+
+    uint16_t cs;
+
+    asm volatile(
+        "mov %%cs, %0"
+        :
+        "=r"(cs)
+    );
+
+    Uart::puts("[IDT] CS: ");
+    Uart::puthex(cs);
+    Uart::puts("\n");
+
+    asm volatile(
+        "lidt %0"
+        :
+        :
+        "m"(idtr)
+    );
+
+    Uart::puts("[IDT] Loaded\n");
+    log(INFO,"IDT","Loaded");
+}
