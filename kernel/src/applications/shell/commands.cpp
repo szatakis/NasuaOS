@@ -8,7 +8,7 @@
 #include "libs/libc/libc.h"
 #include "screen.h"
 
-#include "applications/terminal/terminal.h"
+#include "applications/applications.h"
 
 #include "system/drivers/drivers.h"
 #include "system/vars/info_vars/info_vars.h"
@@ -702,6 +702,11 @@ void execute_command(const char *cmd) {
 
                 if (shell_strncmp(app_name_buf, "terminal", 8)) {
                     draw_window(&terminal);
+                    terminal.id = current_id;
+                    current_id++;
+                }
+                if (shell_strncmp(app_name_buf, "zetedit", 7)) {
+                    draw_window(&zetedit);
                     terminal.id = current_id;
                     current_id++;
                 }
