@@ -175,16 +175,9 @@ build-all:
 	$(MAKE) TOOLCHAIN=llvm
 	$(MAKE) run-windows
 
-edk2-ovmf-bins:
-	@test -d edk2-ovmf-bins || { \
-		curl -L https://github.com/osdev0/edk2-ovmf-stable-bins/releases/latest/download/edk2-ovmf-bins.tar.gz | tar -xz; \
-	}
+edk2-ovmf-bins: ;
 
-limine-binary/limine:
-	@test -f limine-binary/limine || { \
-		curl -L https://github.com/Limine-Bootloader/Limine/releases/latest/download/limine-binary.tar.gz | tar -xz; \
-		$(MAKE) -C limine-binary; \
-	}
+limine-binary/limine: ;
 
 kernel/.deps-obtained:
 	./kernel/get-deps
