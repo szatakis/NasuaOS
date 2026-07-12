@@ -3,8 +3,6 @@
 #include <cstdint>
 #include <limine.h>
 
-#include "system/drivers/keyboard/driver.h"
-
 extern limine_framebuffer* fb;
 
 extern size_t cursor_x;

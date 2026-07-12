@@ -16,5 +16,5 @@ void handle_keyboard();
 static bool shift_pressed = false;
 static bool extended_scancode = false;
 
-static char command_buffer[64];
-static size_t cmd_idx = 0;
+extern char command_buffer[64];
+extern size_t cmd_idx;

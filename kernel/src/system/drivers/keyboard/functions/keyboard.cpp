@@ -9,9 +9,10 @@
 #include "system/gui/icons/icons.h"
 #include "libs/libc/libc.h"
 #include "libs/asm/asm.h"
-
-// Twój nowy plik od historii
 #include "applications/sysfunc/history.h"
+
+char command_buffer[64];
+size_t cmd_idx = 0;
 
 char scancode_to_ascii_normal(uint8_t scancode) {
     switch (scancode) {

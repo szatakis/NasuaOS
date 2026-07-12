@@ -6,6 +6,8 @@
 #include "system/gui/vars/colors.h"
 #include "applications/shell/commands.h"
 #include "libs/libc/libc.h"
+#include "system/drivers/keyboard/driver.h"
+
 
 uint32_t current_text_color = COLOR_WHITE;
 
@@ -221,6 +223,8 @@ void delete_last_char() {
     }
 }
 
+#include "system/drivers/uart/driver.h"
+
 void clear_line() {
     if (!fb) return;
 
@@ -230,7 +234,7 @@ void clear_line() {
     uint32_t bg = COLOR_ZYTR_BG;
 
     size_t start_x = cursor_x - (cmd_idx * (8 + FONT_SPACING_W));
-
+    
     for (size_t x = start_x; x < cursor_x; x++) {
         for (int y = 0; y < 8; y++) {
             bb_ptr[(cursor_y + y) * pitch + x] = bg;

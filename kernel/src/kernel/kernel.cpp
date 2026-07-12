@@ -10,6 +10,7 @@
 
 #include "system/gui/vars/colors.h"
 #include "system/gui/icons/icons.h"
+#include "system/gui/gui.h"
 
 #include "kernel/include/logger/logger.hpp"
 
@@ -113,6 +114,8 @@ extern "C" void kmain() {
 
     // Główna pętla wywołań
     for (;;) {
+        update_gui_state(mouse_x, mouse_y);
+        
         updateTime();
         render_frame();
 
@@ -123,9 +126,9 @@ extern "C" void kmain() {
 // ---------------- CRT ----------------
 
 extern "C" {
-int __cxa_atexit(void (*)(void*), void*, void*) { return 0; }
-void __cxa_pure_virtual() { hcf(); }
-void* __dso_handle;
+    int __cxa_atexit(void (*)(void*), void*, void*) { return 0; }
+    void __cxa_pure_virtual() { hcf(); }
+    void* __dso_handle;
 }
 
 extern void (*__init_array[])();
