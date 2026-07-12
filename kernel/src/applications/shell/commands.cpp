@@ -18,6 +18,8 @@
 
 #include "system/filesystem/clawfs.h"
 
+#include "system/sysfunc/rand.h"
+
 #include "libs/asm/asm.h"
 
 extern uint32_t current_text_color;
@@ -149,15 +151,13 @@ void execute_command(const char *cmd) {
             print(" -beep                               - System PC Speaker sound generator utility\n");
             print("    --freq \"Hz\"                      - (Optional) Sound frequency in Hertz (Default: 1000 Hz)\n");
             print("    --dur \"ms\"                       - (Optional) Sound duration in milliseconds (Default: 200 ms)\n");
-            /*
-            -calc – Prosty kalkulator systemowy.
-                --op "add|sub|mul|div" – (Wymagane) Wybór operacji matematycznej.
-                --num1 [wartość] – (Wymagane) Pierwsza liczba.
-                --num2 [wartość] – (Wymagane) Druga liczba.
-            -rand – Generator liczb losowych.
-                --min [wartość] – (Opcjonalne) Dolna granica (domyślnie 0).
-                --max [wartość] – (Opcjonalne) Górna granica.
-            */
+            print(" -calc                               - Simple system calculator utility\n");
+            print("    --op \"add|sub|mul|div\"           - (Required) Selection of mathematical operation\n");
+            print("    --num1 \"value\"                   - (Required) First numeric value\n");
+            print("    --num2 \"value\"                   - (Required) Second numeric value\n");
+            print(" -rand                               - Pseudo-random number generator\n");
+            print("    --min \"value\"                   - (Optional) Lower bound of the range (Default: 0)\n");
+            print("    --max \"value\"                   - (Required) Upper bound of the range\n");
         }
 
         else if (page == 5) {
@@ -733,7 +733,6 @@ void execute_command(const char *cmd) {
         }
     }
     // 21. komenda: beep
-        // 21. komenda: beep
     else if (cmd_name_len == 4 && shell_strncmp(cmd, "beep", 4)) {
         int freq = 1000; // Domyślna częstotliwość w Hz
         int dur = 200;   // Domyślny czas trwania w ms
@@ -808,6 +807,165 @@ void execute_command(const char *cmd) {
             print_info("Usage:\n");
             print("  beep\n");
             print("  beep --freq \"frequency\" --dur \"time\"\n");
+        }
+    }
+        // 22. komenda: calc
+    else if (cmd_name_len == 4 && shell_strncmp(cmd, "calc", 4)) {
+        const char* op_flag  = shell_strstr(args, "--op ");
+        const char* num1_flag = shell_strstr(args, "--num1 ");
+        const char* num2_flag = shell_strstr(args, "--num2 ");
+
+        if (op_flag && num1_flag && num2_flag) {
+            char op_buf[8] = {0};
+            char num1_buf[16] = {0};
+            char num2_buf[16] = {0};
+            int i = 0;
+
+            // 1. Parsowanie --op
+            const char* op_arg = op_flag + 5;
+            i = 0;
+            if (op_arg[0] == '"') {
+                op_arg++;
+                while (op_arg[i] != '"' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
+            } else {
+                while (op_arg[i] != ' ' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
+            }
+            op_buf[i] = '\0';
+
+            // 2. Parsowanie --num1
+            const char* num1_arg = num1_flag + 7;
+            i = 0;
+            if (num1_arg[0] == '"') {
+                num1_arg++;
+                while (num1_arg[i] != '"' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
+            } else {
+                while (num1_arg[i] != ' ' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
+            }
+            num1_buf[i] = '\0';
+
+            // 3. Parsowanie --num2
+            const char* num2_arg = num2_flag + 7;
+            i = 0;
+            if (num2_arg[0] == '"') {
+                num2_arg++;
+                while (num2_arg[i] != '"' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
+            } else {
+                while (num2_arg[i] != ' ' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
+            }
+            num2_buf[i] = '\0';
+
+            // Konwersja na liczby
+            int n1 = atoi(num1_buf);
+            int n2 = atoi(num2_buf);
+            int result = 0;
+
+            // Wykonanie operacji
+            if (shell_strncmp(op_buf, "add", 3)) {
+                result = n1 + n2;
+                print_info("Result: ");
+                print_num8(result);
+                print("\n");
+            } else if (shell_strncmp(op_buf, "sub", 3)) {
+                result = n1 - n2;
+                print_info("Result: ");
+                print_num8(result);
+                print("\n");
+            } else if (shell_strncmp(op_buf, "mul", 3)) {
+                result = n1 * n2;
+                print_info("Result: ");
+                print_num8(result);
+                print("\n");
+            } else if (shell_strncmp(op_buf, "div", 3)) {
+                if (n2 == 0) {
+                    print_error("Division by zero error!\n");
+                } else {
+                    result = n1 / n2;
+                    print_info("Result: ");
+                    print_num8(result);
+                    print("\n");
+                }
+            } else {
+                print_error("Unknown operation! Use: add, sub, mul, div\n");
+            }
+        } else {
+            print_error("Syntax error! Missing required arguments.\n");
+            print_info("Usage: calc --op \"add|sub|mul|div\" --num1 [val] --num2 [val]\n");
+        }
+    }
+    // 23. komenda: rand
+    else if (cmd_name_len == 4 && shell_strncmp(cmd, "rand", 4)) {
+        const char* min_flag = shell_strstr(args, "--min ");
+        const char* max_flag = shell_strstr(args, "--max ");
+
+        int min_val = 0;
+        int max_val = 0;
+        int has_max = 0;
+
+        // 1. Parsowanie --min (opcjonalne)
+        if (min_flag) {
+            const char* min_arg = min_flag + 6; // Przesunięcie o długość "--min "
+            char min_buf[16] = {0};
+            int i = 0;
+
+            if (min_arg[0] == '"') {
+                min_arg++; // Pomiń otwierający cudzysłów
+                while (min_arg[i] != '"' && min_arg[i] != '\0' && i < 15) {
+                    min_buf[i] = min_arg[i];
+                    i++;
+                }
+            } else {
+                while (min_arg[i] != ' ' && min_arg[i] != '\0' && i < 15) {
+                    min_buf[i] = min_arg[i];
+                    i++;
+                }
+            }
+            min_buf[i] = '\0';
+            min_val = atoi(min_buf);
+        }
+
+        // 2. Parsowanie --max (wymagane)
+        if (max_flag) {
+            const char* max_arg = max_flag + 6; // Przesunięcie o długość "--max "
+            char max_buf[16] = {0};
+            int i = 0;
+
+            if (max_arg[0] == '"') {
+                max_arg++; // Pomiń otwierający cudzysłów
+                while (max_arg[i] != '"' && max_arg[i] != '\0' && i < 15) {
+                    max_buf[i] = max_arg[i];
+                    i++;
+                }
+            } else {
+                while (max_arg[i] != ' ' && max_arg[i] != '\0' && i < 15) {
+                    max_buf[i] = max_arg[i];
+                    i++;
+                }
+            }
+            max_buf[i] = '\0';
+            max_val = atoi(max_buf);
+            has_max = 1;
+        }
+
+        // 3. Walidacja i wykonanie
+        if (has_max) {
+            if (min_val > max_val) {
+                print_error("Invalid range! Min cannot be greater than Max.\n");
+            } else {
+                int range = max_val - min_val + 1;
+                
+                // Zabezpieczenie przed dzieleniem przez zero (gdy min_val == max_val)
+                int random_num = min_val;
+                if (range > 0) {
+                    random_num += (system_rand() % range);
+                }
+                
+                print_info("Random number: ");
+                print_num8(random_num); // Twoja funkcja do drukowania liczb
+                print("\n");
+            }
+        } else {
+            print_error("Syntax error! Argument --max is required.\n");
+            print_info("Usage: rand [--min val] --max [val]\n");
         }
     }
 

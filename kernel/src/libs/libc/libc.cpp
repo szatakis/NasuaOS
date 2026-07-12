@@ -241,9 +241,8 @@ int atoi(const char* str) {
         i++;
     }
 
-    // 3. Konwersja kolejnych cyfr na liczbę
-    while (str[i] >= '0' && str[i] <= '10') {
-        // Bezpieczne zabezpieczenie przed przepełnieniem (opcjonalne, ale zalecane)
+    // 3. Konwersja kolejnych cyfr na liczbę (poprawiony warunek na '9')
+    while (str[i] >= '0' && str[i] <= '9') {
         res = res * 10 + (str[i] - '0');
         i++;
     }
