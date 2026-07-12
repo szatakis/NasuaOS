@@ -3,15 +3,14 @@
 #include <cstdint>
 #include <limine.h>
 
+#include "system/drivers/keyboard/driver.h"
+
 extern limine_framebuffer* fb;
 
 extern size_t cursor_x;
 extern size_t cursor_y;
 
 extern uint32_t current_text_color;
-
-extern char command_buffer[64];
-extern size_t cmd_idx;
 
 extern const uint32_t FONT_SPACING_W;
 extern const uint32_t FONT_SPACING_H;

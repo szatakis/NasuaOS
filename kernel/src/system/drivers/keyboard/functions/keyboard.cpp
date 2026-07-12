@@ -1,6 +1,18 @@
 #include "../driver.h"
 #include "../../uart/driver.h"
 
+// Dołączamy wszystkie potrzebne pliki nagłówkowe (tak jak w main.cpp)
+#include "system/drivers/drivers.h"
+#include "system/interrupts/interrupts.h"
+#include "applications/shell/commands.h"
+#include "system/gui/vars/colors.h"
+#include "system/gui/icons/icons.h"
+#include "libs/libc/libc.h"
+#include "libs/asm/asm.h"
+
+// Twój nowy plik od historii
+#include "applications/sysfunc/history.h"
+
 char scancode_to_ascii_normal(uint8_t scancode) {
     switch (scancode) {
         case 0x1E: return 'a'; case 0x30: return 'b'; case 0x2E: return 'c';
@@ -74,4 +86,209 @@ void print_sc(uint8_t scancode) {
     Uart::puts("SC: 0x");
     Uart::puts(hex);
     Uart::puts("\n");
+}
+
+extern bool debug_mode; // Pobieramy z main.cpp
+
+extern char scancode_to_ascii_normal(uint8_t);
+extern char scancode_to_ascii_shift(uint8_t);
+
+// Funkcja pomocnicza - bezpiecznie usuwa starą komendę z ekranu i rysuje nową
+static void replace_current_command(const char* new_cmd) 
+{
+    restore_mouse_backdrop();
+
+    for (size_t i = 0; i < cmd_idx; i++) {
+        delete_last_char();
+    }
+
+    strcpy(command_buffer, new_cmd);
+    cmd_idx = strlen(command_buffer);
+
+    for (size_t i = 0; i < cmd_idx; i++) {
+        print_char8(command_buffer[i]);
+    }
+
+    save_mouse_backdrop();
+    draw_mouse_cursor();
+    render_frame();
+}
+
+void handle_keyboard() 
+{
+    uint8_t status = inb(0x64);
+
+    // Brak danych do odczytu
+    if (!(status & 1)) {
+        return;
+    }
+
+    uint8_t data = inb(0x60);
+
+    // Sprawdzamy czy to myszka (bit 5). Jeśli tak, to tu pomijamy.
+    if (status & 0x20) {
+        return; 
+    }
+
+    uint8_t scancode = data;
+
+    if (debug_mode) {
+        print_sc(scancode);
+    }
+
+    // 1. Obsługa prefiksu rozszerzonego
+    if (scancode == 0xE0) {
+        extended_scancode = true;
+        return; 
+    }
+
+    // 2. Przetwarzanie kodów rozszerzonych
+    if (extended_scancode) {
+        extended_scancode = false;
+
+        if (scancode & 0x80) {
+            return; 
+        }
+
+        // Left Windows
+        if (scancode == 0x5B) {
+            if (!is_menu_start_open) {
+                clear_line();
+                print("Start menu opened\n");
+                print_cmd();
+                is_menu_start_open = true;
+            } else {
+                clear_line();
+                print("Start menu closed\n");
+                print_cmd();
+                is_menu_start_open = false;
+            }
+            return;
+        }
+
+        // Right Windows
+        if (scancode == 0x5C) {
+            if (!is_menu_start_open) {
+                clear_line();
+                print("Start menu opened\n");
+                print_cmd();
+                is_menu_start_open = true;
+            } else {
+                clear_line();
+                print("Start menu closed\n");
+                print_cmd();
+                is_menu_start_open = false;
+            }
+            return;
+        }
+
+        // ARROW KEYS - Mysz LUB przewijanie historii poleceń
+        if (scancode == 0x48 || scancode == 0x50 || scancode == 0x4B || scancode == 0x4D) {
+            if (shift_pressed) {
+                if (scancode == 0x48) { // SHIFT + UP
+                    const char* cmd = history_navigate_up();
+                    if (cmd != nullptr) {
+                        replace_current_command(cmd);
+                    }
+                } 
+                else if (scancode == 0x50) { // SHIFT + DOWN
+                    const char* cmd = history_navigate_down();
+                    if (cmd != nullptr) {
+                        replace_current_command(cmd);
+                    }
+                }
+            } 
+            else {
+                // RUCH MYSZĄ
+                restore_mouse_backdrop();
+                int speed = 5;
+
+                if (scancode == 0x48 && mouse_y >= speed)
+                    mouse_y -= speed;
+                else if (scancode == 0x50 && mouse_y + 20 < (int)fb->height)
+                    mouse_y += speed;
+                else if (scancode == 0x4B && mouse_x >= speed)
+                    mouse_x -= speed;
+                else if (scancode == 0x4D && mouse_x + 20 < (int)fb->width)
+                    mouse_x += speed;
+
+                save_mouse_backdrop();
+                draw_mouse_cursor();
+                render_frame();
+            }
+            return;
+        }
+        return; 
+    }
+
+    // 3. Normalne puszczenie klawisza (Break Code)
+    if (scancode & 0x80) {
+        uint8_t rel = scancode & 0x7F;
+        if (rel == 0x2A || rel == 0x36) {
+            shift_pressed = false;
+        }
+        return;
+    }
+
+    // 4. SHIFT DOWN
+    if (scancode == 0x2A || scancode == 0x36) {
+        shift_pressed = true;
+        return;
+    }
+
+    // 5. BACKSPACE
+    if (scancode == 0x0E) {
+        if (cmd_idx > 0) {
+            cmd_idx--;
+            restore_mouse_backdrop();
+            delete_last_char();
+            save_mouse_backdrop();
+            draw_mouse_cursor();
+            render_frame();
+        }
+        return;
+    }
+
+    // 6. ENTER
+    if (scancode == 0x1C) {
+        if (is_mouse_over_start(mouse_x, mouse_y)) {
+            if (!is_menu_start_open) {
+                clear_line();
+                print("Start menu opened\n");
+                print_cmd();
+                is_menu_start_open = true;
+            } else {
+                clear_line();
+                print("Start menu closed\n");
+                print_cmd();
+                is_menu_start_open = false;
+            }
+        } else {
+            command_buffer[cmd_idx] = '\0';
+            
+            history_add(command_buffer);
+            history_reset_nav(); 
+            
+            execute_command(command_buffer);
+            cmd_idx = 0;
+            command_buffer[0] = '\0';
+            render_frame();
+        }
+        return;
+    }
+
+    // 7. ZWYKŁE ZNAKI
+    char c = shift_pressed
+        ? scancode_to_ascii_shift(scancode)
+        : scancode_to_ascii_normal(scancode);
+
+    if (c && cmd_idx < 63) {
+        command_buffer[cmd_idx++] = c;
+
+        restore_mouse_backdrop();
+        print_char8(c);
+        save_mouse_backdrop();
+        draw_mouse_cursor();
+        render_frame();
+    }
 }

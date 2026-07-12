@@ -4,10 +4,10 @@
 
 #include "system/drivers/drivers.h"
 #include "system/interrupts/interrupts.h"
-
 #include "system/filesystem/ztrfs.h"
 
 #include "applications/shell/commands.h"
+
 #include "system/gui/vars/colors.h"
 #include "system/gui/icons/icons.h"
 
@@ -22,7 +22,6 @@ volatile limine_rsdp_request rsdp_request = {
     .revision = 0,
     .response = nullptr
 };
-
 
 __attribute__((used, section(".limine_requests")))
 volatile limine_hhdm_request hhdm_request = {
@@ -63,19 +62,6 @@ volatile std::uint64_t limine_requests_end_marker[] = LIMINE_REQUESTS_END_MARKER
 
 bool debug_mode = false;
 
-// ---------------- GLOBAL STATE ----------------
-
-bool shift_pressed = false;
-bool extended_scancode = false;
-
-char command_buffer[64];
-size_t cmd_idx = 0;
-
-// ---------------- KEYBOARD HELPERS ----------------
-
-extern char scancode_to_ascii_normal(uint8_t);
-extern char scancode_to_ascii_shift(uint8_t);
-
 // ---------------- KMAIN ----------------
 
 extern "C" void kmain() {
@@ -110,7 +96,6 @@ extern "C" void kmain() {
 
     asm volatile("sti");
 
-
     // Initialize backbuffer with framebuffer dimensions
     init_backbuffer(fb->width, fb->height, fb->pitch);
 
@@ -126,157 +111,12 @@ extern "C" void kmain() {
     print("Enter Command\n");
     print_cmd();
 
+    // Główna pętla wywołań
     for (;;) {
         updateTime();
         render_frame();
 
-        uint8_t status = inb(0x64);
-
-        if (!(status & 1))
-            continue;
-
-        uint8_t data = inb(0x60);
-
-        // ---------------- KEYBOARD ----------------
-        if (!(status & 0x20)) {
-            uint8_t scancode = data;
-
-            if(debug_mode) {
-                print_sc(scancode);
-            }
-
-            // 1. Obsługa prefiksu rozszerzonego
-            if (scancode == 0xE0) {
-                extended_scancode = true;
-                continue; // Czekamy na właściwy kod w następnej iteracji
-            }
-
-            // 2. Przetwarzanie kodów rozszerzonych (jeśli flaga była aktywna)
-            if (extended_scancode) {
-                extended_scancode = false; // Natychmiast czyścimy flagę, by nie zawisła
-
-                // Sprawdzamy czy to puszczenie klawisza rozszerzonego (Break Code)
-                if (scancode & 0x80) {
-                    continue; // Ignorujemy puszczenie klawiszy rozszerzonych
-                }
-
-                // Left Windows (Wciśnięcie)
-                if (scancode == 0x5B) {
-                    if (!is_menu_start_open) {
-                        clear_line();
-                        print("Start menu opened\n");
-                        print_cmd();
-                        is_menu_start_open = true;
-                    } else {
-                        clear_line();
-                        print("Start menu closed\n");
-                        print_cmd();
-                        is_menu_start_open = false;
-                    }
-                    continue;
-                }
-
-                // Right Windows (Wciśnięcie)
-                if (scancode == 0x5C) {
-                    if (!is_menu_start_open) {
-                        clear_line();
-                        print("Start menu opened\n");
-                        print_cmd();
-                        is_menu_start_open = true;
-                    } else {
-                        clear_line();
-                        print("Start menu closed\n");
-                        print_cmd();
-                        is_menu_start_open = false;
-                    }
-                    continue;
-                }
-
-                // ARROW KEYS (Tylko rozszerzone wersje sterują myszą)
-                if (scancode == 0x48 || scancode == 0x50 || scancode == 0x4B || scancode == 0x4D) {
-                    restore_mouse_backdrop();
-                    int speed = 5;
-
-                    if (scancode == 0x48 && mouse_y >= speed)
-                        mouse_y -= speed;
-                    else if (scancode == 0x50 && mouse_y + 20 < (int)fb->height)
-                        mouse_y += speed;
-                    else if (scancode == 0x4B && mouse_x >= speed)
-                        mouse_x -= speed;
-                    else if (scancode == 0x4D && mouse_x + 20 < (int)fb->width)
-                        mouse_x += speed;
-
-                    save_mouse_backdrop();
-                    draw_mouse_cursor();
-                    render_frame();
-                    continue;
-                }
-
-                continue; // Zabezpieczenie: pomiń resztę przetwarzania dla innych klawiszy E0
-            }
-
-            // 3. Normalne puszczenie klawisza (Zwykły Break Code bez E0)
-            if (scancode & 0x80) {
-                uint8_t rel = scancode & 0x7F;
-                if (rel == 0x2A || rel == 0x36)
-                    shift_pressed = false;
-                continue;
-            }
-
-            // 4. SHIFT DOWN
-            if (scancode == 0x2A || scancode == 0x36) {
-                shift_pressed = true;
-                continue;
-            }
-
-            // 5. BACKSPACE
-            if (scancode == 0x0E) {
-                if (cmd_idx > 0) {
-                    cmd_idx--;
-                    delete_last_char();
-                    render_frame();
-                }
-                continue;
-            }
-
-            // 6. ENTER
-            if (scancode == 0x1C) {
-                if (is_mouse_over_start(mouse_x, mouse_y)) {
-                    if (!is_menu_start_open) {
-                        clear_line();
-                        print("Start menu opened\n");
-                        print_cmd();
-                        is_menu_start_open = true;
-                    } else {
-                        clear_line();
-                        print("Start menu closed\n");
-                        print_cmd();
-                        is_menu_start_open = false;
-                    }
-                } else {
-                    command_buffer[cmd_idx] = '\0';
-                    execute_command(command_buffer);
-                    cmd_idx = 0;
-                    render_frame();
-                }
-                continue;
-            }
-
-            // 7. ZWYKŁE ZNAKI (Tylko jeśli kod nie był rozszerzony)
-            char c = shift_pressed
-                ? scancode_to_ascii_shift(scancode)
-                : scancode_to_ascii_normal(scancode);
-
-            if (c && cmd_idx < 63) {
-                command_buffer[cmd_idx++] = c;
-
-                restore_mouse_backdrop();
-                print_char8(c);
-                save_mouse_backdrop();
-                draw_mouse_cursor();
-                render_frame();
-            }
-        }
+        handle_keyboard();
     }
 }
 

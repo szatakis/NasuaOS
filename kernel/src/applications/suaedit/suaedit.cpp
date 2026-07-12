@@ -1,5 +1,5 @@
-#include "zetedit.h"
-#include "zetscript/zetscript.h"
+#include "suaedit.h"
+#include "suascript/suascript.h"
 
 window_struct zetedit = {
     .name = "ZetEdit",

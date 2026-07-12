@@ -2,6 +2,6 @@
 #define APPS_H
 
 #include "terminal/terminal.h"
-#include "zetedit/zetedit.h"
+#include "suaedit/suaedit.h"
 
 #endif // APPS_H
