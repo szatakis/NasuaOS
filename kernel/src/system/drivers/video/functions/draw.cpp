@@ -103,7 +103,7 @@ void update_bottom_bar() {
         }
     }
 
-    draw_icon(speaker_icon, start_x - 150, start_y + 10);
+    draw_icon(speaker_icon, start_x - 155, start_y + 10);
     draw_icon(notification_icon, start_x - 130, start_y + 10);
 
     draw_start_button(5, start_y + 2);
