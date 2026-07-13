@@ -162,13 +162,13 @@ void update_bottom_bar() {
     fill_block(0, start_y, COLOR_NASUA_TASKBAR, fb->width, bar_h);
 
     // Nakładamy ikony po prawej stronie
-    draw_icon_hex<32, 32>(speaker_icon, start_x - 190, start_y + ((bar_h - 32) / 2));
+    draw_icon<32, 32>(speaker_icon, start_x - 190, start_y + ((bar_h - 32) / 2));
     if(notification_count <= 0) {
-        draw_icon_hex<32, 32>(notification_icon, start_x - 150, start_y + ((bar_h - 32) / 2));
+        draw_icon<32, 32>(notification_icon, start_x - 150, start_y + ((bar_h - 32) / 2));
     }
     else 
     {
-        draw_icon_hex<32, 32>(notification_icon_h, start_x - 150, start_y + ((bar_h - 32) / 2));
+        draw_icon<32, 32>(notification_icon_h, start_x - 150, start_y + ((bar_h - 32) / 2));
     }
 
     // Rysujemy przycisk START i czas

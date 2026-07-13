@@ -100,8 +100,6 @@ extern "C" void kmain() {
 
     asm volatile("sti");
 
-    update_bottom_bar();
-
     fetch();
     print(CMD_TEXT_WHITE);
     print("Enter Command\n");
