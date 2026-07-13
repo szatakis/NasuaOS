@@ -1,3 +1,5 @@
+![Logo](documentation/images/logo.png)
+
 # NasuaOS
 
 Modern hobby operating system for **x86_64 computers**, written from scratch in **C++**.
@@ -43,7 +45,7 @@ The long-term goal is to create a modern, lightweight operating system capable o
 
 ## Screenshots
 
-![Desktop](documentation/screenshots/desktop.png)
+![Desktop](documentation/images/screenshots/desktop.png)
 
 ## Features
 
