@@ -8,6 +8,41 @@ ARCH := x86_64
 QEMUFLAGS := -m 2G
 
 override IMAGE_NAME := NasuaOS-$(ARCH)
+override FS_NAME := clawfs_disk
+
+# Wykrywanie WSL
+IS_WSL := $(shell grep -qi microsoft /proc/version 2>/dev/null && echo 1 || echo 0)
+
+ifeq ($(IS_WSL),1)
+QEMU_X86_64 = /mnt/c/Program\ Files/qemu/qemu-system-x86_64.exe
+QEMU_AARCH64 = /mnt/c/Program\ Files/qemu/qemu-system-aarch64.exe
+QEMU_RISCV64 = /mnt/c/Program\ Files/qemu/qemu-system-riscv64.exe
+QEMU_LOONGARCH64 = /mnt/c/Program\ Files/qemu/qemu-system-loongarch64.exe
+
+define PREPARE_WSL
+	@powershell.exe -Command "New-Item -ItemType Directory -Force -Path C:\wsl_target" > /dev/null
+
+	@if [ ! -f /mnt/c/wsl_target/$(FS_NAME).img ]; then \
+		dd if=/dev/zero of=/mnt/c/wsl_target/$(FS_NAME).img bs=1M count=2048 2>/dev/null; \
+		echo "-> Created virtual disk"; \
+	fi
+
+	@cp $(IMAGE_NAME).iso /mnt/c/wsl_target/$(IMAGE_NAME).iso
+	@rm -rf /mnt/c/wsl_target/edk2-ovmf-bins
+	@cp -r edk2-ovmf-bins /mnt/c/wsl_target/
+endef
+
+else
+
+QEMU_X86_64 = qemu-system-x86_64
+QEMU_AARCH64 = qemu-system-aarch64
+QEMU_RISCV64 = qemu-system-riscv64
+QEMU_LOONGARCH64 = qemu-system-loongarch64
+
+define PREPARE_WSL
+endef
+
+endif
 
 # Toolchain for building the 'limine' executable for the host.
 HOST_CC := cc
@@ -30,113 +65,258 @@ run-hdd: run-hdd-$(ARCH)
 
 .PHONY: run-x86_64
 run-x86_64: edk2-ovmf-bins $(IMAGE_NAME).iso
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	$(PREPARE_WSL)
+	$(QEMU_X86_64) \
+		-M pc \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-x86_64.fd,readonly=on \
+		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
+		-drive id=$(FS_NAME),file=C:\\wsl_target\\$(FS_NAME).img,format=raw,if=none \
+		-device ide-hd,drive=$(FS_NAME),bus=ide.0,unit=0 \
+		$(QEMUFLAGS) \
+		-display sdl,gl=on \
+		-serial stdio
+else
+	$(QEMU_X86_64) \
 		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-x86_64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-hdd-x86_64
 run-hdd-x86_64: edk2-ovmf-bins $(IMAGE_NAME).hdd
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@powershell.exe -Command "New-Item -ItemType Directory -Force -Path C:\wsl_target" > /dev/null
+
+	@cp $(IMAGE_NAME).hdd /mnt/c/wsl_target/$(IMAGE_NAME).hdd
+	@rm -rf /mnt/c/wsl_target/edk2-ovmf-bins
+	@cp -r edk2-ovmf-bins /mnt/c/wsl_target/
+
+	$(QEMU_X86_64) \
 		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-x86_64.fd,readonly=on \
+		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
+		$(QEMUFLAGS) \
+		-display sdl,gl=on \
+		-serial stdio
+else
+	$(QEMU_X86_64) \
+		-M q35 \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-x86_64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-aarch64
 run-aarch64: edk2-ovmf-bins $(IMAGE_NAME).iso
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	$(PREPARE_WSL)
+	$(QEMU_AARCH64) \
 		-M virt \
 		-cpu cortex-a72 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-aarch64.fd,readonly=on \
+		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
+		$(QEMUFLAGS)
+else
+	$(QEMU_AARCH64) \
+		-M virt \
+		-cpu cortex-a72 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-aarch64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-hdd-aarch64
 run-hdd-aarch64: edk2-ovmf-bins $(IMAGE_NAME).hdd
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@cp $(IMAGE_NAME).hdd /mnt/c/wsl_target/$(IMAGE_NAME).hdd
+	@rm -rf /mnt/c/wsl_target/edk2-ovmf-bins
+	@cp -r edk2-ovmf-bins /mnt/c/wsl_target/
+
+	$(QEMU_AARCH64) \
 		-M virt \
 		-cpu cortex-a72 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-aarch64.fd,readonly=on \
+		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
+		$(QEMUFLAGS)
+else
+	$(QEMU_AARCH64) \
+		-M virt \
+		-cpu cortex-a72 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-aarch64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-riscv64
 run-riscv64: edk2-ovmf-bins $(IMAGE_NAME).iso
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	$(PREPARE_WSL)
+	$(QEMU_RISCV64) \
 		-M virt \
 		-cpu rv64 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-riscv64.fd,readonly=on \
+		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
+		$(QEMUFLAGS)
+else
+	$(QEMU_RISCV64) \
+		-M virt \
+		-cpu rv64 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-riscv64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-hdd-riscv64
 run-hdd-riscv64: edk2-ovmf-bins $(IMAGE_NAME).hdd
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@cp $(IMAGE_NAME).hdd /mnt/c/wsl_target/$(IMAGE_NAME).hdd
+	@rm -rf /mnt/c/wsl_target/edk2-ovmf-bins
+	@cp -r edk2-ovmf-bins /mnt/c/wsl_target/
+
+	$(QEMU_RISCV64) \
 		-M virt \
 		-cpu rv64 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-riscv64.fd,readonly=on \
+		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
+		$(QEMUFLAGS)
+else
+	$(QEMU_RISCV64) \
+		-M virt \
+		-cpu rv64 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-riscv64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-loongarch64
 run-loongarch64: edk2-ovmf-bins $(IMAGE_NAME).iso
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	$(PREPARE_WSL)
+	$(QEMU_LOONGARCH64) \
 		-M virt \
 		-cpu la464 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-loongarch64.fd,readonly=on \
+		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
+		$(QEMUFLAGS)
+else
+	$(QEMU_LOONGARCH64) \
+		-M virt \
+		-cpu la464 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-loongarch64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-hdd-loongarch64
 run-hdd-loongarch64: edk2-ovmf-bins $(IMAGE_NAME).hdd
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@cp $(IMAGE_NAME).hdd /mnt/c/wsl_target/$(IMAGE_NAME).hdd
+	@rm -rf /mnt/c/wsl_target/edk2-ovmf-bins
+	@cp -r edk2-ovmf-bins /mnt/c/wsl_target/
+
+	$(QEMU_LOONGARCH64) \
 		-M virt \
 		-cpu la464 \
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-$(ARCH).fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-ovmf-bins\\ovmf-code-loongarch64.fd,readonly=on \
+		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
+		$(QEMUFLAGS)
+else
+	$(QEMU_LOONGARCH64) \
+		-M virt \
+		-cpu la464 \
+		-device ramfb \
+		-device qemu-xhci \
+		-device usb-kbd \
+		-device usb-tablet \
+		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf-bins/ovmf-code-loongarch64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
+endif
 
 
 .PHONY: run-bios
 run-bios: $(IMAGE_NAME).iso
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@cp $(IMAGE_NAME).iso /mnt/c/wsl_target/$(IMAGE_NAME).iso
+
+	$(QEMU_X86_64) \
+		-M q35 \
+		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
+		-boot d \
+		$(QEMUFLAGS) \
+		-display sdl,gl=on \
+		-serial stdio
+else
+	$(QEMU_X86_64) \
 		-M q35 \
 		-cdrom $(IMAGE_NAME).iso \
 		-boot d \
 		$(QEMUFLAGS)
+endif
 
 .PHONY: run-hdd-bios
 run-hdd-bios: $(IMAGE_NAME).hdd
-	qemu-system-$(ARCH) \
+ifeq ($(IS_WSL),1)
+	@cp $(IMAGE_NAME).hdd /mnt/c/wsl_target/$(IMAGE_NAME).hdd
+
+	$(QEMU_X86_64) \
+		-M q35 \
+		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
+		$(QEMUFLAGS) \
+		-display sdl,gl=on \
+		-serial stdio
+else
+	$(QEMU_X86_64) \
 		-M q35 \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
+endif
 
 edk2-ovmf-bins:
 	cp -r confile/edk2-ovmf-bins ./
@@ -242,39 +422,3 @@ clean:
 distclean:
 	$(MAKE) -C kernel distclean
 	rm -rf iso_root *.iso *.hdd limine-binary edk2-ovmf-bins
-
-.PHONY: run-windows
-run-windows: kernel
-	@echo "--- Kopiowanie ISO i uruchamianie QEMU na Windows ---"
-	# 1. Tworzymy folder testowy na dysku C: przez PowerShell (jeśli nie istnieje)
-	@powershell.exe -Command "New-Item -ItemType Directory -Force -Path C:\wsl_target" > /dev/null
-	
-	# 2. Tworzymy pusty dysk 2GB w folderze testowym (tylko jeśli jeszcze nie istnieje)
-	# Używamy ścieżki WSL (/mnt/c/...), aby sprawdzić dostępność pliku i go wygenerować.
-	@if [ ! -f /mnt/c/wsl_target/ztrfs_disk.img ]; then \
-		dd if=/dev/zero of=/mnt/c/wsl_target/ztrfs_disk.img bs=1M count=2048 2>/dev/null; \
-		echo "-> Utworzono czysty wirtualny dysk dla ZTRFS"; \
-	fi
-	
-	# 3. Kopiujemy plik ISO z głównego folderu projektu na dysk C:
-	@cp NasuaOS-x86_64.iso /mnt/c/wsl_target/NasuaOS-x86_64.iso
-	
-	# 4. Odpalamy QEMU z lokalizacji C:\Program Files\qemu
-	# ZMIANY: 
-	# - Przenosimy ISO do parametru -cdrom (zwalnia to główny kanał dysków)
-	# - Podpinamy ztrfs_disk.img jako Primary Master (bus=ide.0, unit=0)
-	# - Zmieniamy maszynę na "-M pc", aby aktywować emulację portów ATA PIO 0x1F0
-	@/mnt/c/Program\ Files/qemu/qemu-system-x86_64.exe \
-		-cdrom C:\\wsl_target\\NasuaOS-x86_64.iso \
-		-drive id=ztrfs_drive,file=C:\\wsl_target\\ztrfs_disk.img,format=raw,if=none \
-		-device ide-hd,drive=ztrfs_drive,bus=ide.0,unit=0 \
-		-m 512M \
-		-machine pc \
-		-cpu qemu64 \
-		-display sdl,gl=on \
-		-serial stdio
-
-build-all:
-	$(MAKE) clean
-	$(MAKE) TOOLCHAIN=llvm
-	$(MAKE) run-windows

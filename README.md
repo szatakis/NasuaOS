@@ -116,11 +116,6 @@ Build and Run:
 make run
 ```
 
-Build and Run in windows:
-```bash
-make build-all
-```
-
 # Contributing
 
 Contributions, bug reports and feature suggestions are welcome.
