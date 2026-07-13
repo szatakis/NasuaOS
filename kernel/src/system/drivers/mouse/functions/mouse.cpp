@@ -26,11 +26,3 @@ const char arrow_cursor[CURSOR_H][CURSOR_W] = {
     {'.','.','.','.','.','.','W','B','B','W','.','.'},
     {'.','.','.','.','.','.','.','W','W','W','.','.'}
 };
-
-uint32_t mouse_backdrop[CURSOR_W * CURSOR_H];
-
-void handle_mouse() {
-    restore_mouse_backdrop();
-    save_mouse_backdrop();
-    draw_mouse_cursor();
-}

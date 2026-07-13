@@ -76,8 +76,15 @@ void draw_char16(unsigned char c, size_t x, size_t y, uint32_t color) {
 }
 
 void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y) {
+    if (!fb) return;
+
     uint32_t* bb_ptr = get_backbuffer();
     size_t pitch = get_backbuffer_pitch();
+
+    // Clipping - zabezpieczenie przed wyjściem poza ekran
+    if (x >= fb->width || y >= fb->height) return;
+    if (x + size_x > fb->width)  size_x = fb->width - x;
+    if (y + size_y > fb->height) size_y = fb->height - y;
 
     for (size_t dy = 0; dy < size_y; dy++) {
         for (size_t dx = 0; dx < size_x; dx++) {
@@ -86,38 +93,18 @@ void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y
     }
 }
 
-// ---------------- BOTTOM BAR ----------------
-void update_bottom_bar() {
-    if (!fb) return;
-
-    uint32_t* bb_ptr = get_backbuffer();
-    size_t pitch = get_backbuffer_pitch();
-
-    size_t bar_h = 36;
-    size_t start_y = fb->height - bar_h;
-    size_t start_x = fb->width;
-
-    for (size_t y = start_y; y < fb->height; y++) {
-        for (size_t x = 0; x < fb->width; x++) {
-            bb_ptr[y * pitch + x] = COLOR_NASUA_TASKBAR;
-        }
-    }
-
-    draw_icon(speaker_icon, start_x - 155, start_y + 10);
-    draw_icon(notification_icon, start_x - 130, start_y + 10);
-
-    draw_start_button(5, start_y + 2);
-}
-
 void update_start() {
+    if (!fb) return;
     size_t bar_h = 36;
     size_t start_y = fb->height - bar_h;
 
-    fill_block(0, start_y, COLOR_NASUA_TASKBAR, 50, 36);
+    // Usunięto fill_block czyszczący, ponieważ update_bottom_bar robi to globalnie
     draw_start_button(5, start_y + 2);
 }
 
 void update_time() {
+    if (!fb) return;
+
     RtcTime time = get_rtc_time();
 
     char time_buf[9];
@@ -152,21 +139,43 @@ void update_time() {
     size_t bar_h = 36;
     size_t start_y = fb->height - bar_h;
 
-    // ---------------- CLEAR (poprawne) ----------------
-    fill_block(text_x, start_y + 7, COLOR_NASUA_TASKBAR, 100, 10);
-    fill_block(text_x, start_y + 19, COLOR_NASUA_TASKBAR, 100, 10);
+    // Usunięto zbędne wywołania fill_block do czyszczenia tła pod tekstem zegarka,
+    // ponieważ cała linia paska jest świeżo narysowana w update_bottom_bar()
 
     // ---------------- DRAW ----------------
     print_at8(time_buf, text_x, start_y + 8, COLOR_WHITE);
     print_at8(date_buf, text_x, start_y + 20, COLOR_WHITE);
 }
 
-void update_gui() {
+// ---------------- BOTTOM BAR ----------------
+// Rysuje cały dolny pasek zadań na gotowo do backbuffera co klatkę
+void update_bottom_bar() {
+    if (!fb) return;
+
+    size_t bar_h = 36;
+    size_t start_y = fb->height - bar_h;
+    size_t start_x = fb->width;
+
+    // Rysujemy podkład paska zadań
+    fill_block(0, start_y, COLOR_NASUA_TASKBAR, fb->width, bar_h);
+
+    // Nakładamy ikony po prawej stronie
+    draw_icon(speaker_icon, start_x - 155, start_y + 10);
+    draw_icon(notification_icon, start_x - 130, start_y + 10);
+
+    // Rysujemy przycisk START i czas
     update_start();
     update_time();
 }
 
+// Zostawiamy funkcję zbiorczą wywoływaną co klatkę w głównej pętli
+void update_gui() {
+    update_bottom_bar();
+}
+
 void draw_rect(int x1, int y1, int x2, int y2, uint32_t color) {
+    if (!fb) return;
+
     // 1. Zabezpieczenie współrzędnych
     if (x1 > x2) { int tmp = x1; x1 = x2; x2 = tmp; }
     if (y1 > y2) { int tmp = y1; y1 = y2; y2 = tmp; }
@@ -179,8 +188,6 @@ void draw_rect(int x1, int y1, int x2, int y2, uint32_t color) {
 
     // 3. Pobranie wskaźnika na backbuffer
     uint32_t* bb_ptr = get_backbuffer();
-    
-    // Obliczamy ile 32-bitowych pikseli mieści się w jednej linii
     int pixels_per_pitch = get_backbuffer_pitch();
 
     // 4. Rysowanie prostokąta

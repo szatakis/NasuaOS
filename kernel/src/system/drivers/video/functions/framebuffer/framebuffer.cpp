@@ -2,6 +2,9 @@
 #include "system/gui/vars/colors.h"
 #include "applications/shell/commands.h"
 
+// Deklaracja funkcji inicjalizującej bufor terminala z pliku tekstowego
+extern void init_terminal_buffer();
+
 limine_framebuffer* fb = nullptr;
 
 // Backbuffer: static allocation for double buffering
@@ -25,35 +28,34 @@ size_t get_backbuffer_pitch() {
     return backbuffer_pitch;
 }
 
+// Skopiowanie całego backbuffera do fizycznego framebuffera (VRAM)
 void render_frame() {
-    if (!fb) return;
+    if (!fb || !fb->address) return;
 
     uint32_t* fb_ptr = (uint32_t*)fb->address;
-    
-    // Copy entire backbuffer to framebuffer
+    size_t fb_pitch = fb->pitch / 4; // Pitch fizycznego ekranu w pikselach
+
+    // Optymalizacja: Kopiujemy całe linie pamięci zamiast pojedynczych pikseli
     for (size_t y = 0; y < backbuffer_height; y++) {
-        for (size_t x = 0; x < backbuffer_width; x++) {
-            fb_ptr[y * backbuffer_pitch + x] = backbuffer[y * backbuffer_pitch + x];
-        }
+        __builtin_memcpy(
+            &fb_ptr[y * fb_pitch], 
+            &backbuffer[y * backbuffer_pitch], 
+            backbuffer_width * sizeof(uint32_t)
+        );
     }
 }
 
+// Czyszczenie pamięci roboczej ekranu oraz wirtualnego bufora konsoli
 void clear_screen() {
     if (!fb) return;
 
-    cursor_x = 0;
-    cursor_y = 0;
-
+    // 2. Wypełnienie całego backbuffera jednolitym kolorem tła systemu
     uint32_t* bb_ptr = backbuffer;
-
-    size_t bar_height = 36;
-    size_t bar_start = backbuffer_height - bar_height;
+    uint32_t bg_color = COLOR_NASUA_BG;
 
     for (size_t y = 0; y < backbuffer_height; y++) {
-        uint32_t c = (y >= bar_start) ? COLOR_DARK_GRAY : COLOR_NASUA_BG;
-
         for (size_t x = 0; x < backbuffer_width; x++) {
-            bb_ptr[y * backbuffer_pitch + x] = c;
+            bb_ptr[y * backbuffer_pitch + x] = bg_color;
         }
     }
 }

@@ -103,8 +103,7 @@ extern "C" void kmain() {
     clear_screen();
     update_bottom_bar();
 
-    render_frame();
-
+    init_terminal_buffer();
     fetch();
     print(CMD_TEXT_WHITE);
     print("Enter Command\n");
@@ -112,15 +111,18 @@ extern "C" void kmain() {
 
     // Główna pętla wywołań
     for (;;) {
+        clear_screen();
         update_gui_state(mouse_x, mouse_y);
 
+        draw_terminal_buffer();
         update_gui();
+        draw_windows(); 
+        draw_start_menu();
 
         handle_keyboard();
         handle_mouse();
 
         render_frame();
-
     }
 }
 

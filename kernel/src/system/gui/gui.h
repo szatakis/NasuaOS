@@ -7,4 +7,6 @@ void open_start_menu();
 
 void close_start_menu();
 
+void draw_start_menu();
+
 #endif // GUI_H

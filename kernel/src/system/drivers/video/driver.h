@@ -33,9 +33,7 @@ void print_at16(const char* str, size_t x, size_t y, uint32_t color);
 
 void delete_last_char();
 
-void save_mouse_backdrop();
-void restore_mouse_backdrop();
-void draw_mouse_cursor();
+void handle_mouse();
 
 // ---------------- DRAW API ----------------
 void update_bottom_bar();
@@ -49,6 +47,7 @@ void draw_char16(unsigned char c, size_t x, size_t y, uint32_t color);
 void print_num8(uint32_t num);
 
 void update_gui();
+void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y);
 void draw_rect(int x1, int y1, int x2, int y2, uint32_t color);
 
 void print_info(const char* msg);
@@ -91,3 +90,11 @@ void draw_window(window_struct* window);
 bool is_mouse_over_window(window_struct* window, int mouse_x, int mouse_y);
 bool is_mouse_over_window_title(window_struct* window, int mouse_x, int mouse_y);
 window_button get_window_button(window_struct* window, int mouse_x, int mouse_y);
+void register_window(window_struct* window);
+// Wyrejestrowuje okno (np. przy zamknięciu 'X')
+void unregister_window(window_struct* window);
+// Rysuje wszystkie zarejestrowane okna (WYWOŁAJ TO CO KLATKĘ)
+void draw_windows();
+
+void init_terminal_buffer();
+void draw_terminal_buffer();

@@ -14,6 +14,4 @@ extern int32_t mouse_y;
 extern const char arrow_cursor[CURSOR_H][CURSOR_W];
 extern uint32_t mouse_backdrop[CURSOR_W * CURSOR_H];
 
-void handle_mouse();
-
 #endif

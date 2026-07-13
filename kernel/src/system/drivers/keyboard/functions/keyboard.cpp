@@ -102,8 +102,6 @@ extern char scancode_to_ascii_shift(uint8_t);
 // Funkcja pomocnicza - bezpiecznie usuwa starą komendę z ekranu i rysuje nową
 static void replace_current_command(const char* new_cmd) 
 {
-    restore_mouse_backdrop();
-
     for (size_t i = 0; i < cmd_idx; i++) {
         delete_last_char();
     }
@@ -115,8 +113,6 @@ static void replace_current_command(const char* new_cmd)
         print_char8(command_buffer[i]);
     }
 
-    save_mouse_backdrop();
-    draw_mouse_cursor();
     render_frame();
 }
 
@@ -194,7 +190,6 @@ void handle_keyboard()
             } 
             else {
                 // RUCH MYSZĄ
-                restore_mouse_backdrop();
                 int speed = 5;
 
                 if (scancode == 0x48 && mouse_y >= speed)
@@ -205,9 +200,6 @@ void handle_keyboard()
                     mouse_x -= speed;
                 else if (scancode == 0x4D && mouse_x + 20 < (int)fb->width)
                     mouse_x += speed;
-                save_mouse_backdrop();
-                draw_mouse_cursor();
-                render_frame();
             }
             return;
         }
@@ -233,11 +225,7 @@ void handle_keyboard()
     if (scancode == 0x0E) {
         if (cmd_idx > 0) {
             cmd_idx--;
-            restore_mouse_backdrop();
             delete_last_char();
-            save_mouse_backdrop();
-            draw_mouse_cursor();
-            render_frame();
         }
         return;
     }
@@ -260,7 +248,6 @@ void handle_keyboard()
             execute_command(command_buffer);
             cmd_idx = 0;
             command_buffer[0] = '\0';
-            render_frame();
         }
         return;
     }
@@ -274,11 +261,7 @@ void handle_keyboard()
         if (c && cmd_idx < 63) {
             command_buffer[cmd_idx++] = c;
 
-            restore_mouse_backdrop();
             print_char8(c);
-            save_mouse_backdrop();
-            draw_mouse_cursor();
-            render_frame();
         }
     }
 }

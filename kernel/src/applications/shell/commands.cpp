@@ -192,10 +192,8 @@ void execute_command(const char *cmd) {
     }
     // 2. Komenda: clear
     else if (cmd_name_len == 5 && shell_strncmp(cmd, "clear", 5)) {
-        clear_screen();
-
-        update_bottom_bar();
-        draw_mouse_cursor();
+        // 1. Resetowanie wirtualnego bufora tekstu (czyszczenie pamięci konsoli)
+        init_terminal_buffer();
 
         fetch();
 
@@ -713,14 +711,18 @@ void execute_command(const char *cmd) {
                 }
 
                 if (shell_strncmp(app_name_buf, "terminal", 8)) {
-                    draw_window(&terminal);
+                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                    terminal.visible = true;
                     terminal.id = current_id;
                     current_id++;
+                    register_window(&terminal);
                 }
-                if (shell_strncmp(app_name_buf, "suaedit", 7)) {
-                    draw_window(&suaedit);
-                    terminal.id = current_id;
+                else if (shell_strncmp(app_name_buf, "suaedit", 7)) {
+                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                    suaedit.visible = true;
+                    suaedit.id = current_id; // Poprawiono z terminal.id na suaedit.id
                     current_id++;
+                    register_window(&suaedit);
                 }
                 else {
                     print_error("Unknown app\n");
