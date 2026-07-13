@@ -2,7 +2,9 @@
 
 # NasuaOS
 
-Modern hobby operating system for **x86_64 computers**, written from scratch in **C++**.
+Modern hobby operating system primarily targeting **x86_64** computers, written from scratch in **C++**.
+
+Experimental support is planned for **AArch64**, **LoongArch64**, and **RISC-V**. The architecture is designed to be portable, but these targets are currently untested.
 
 NasuaOS is an experimental operating system focused on learning, low-level programming, kernel development, and building a complete system from the ground up.
 
