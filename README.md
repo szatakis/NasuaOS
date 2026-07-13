@@ -50,13 +50,14 @@ The long-term goal is to create a modern, lightweight operating system capable o
 ## Features
 
 - Modern 64-bit kernel
-- Preemptive multitasking
 - Physical & Virtual Memory Manager (PMM/VMM)
 - Paging support
 - ACPI support
 - PCI device enumeration
 - ATA PIO storage driver
+- SATA storage driver (in plans)
 - PS/2 keyboard
+- USB keyboar (in plans)
 - Framebuffer graphics
 - Desktop environment (minimal)
 - Built-in shell
@@ -64,18 +65,6 @@ The long-term goal is to create a modern, lightweight operating system capable o
 - Hardware interrupt handling
 - Serial debugging (UART)
 - Runs in QEMU, VirtualBox and on real hardware
-
-## Project Goals
-
-- Stable kernel
-- Modern desktop interface
-- USB HID support
-- Networking
-- Audio support
-- Package manager
-- Better filesystem support
-- Multi-user environment
-- Open source development
 
 ## Documentation
 
