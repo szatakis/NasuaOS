@@ -5,10 +5,9 @@
 #include "system/drivers/video/driver.h"
 #include "../vars/colors.h"
 
-extern const char start_icon[32][32];
-extern const char start_icon_hover[34][34];
-extern const char notification_icon[16][16];
-extern const char speaker_icon[16][16];
+extern const uint32_t notification_icon[1024];
+extern const uint32_t notification_icon_h[1024];
+extern const uint32_t speaker_icon[1024];
 
 
 extern bool is_menu_start_open;
@@ -56,6 +55,34 @@ void draw_icon(const char (&icon)[rows][cols], size_t start_x, size_t start_y) {
 
             if(draw)
                 bb_ptr[py * pitch + px] = color;
+        }
+    }
+}
+
+template <size_t width, size_t height>
+void draw_icon_hex(const uint32_t* icon, size_t start_x, size_t start_y)
+{
+    if (!fb) return;
+
+    uint32_t* bb_ptr = get_backbuffer();
+    size_t pitch = get_backbuffer_pitch();
+
+    for (size_t y = 0; y < height; y++)
+    {
+        for (size_t x = 0; x < width; x++)
+        {
+            size_t px = start_x + x;
+            size_t py = start_y + y;
+
+            if (px >= fb->width || py >= fb->height)
+                continue;
+
+            uint32_t color = icon[y * width + x];
+
+            if (color == 0x000000)
+                continue;
+
+            bb_ptr[py * pitch + px] = 0xFF000000 | color;
         }
     }
 }

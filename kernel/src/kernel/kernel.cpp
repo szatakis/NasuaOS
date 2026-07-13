@@ -76,6 +76,9 @@ extern "C" void kmain() {
     }
 
     fb = framebuffer_request.response->framebuffers[0];
+    // Initialize backbuffer with framebuffer dimensions
+    init_backbuffer(fb->width, fb->height, fb->pitch);
+    init_terminal_buffer();
 
     Uart::init();
 
@@ -97,13 +100,8 @@ extern "C" void kmain() {
 
     asm volatile("sti");
 
-    // Initialize backbuffer with framebuffer dimensions
-    init_backbuffer(fb->width, fb->height, fb->pitch);
-
-    clear_screen();
     update_bottom_bar();
 
-    init_terminal_buffer();
     fetch();
     print(CMD_TEXT_WHITE);
     print("Enter Command\n");
@@ -112,12 +110,6 @@ extern "C" void kmain() {
     // Główna pętla wywołań
     for (;;) {
         update_windows_positions(mouse_x, mouse_y);
-
-        if (is_mouse_over_any_window(mouse_x, mouse_y) || is_menu_start_open) {
-            shell_input_enabled = false;
-        } else {
-            shell_input_enabled = true; // Mysz na wolnym pulpicie -> można pisać
-        }
 
         clear_screen();
         update_gui_state(mouse_x, mouse_y);

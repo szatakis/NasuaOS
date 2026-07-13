@@ -10,6 +10,8 @@
 
 #include "system/gui/vars/colors.h"
 
+#include "system/sysfunc/notification_manager/notification_manager.h"
+
 // ---------------- HELPERS ----------------
 
 static inline void put_pixel(size_t x, size_t y, uint32_t color) {
@@ -160,8 +162,14 @@ void update_bottom_bar() {
     fill_block(0, start_y, COLOR_NASUA_TASKBAR, fb->width, bar_h);
 
     // Nakładamy ikony po prawej stronie
-    draw_icon(speaker_icon, start_x - 155, start_y + 10);
-    draw_icon(notification_icon, start_x - 130, start_y + 10);
+    draw_icon_hex<32, 32>(speaker_icon, start_x - 190, start_y + ((bar_h - 32) / 2));
+    if(notification_count <= 0) {
+        draw_icon_hex<32, 32>(notification_icon, start_x - 150, start_y + ((bar_h - 32) / 2));
+    }
+    else 
+    {
+        draw_icon_hex<32, 32>(notification_icon_h, start_x - 150, start_y + ((bar_h - 32) / 2));
+    }
 
     // Rysujemy przycisk START i czas
     update_start();
