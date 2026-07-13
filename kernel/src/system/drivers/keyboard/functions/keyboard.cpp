@@ -239,6 +239,9 @@ void handle_keyboard()
                 close_start_menu();
             }
         } 
+        else if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+            handle_window_mouse_click(mouse_x, mouse_y);
+        }
         else if(shell_input_enabled) {
             command_buffer[cmd_idx] = '\0';
             

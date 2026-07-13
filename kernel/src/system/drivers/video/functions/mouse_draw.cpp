@@ -6,6 +6,7 @@ extern const char arrow_cursor[][CURSOR_W];
 
 // Pobiera kształt z arrow_cursor i renderuje go bezpośrednio do backbuffera
 void handle_mouse() {
+
     if (!fb) return;
 
     uint32_t* bb_ptr = get_backbuffer();

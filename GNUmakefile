@@ -138,46 +138,18 @@ run-hdd-bios: $(IMAGE_NAME).hdd
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 
-# --- REGUŁA TESTOWA DLA WSL2 -> WINDOWS (QEMU) ---
-.PHONY: run-windows
-run-windows: kernel
-	@echo "--- Kopiowanie ISO i uruchamianie QEMU na Windows ---"
-	# 1. Tworzymy folder testowy na dysku C: przez PowerShell (jeśli nie istnieje)
-	@powershell.exe -Command "New-Item -ItemType Directory -Force -Path C:\wsl_target" > /dev/null
-	
-	# 2. Tworzymy pusty dysk 2GB w folderze testowym (tylko jeśli jeszcze nie istnieje)
-	# Używamy ścieżki WSL (/mnt/c/...), aby sprawdzić dostępność pliku i go wygenerować.
-	@if [ ! -f /mnt/c/wsl_target/ztrfs_disk.img ]; then \
-		dd if=/dev/zero of=/mnt/c/wsl_target/ztrfs_disk.img bs=1M count=2048 2>/dev/null; \
-		echo "-> Utworzono czysty wirtualny dysk dla ZTRFS"; \
-	fi
-	
-	# 3. Kopiujemy plik ISO z głównego folderu projektu na dysk C:
-	@cp NasuaOS-x86_64.iso /mnt/c/wsl_target/NasuaOS-x86_64.iso
-	
-	# 4. Odpalamy QEMU z lokalizacji C:\Program Files\qemu
-	# ZMIANY: 
-	# - Przenosimy ISO do parametru -cdrom (zwalnia to główny kanał dysków)
-	# - Podpinamy ztrfs_disk.img jako Primary Master (bus=ide.0, unit=0)
-	# - Zmieniamy maszynę na "-M pc", aby aktywować emulację portów ATA PIO 0x1F0
-	@/mnt/c/Program\ Files/qemu/qemu-system-x86_64.exe \
-		-cdrom C:\\wsl_target\\NasuaOS-x86_64.iso \
-		-drive id=ztrfs_drive,file=C:\\wsl_target\\ztrfs_disk.img,format=raw,if=none \
-		-device ide-hd,drive=ztrfs_drive,bus=ide.0,unit=0 \
-		-m 512M \
-		-machine pc \
-		-cpu qemu64 \
-		-display sdl,gl=on \
-		-serial stdio
+edk2-ovmf-bins:
+	cp -r confile/edk2-ovmf-bins ./
 
-build-all:
-	$(MAKE) clean
-	$(MAKE) TOOLCHAIN=llvm
-	$(MAKE) run-windows
-
-edk2-ovmf-bins: ;
-
-limine-binary/limine: ;
+limine-binary/limine:
+	rm -rf limine-binary
+	cp -r confile/limine-binary ./
+	$(MAKE) -C limine-binary \
+		CC="$(HOST_CC)" \
+		CFLAGS="$(HOST_CFLAGS)" \
+		CPPFLAGS="$(HOST_CPPFLAGS)" \
+		LDFLAGS="$(HOST_LDFLAGS)" \
+		LIBS="$(HOST_LIBS)"
 
 kernel/.deps-obtained:
 	./kernel/get-deps
@@ -269,4 +241,40 @@ clean:
 .PHONY: distclean
 distclean:
 	$(MAKE) -C kernel distclean
-	rm -rf iso_root *.iso *.hdd
+	rm -rf iso_root *.iso *.hdd limine-binary edk2-ovmf-bins
+
+.PHONY: run-windows
+run-windows: kernel
+	@echo "--- Kopiowanie ISO i uruchamianie QEMU na Windows ---"
+	# 1. Tworzymy folder testowy na dysku C: przez PowerShell (jeśli nie istnieje)
+	@powershell.exe -Command "New-Item -ItemType Directory -Force -Path C:\wsl_target" > /dev/null
+	
+	# 2. Tworzymy pusty dysk 2GB w folderze testowym (tylko jeśli jeszcze nie istnieje)
+	# Używamy ścieżki WSL (/mnt/c/...), aby sprawdzić dostępność pliku i go wygenerować.
+	@if [ ! -f /mnt/c/wsl_target/ztrfs_disk.img ]; then \
+		dd if=/dev/zero of=/mnt/c/wsl_target/ztrfs_disk.img bs=1M count=2048 2>/dev/null; \
+		echo "-> Utworzono czysty wirtualny dysk dla ZTRFS"; \
+	fi
+	
+	# 3. Kopiujemy plik ISO z głównego folderu projektu na dysk C:
+	@cp NasuaOS-x86_64.iso /mnt/c/wsl_target/NasuaOS-x86_64.iso
+	
+	# 4. Odpalamy QEMU z lokalizacji C:\Program Files\qemu
+	# ZMIANY: 
+	# - Przenosimy ISO do parametru -cdrom (zwalnia to główny kanał dysków)
+	# - Podpinamy ztrfs_disk.img jako Primary Master (bus=ide.0, unit=0)
+	# - Zmieniamy maszynę na "-M pc", aby aktywować emulację portów ATA PIO 0x1F0
+	@/mnt/c/Program\ Files/qemu/qemu-system-x86_64.exe \
+		-cdrom C:\\wsl_target\\NasuaOS-x86_64.iso \
+		-drive id=ztrfs_drive,file=C:\\wsl_target\\ztrfs_disk.img,format=raw,if=none \
+		-device ide-hd,drive=ztrfs_drive,bus=ide.0,unit=0 \
+		-m 512M \
+		-machine pc \
+		-cpu qemu64 \
+		-display sdl,gl=on \
+		-serial stdio
+
+build-all:
+	$(MAKE) clean
+	$(MAKE) TOOLCHAIN=llvm
+	$(MAKE) run-windows

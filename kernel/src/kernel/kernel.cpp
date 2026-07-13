@@ -111,6 +111,14 @@ extern "C" void kmain() {
 
     // Główna pętla wywołań
     for (;;) {
+        update_windows_positions(mouse_x, mouse_y);
+
+        if (is_mouse_over_any_window(mouse_x, mouse_y) || is_menu_start_open) {
+            shell_input_enabled = false;
+        } else {
+            shell_input_enabled = true; // Mysz na wolnym pulpicie -> można pisać
+        }
+
         clear_screen();
         update_gui_state(mouse_x, mouse_y);
 

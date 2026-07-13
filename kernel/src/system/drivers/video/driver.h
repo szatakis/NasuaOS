@@ -19,6 +19,9 @@ uint32_t* get_backbuffer();
 size_t get_backbuffer_pitch();
 void render_frame();  // Copy entire backbuffer to framebuffer
 
+void init_terminal_buffer();
+void draw_terminal_buffer();
+
 void clear_screen();
 void clear_line();
 
@@ -75,6 +78,10 @@ struct window_struct {
 
     bool visible;
     bool focused;
+
+    bool is_dragging;    // Czy okno jest aktualnie przeciągane
+    int drag_offset_x;   // Odległość X myszy od lewego rogu okna
+    int drag_offset_y;   // Odległość Y myszy od górnego rogu okna
 };
 
 enum window_button
@@ -90,11 +97,13 @@ void draw_window(window_struct* window);
 bool is_mouse_over_window(window_struct* window, int mouse_x, int mouse_y);
 bool is_mouse_over_window_title(window_struct* window, int mouse_x, int mouse_y);
 window_button get_window_button(window_struct* window, int mouse_x, int mouse_y);
+void handle_window_mouse_click(int mouse_x, int mouse_y);
+
 void register_window(window_struct* window);
 // Wyrejestrowuje okno (np. przy zamknięciu 'X')
 void unregister_window(window_struct* window);
 // Rysuje wszystkie zarejestrowane okna (WYWOŁAJ TO CO KLATKĘ)
 void draw_windows();
+void update_windows_positions(int current_mouse_x, int current_mouse_y);
 
-void init_terminal_buffer();
-void draw_terminal_buffer();
+bool is_mouse_over_any_window(int mouse_x, int mouse_y);
