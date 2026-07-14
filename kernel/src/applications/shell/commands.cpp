@@ -142,7 +142,8 @@ void execute_command(const char *cmd) {
             print("    --subsystem \"subsystem_name\"     - (Required 1 of 5) Display logs from selected subsystem\n");
             print("    --put \"text\"                     - (Required 1 of 5) Add custom log message with INFO level\n");
             print(" -bootapp                            - Application manager command\n");
-            print("    --app \"app_name\"                 - (Required) Load and execute selected application\n");
+            print("    --app \"application_name\"         - (Required) Load and execute selected application\n");
+            print("    --list                           - List all available applications\n");
 
         }
 
@@ -688,8 +689,21 @@ void execute_command(const char *cmd) {
     else if (cmd_name_len == 7 && shell_strncmp(cmd, "bootapp", 7)) {
 
         const char* app_flag = shell_strstr(args, "--app ");
+        const char* list_flag = shell_strstr(args, "--list");
 
-        if (app_flag) {
+        if(list_flag) {
+
+            print_info("Available applications:\n");
+
+            print(" - terminal\n");
+            print(" - suaedit\n");
+            print(" - calculator\n");
+
+            print("\nUsage:\n");
+            print(" bootapp --app \"application_name\"\n");
+
+        }
+        else if(app_flag) {
             const char* app_name = app_flag + 6; // po "--app "
 
             if (*app_name == '"') {
@@ -724,6 +738,13 @@ void execute_command(const char *cmd) {
                     current_id++;
                     register_window(&suaedit);
                 }
+                else if (shell_strncmp(app_name_buf, "calculator", 10)) {
+                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                    calculator.visible = true;
+                    calculator.id = current_id;
+                    current_id++;
+                    register_window(&calculator);
+                }
                 else {
                     print_error("Unknown app\n");
                 }
@@ -731,7 +752,9 @@ void execute_command(const char *cmd) {
         }
         else {
             print_error("Syntax error!\n");
-            print_info("Usage: bootapp --app \"app_name\"\n");
+            print_info("Usage:\n");
+            print("  bootapp --list\n");
+            print("  bootapp --app \"app_name\"\n");
         }
     }
     // 21. komenda: beep

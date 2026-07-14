@@ -6,6 +6,8 @@
 
 #define MAX_WINDOWS 10
 
+window_struct* active_window = nullptr;
+
 extern void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y);
 
 static window_struct* window_list[MAX_WINDOWS];
@@ -18,6 +20,9 @@ void register_window(window_struct* window) {
     }
     window->is_dragging = false; // Inicjalizacja flagi bezpieczeństwa
     window_list[window_count++] = window;
+
+    active_window = window;
+    window->focused = true;
 }
 
 void unregister_window(window_struct* window) {
@@ -33,13 +38,39 @@ void unregister_window(window_struct* window) {
 }
 
 // Funkcja pomocnicza: przenosi okno na sam koniec tablicy (na wierzch ekranu)
-void bring_window_to_front(int index) {
-    if (index < 0 || index >= window_count - 1) return;
+void bring_window_to_front(int index)
+{
+    if(index < 0 || index >= window_count)
+        return;
+
     window_struct* target = window_list[index];
-    for (int i = index; i < window_count - 1; i++) {
-        window_list[i] = window_list[i + 1];
+
+    for(int i = index; i < window_count - 1; i++)
+    {
+        window_list[i] = window_list[i+1];
     }
-    window_list[window_count - 1] = target;
+
+    window_list[window_count-1] = target;
+
+    active_window = target;
+
+    for(int i = 0; i < window_count; i++)
+    {
+        window_list[i]->focused = false;
+    }
+
+    target->focused = true;
+}
+
+void send_key_to_window(char key)
+{
+    if(active_window == nullptr)
+        return;
+
+    if(active_window->key_press)
+    {
+        active_window->key_press(active_window, key);
+    }
 }
 
 // NOWA FUNKCJA: Aktualizuje pozycje przeciąganych okien na podstawie aktualnej pozycji myszy.
@@ -100,9 +131,20 @@ void handle_window_mouse_click(int mouse_x, int mouse_y) {
             return;
         }
 
-        // KROK 4: Zwykłe kliknięcie wewnątrz okna (fokus / wyciągnięcie na wierzch)
         if (is_mouse_over_window(win, mouse_x, mouse_y)) {
+
             bring_window_to_front(i);
+
+
+            if(win->mouse_click)
+            {
+                win->mouse_click(
+                    win,
+                    mouse_x,
+                    mouse_y
+                );
+            }
+
             return;
         }
     }
@@ -152,6 +194,11 @@ void draw_window(window_struct* window) {
         print_at8("-", button_x, button_y, COLOR_WHITE);
         print_at8("[]", button_x + 16, button_y, COLOR_WHITE);
         print_at8("X", button_x + 42, button_y, COLOR_WHITE);
+    }
+
+    // narysuj zawartość okna
+    if (window->draw_content) {
+        window->draw_content(window);
     }
 }
 

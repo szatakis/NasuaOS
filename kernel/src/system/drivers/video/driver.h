@@ -66,8 +66,12 @@ void print_resolution();
 void fetch();
 
 
+
+typedef void (*window_draw_callback)(struct window_struct*);
+typedef void (*window_key_callback)(window_struct*, char);
+typedef void (*window_mouse_callback)(window_struct*, int, int);
 //Window manager
-struct window_struct {
+typedef struct window_struct {
     const char* name;
     uint32_t id;
 
@@ -82,7 +86,17 @@ struct window_struct {
     bool is_dragging;    // Czy okno jest aktualnie przeciągane
     int drag_offset_x;   // Odległość X myszy od lewego rogu okna
     int drag_offset_y;   // Odległość Y myszy od górnego rogu okna
-};
+
+    void* userdata;
+
+    window_draw_callback draw_content;
+    window_key_callback key_press;
+    window_mouse_callback mouse_click;
+} window_struct;
+
+extern window_struct* active_window;
+
+void send_key_to_window(char key);
 
 enum window_button
 {

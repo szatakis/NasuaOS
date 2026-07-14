@@ -223,11 +223,19 @@ void handle_keyboard()
 
     // 5. BACKSPACE
     if (scancode == 0x0E) {
-        if (cmd_idx > 0) {
-            cmd_idx--;
-            delete_last_char();
+        if(active_window)
+        {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+                send_key_to_window('\b');
+            }
         }
-        return;
+        if(shell_input_enabled && !is_mouse_over_any_window(mouse_x, mouse_y)) {
+            if (cmd_idx > 0) {
+                cmd_idx--;
+                delete_last_char();
+            }
+            return;
+        }
     }
 
     // 6. ENTER
@@ -252,19 +260,35 @@ void handle_keyboard()
             cmd_idx = 0;
             command_buffer[0] = '\0';
         }
+        if(active_window)
+        {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+                send_key_to_window('\n');
+            }
+        }
         return;
     }
 
-    if(shell_input_enabled) {
-        // 7. ZWYKŁE ZNAKI
-        char c = shift_pressed
-            ? scancode_to_ascii_shift(scancode)
-            : scancode_to_ascii_normal(scancode);
+    char c = shift_pressed
+        ? scancode_to_ascii_shift(scancode)
+        : scancode_to_ascii_normal(scancode);
 
-        if (c && cmd_idx < 63) {
-            command_buffer[cmd_idx++] = c;
 
-            print_char8(c);
+    if(c)
+    {
+        if(active_window)
+        {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+                send_key_to_window(c);
+            }
+        }
+        if(shell_input_enabled && !is_mouse_over_any_window(mouse_x, mouse_y))
+        {
+            if(cmd_idx < 63)
+            {
+                command_buffer[cmd_idx++] = c;
+                print_char8(c);
+            }
         }
     }
 }
