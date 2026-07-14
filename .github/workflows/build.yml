@@ -39,12 +39,12 @@ jobs:
         run: |
           make all-hdd
 
-      - name: Find images
+      - name: Find generated images
         run: |
           echo "Generated files:"
           find . \( -name "*.iso" -o -name "*.hdd" \) -type f
 
-      - name: Upload ISO and HDD to iso branch
+      - name: Prepare release files
         run: |
           mkdir release
 
@@ -53,14 +53,15 @@ jobs:
 
           cd release
 
-          git init
-          git checkout -b iso
+          cat > README.md << 'EOF'
+# NasuaOS Builds 
 
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+## ISO 
+Boot from CD/USB: 
+  NasuaOS.iso 
 
-          git add .
-          git commit -m "Update NasuaOS images"
-
-          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git push --force origin iso
+## HDD For QEMU: 
+  NasuaOS.hdd 
+  
+  Example: 
+    qemu-system-x86_64 -hda NasuaOS.hdd
