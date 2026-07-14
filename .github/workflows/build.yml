@@ -34,16 +34,23 @@ jobs:
         run: |
           make all
 
-      - name: Find ISO
+      - name: Build HDD image
         run: |
-          find . -name "*.iso"
+          make hdd
 
-      - name: Upload ISO to iso branch
+      - name: Find images
         run: |
-          mkdir iso-upload
-          cp *.iso iso-upload/
+          echo "Generated files:"
+          find . \( -name "*.iso" -o -name "*.hdd" \) -type f
 
-          cd iso-upload
+      - name: Upload ISO and HDD to iso branch
+        run: |
+          mkdir release
+
+          cp $(find . -name "*.iso" | head -n 1) release/
+          cp $(find . -name "*.hdd" | head -n 1) release/
+
+          cd release
 
           git init
           git checkout -b iso
@@ -52,7 +59,7 @@ jobs:
           git config user.email "github-actions@github.com"
 
           git add .
-          git commit -m "Update NasuaOS ISO"
+          git commit -m "Update NasuaOS images"
 
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin iso
