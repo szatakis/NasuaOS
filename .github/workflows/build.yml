@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - main
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -18,22 +21,35 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
-            gcc \
-            g++ \
+            build-essential \
             cmake \
-            xorriso \
-            clang \
-            lld \
+            ninja-build \
             nasm \
-            qemu-system-x86
+            xorriso
 
       - name: Build ISO
         run: |
           make all
 
-      - name: Upload ISO artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: nasuaos-iso
-          path: |
-            *.iso
+      - name: Find ISO
+        run: |
+          find . -name "*.iso"
+
+      - name: Upload ISO to iso branch
+        run: |
+          mkdir iso-upload
+          cp *.iso iso-upload/
+
+          cd iso-upload
+
+          git init
+          git checkout -b iso
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+          git commit -m "Update NasuaOS ISO"
+
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git push --force origin iso
