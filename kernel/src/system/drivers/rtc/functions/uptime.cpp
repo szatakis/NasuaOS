@@ -18,7 +18,6 @@ void print_uptime()
     uint64_t seconds = uptime % 60;
 
 
-
     print_info("System uptime: ");
     print_int(hours);
     print("h ");

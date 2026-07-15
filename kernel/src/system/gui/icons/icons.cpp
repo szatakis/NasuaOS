@@ -927,9 +927,10 @@ const uint32_t reboot_icon[1024] = {
     
 };
 
-typedef struct {
-    int x1, y1; // Lewy górny róg
-    int x2, y2; // Prawy dolny róg
+typedef struct 
+{
+    int x1, y1;
+    int x2, y2;
 } ButtonArea;
 
 int bar_h = 36; 
@@ -938,29 +939,35 @@ bool is_menu_start_open = false;
 
 ButtonArea start_button = { 0, 0, 0, 0 }; 
 
-void draw_start_button(size_t x, size_t y) {
+void draw_start_button(size_t x, size_t y) 
+{
     start_button.x1 = static_cast<int>(x);
     start_button.y1 = static_cast<int>(y);
     start_button.x2 = static_cast<int>(x + 100);
     start_button.y2 = static_cast<int>(y + 31); 
 
-    if(start_hover){
+    if(start_hover)
+    {
         draw_icon<32, 32>(start_icon_hover, x, y);
-    } else {
+    } 
+    else 
+    {
         draw_icon<32, 32>(start_icon, x, y);
     }
     
     print_at10("START", x + 32 + 6, y + 12, 0xFFFFFFFF);
 }
 
-void draw_start_menu_system_icons(int x, int y) {
+void draw_start_menu_system_icons(int x, int y) 
+{
     draw_icon<32, 32>(shutdown_icon, x, y);
     draw_icon<32, 32>(reboot_icon, x, y + 40);
 }
 
-bool is_mouse_over_start(int mouse_x, int mouse_y) {
-    if (mouse_x >= start_button.x1 && mouse_x <= start_button.x2 &&
-        mouse_y >= start_button.y1 && mouse_y <= start_button.y2) {
+bool is_mouse_over_start(int mouse_x, int mouse_y) 
+{
+    if (mouse_x >= start_button.x1 && mouse_x <= start_button.x2 && mouse_y >= start_button.y1 && mouse_y <= start_button.y2) 
+    {
         return true;
     }
     return false;

@@ -1,11 +1,8 @@
 #pragma once
-
 #include <stdint.h>
-
 
 struct Registers
 {
-
     uint64_t r15;
     uint64_t r14;
     uint64_t r13;

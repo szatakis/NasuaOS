@@ -17,26 +17,31 @@
 #define RTC_REGISTER_B    0x0B
 #define RTC_REGISTER_D   0x0D
 
-static uint8_t bcd_to_binary(uint8_t bcd) {
+static uint8_t bcd_to_binary(uint8_t bcd) 
+{
     return (bcd & 0x0F) + ((bcd >> 4) * 10);
 }
 
-static uint8_t binary_to_bcd(uint8_t binary) {
+static uint8_t binary_to_bcd(uint8_t binary) 
+{
     return ((binary / 10) << 4) + (binary % 10);
 }
 
-static bool rtc_update_in_progress() {
+static bool rtc_update_in_progress() 
+{
     outb(RTC_CMOS_ADDRESS, RTC_REGISTER_A);
     return (inb(RTC_CMOS_DATA) & 0x80) != 0;
 }
 
-static uint8_t read_rtc_register(int reg) {
+static uint8_t read_rtc_register(int reg) 
+{
     while (rtc_update_in_progress());
     outb(RTC_CMOS_ADDRESS, reg);
     return inb(RTC_CMOS_DATA);
 }
 
-RtcTime get_rtc_time() {
+RtcTime get_rtc_time() 
+{
     RtcTime time;
     uint8_t regB;
 
@@ -50,7 +55,8 @@ RtcTime get_rtc_time() {
     outb(RTC_CMOS_ADDRESS, RTC_REGISTER_B);
     regB = inb(RTC_CMOS_DATA);
 
-    if (!(regB & 0x04)) {
+    if (!(regB & 0x04)) 
+    {
         time.second = bcd_to_binary(time.second);
         time.minute = bcd_to_binary(time.minute);
         time.hour   = bcd_to_binary(time.hour);
@@ -60,7 +66,8 @@ RtcTime get_rtc_time() {
     }
 
     // Obsługa formatu 12-godzinnego (jeśli bit 1 w Register B jest wyłączony)
-    if (!(regB & 0x02) && (time.hour & 0x80)) {
+    if (!(regB & 0x02) && (time.hour & 0x80)) 
+    {
         time.hour = ((time.hour & 0x7F) + 12) % 24;
     }
 
@@ -68,7 +75,8 @@ RtcTime get_rtc_time() {
     return time;
 }
 
-void set_rtc_time(RtcTime time) {
+void set_rtc_time(RtcTime time) 
+{
     uint8_t regB;
 
     outb(RTC_CMOS_ADDRESS, RTC_REGISTER_B);
@@ -77,7 +85,8 @@ void set_rtc_time(RtcTime time) {
     outb(RTC_CMOS_ADDRESS, RTC_REGISTER_B);
     outb(RTC_CMOS_DATA, regB | 0x80);
 
-    if (!(regB & 0x04)) {
+    if (!(regB & 0x04)) 
+    {
         time.second = binary_to_bcd(time.second);
         time.minute = binary_to_bcd(time.minute);
         time.hour   = binary_to_bcd(time.hour);
@@ -97,11 +106,8 @@ void set_rtc_time(RtcTime time) {
     outb(RTC_CMOS_DATA, regB & ~0x80);
 }
 
-/**
- * Sprawdza stan baterii podtrzymującej pamięć CMOS/RTC.
- * @return true jeśli bateria jest sprawna, false jeśli jest rozładowana/uszkodzona.
- */
-bool is_rtc_battery_ok(void) {
+bool is_rtc_battery_ok(void) 
+{
     // Wybieramy Register D (0x0D)
     outb(RTC_CMOS_ADDRESS, RTC_REGISTER_D);
     

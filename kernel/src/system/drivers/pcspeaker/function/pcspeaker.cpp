@@ -39,8 +39,6 @@ void pc_speaker_off()
 void beep(uint32_t freq, uint32_t duration)
 {
     pc_speaker_on(freq);
-
     sleep(duration);
-
     pc_speaker_off();
 }

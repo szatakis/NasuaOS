@@ -15,11 +15,13 @@ static uint64_t used_ram = 0;
 
 extern "C" {
 
-    void *memcpy(void *__restrict dest, const void *__restrict src, std::size_t n) {
+    void *memcpy(void *__restrict dest, const void *__restrict src, std::size_t n) 
+    {
         std::uint8_t *__restrict pdest = static_cast<std::uint8_t *__restrict>(dest);
         const std::uint8_t *__restrict psrc = static_cast<const std::uint8_t *__restrict>(src);
 
-        for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t i = 0; i < n; i++) 
+        {
             pdest[i] = psrc[i];
         }
 
@@ -35,26 +37,34 @@ extern "C" {
         };  
     }
 
-    void *memset(void *s, int c, std::size_t n) {
+    void *memset(void *s, int c, std::size_t n) 
+    {
         std::uint8_t *p = static_cast<std::uint8_t *>(s);
 
-        for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t i = 0; i < n; i++) 
+        {
             p[i] = static_cast<uint8_t>(c);
         }
 
         return s;
     }
 
-    void *memmove(void *dest, const void *src, std::size_t n) {
+    void *memmove(void *dest, const void *src, std::size_t n) 
+    {
         std::uint8_t *pdest = static_cast<std::uint8_t *>(dest);
         const std::uint8_t *psrc = static_cast<const std::uint8_t *>(src);
 
-        if (reinterpret_cast<std::uintptr_t>(src) > reinterpret_cast<std::uintptr_t>(dest)) {
-            for (std::size_t i = 0; i < n; i++) {
+        if (reinterpret_cast<std::uintptr_t>(src) > reinterpret_cast<std::uintptr_t>(dest)) 
+        {
+            for (std::size_t i = 0; i < n; i++) 
+            {
                 pdest[i] = psrc[i];
             }
-        } else if (reinterpret_cast<std::uintptr_t>(src) < reinterpret_cast<std::uintptr_t>(dest)) {
-            for (std::size_t i = n; i > 0; i--) {
+        } 
+        else if (reinterpret_cast<std::uintptr_t>(src) < reinterpret_cast<std::uintptr_t>(dest)) 
+        {
+            for (std::size_t i = n; i > 0; i--) 
+            {
                 pdest[i-1] = psrc[i-1];
             }
         }
@@ -62,12 +72,15 @@ extern "C" {
         return dest;
     }
 
-    int memcmp(const void *s1, const void *s2, std::size_t n) {
+    int memcmp(const void *s1, const void *s2, std::size_t n) 
+    {
         const std::uint8_t *p1 = static_cast<const std::uint8_t *>(s1);
         const std::uint8_t *p2 = static_cast<const std::uint8_t *>(s2);
 
-        for (std::size_t i = 0; i < n; i++) {
-            if (p1[i] != p2[i]) {
+        for (std::size_t i = 0; i < n; i++) 
+        {
+            if (p1[i] != p2[i]) 
+            {
                 return p1[i] < p2[i] ? -1 : 1;
             }
         }
@@ -136,6 +149,7 @@ uint64_t memory_total_bytes()
     return total_ram;
 }
 
-uint64_t memory_used() {     
+uint64_t memory_used() 
+{     
     return used_ram; 
 }

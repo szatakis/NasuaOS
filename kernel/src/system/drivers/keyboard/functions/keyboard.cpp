@@ -19,7 +19,8 @@ bool shift_pressed = false;
 bool extended_scancode = false;
 bool shell_input_enabled = true;
 
-char scancode_to_ascii_normal(uint8_t scancode) {
+char scancode_to_ascii_normal(uint8_t scancode) 
+{
     switch (scancode) {
         case 0x1E: return 'a'; case 0x30: return 'b'; case 0x2E: return 'c';
         case 0x20: return 'd'; case 0x12: return 'e'; case 0x21: return 'f';
@@ -48,7 +49,8 @@ char scancode_to_ascii_normal(uint8_t scancode) {
     }
 }
 
-char scancode_to_ascii_shift(uint8_t scancode) {
+char scancode_to_ascii_shift(uint8_t scancode) 
+{
     switch (scancode) {
         case 0x1E: return 'A'; case 0x30: return 'B'; case 0x2E: return 'C';
         case 0x20: return 'D'; case 0x12: return 'E'; case 0x21: return 'F';
@@ -80,7 +82,8 @@ char scancode_to_ascii_shift(uint8_t scancode) {
     }
 }
 
-void print_sc(uint8_t scancode) {
+void print_sc(uint8_t scancode) 
+{
     char hex[3];
 
     const char* digits = "0123456789ABCDEF";
@@ -102,14 +105,16 @@ extern char scancode_to_ascii_shift(uint8_t);
 // Funkcja pomocnicza - bezpiecznie usuwa starą komendę z ekranu i rysuje nową
 static void replace_current_command(const char* new_cmd) 
 {
-    for (size_t i = 0; i < cmd_idx; i++) {
+    for (size_t i = 0; i < cmd_idx; i++) 
+    {
         delete_last_char();
     }
 
     strcpy(command_buffer, new_cmd);
     cmd_idx = strlen(command_buffer);
 
-    for (size_t i = 0; i < cmd_idx; i++) {
+    for (size_t i = 0; i < cmd_idx; i++) 
+    {
         print_char8(command_buffer[i]);
     }
 
@@ -121,85 +126,114 @@ void handle_keyboard()
     uint8_t status = inb(0x64);
 
     // Brak danych do odczytu
-    if (!(status & 1)) {
+    if (!(status & 1)) 
+    {
         return;
     }
 
     uint8_t data = inb(0x60);
 
     // Sprawdzamy czy to myszka (bit 5). Jeśli tak, to tu pomijamy.
-    if (status & 0x20) {
+    if (status & 0x20) 
+    {
         return; 
     }
 
     uint8_t scancode = data;
 
-    if (debug_mode) {
+    if (debug_mode) 
+    {
         print_sc(scancode);
     }
 
     // 1. Obsługa prefiksu rozszerzonego
-    if (scancode == 0xE0) {
+    if (scancode == 0xE0) 
+    {
         extended_scancode = true;
         return; 
     }
 
     // 2. Przetwarzanie kodów rozszerzonych
-    if (extended_scancode) {
+    if (extended_scancode) 
+    {
         extended_scancode = false;
 
-        if (scancode & 0x80) {
+        if (scancode & 0x80) 
+        {
             return; 
         }
 
         // Left Windows
-        if (scancode == 0x5B) {
-            if (!is_menu_start_open) {
+        if (scancode == 0x5B) 
+        {
+            if (!is_menu_start_open) 
+            {
                 open_start_menu();
-            } else {
+            } 
+            else 
+            {
                 close_start_menu();
             }
             return;
         }
 
         // Right Windows
-        if (scancode == 0x5C) {
-            if (!is_menu_start_open) {
+        if (scancode == 0x5C) 
+        {
+            if (!is_menu_start_open) 
+            {
                 open_start_menu();
-            } else {
+            } 
+            else 
+            {
                 close_start_menu();
             }
             return;
         }
 
         // ARROW KEYS - Mysz LUB przewijanie historii poleceń
-        if (scancode == 0x48 || scancode == 0x50 || scancode == 0x4B || scancode == 0x4D) {
-            if (shift_pressed) {
-                if (scancode == 0x48) { // SHIFT + UP
+        if (scancode == 0x48 || scancode == 0x50 || scancode == 0x4B || scancode == 0x4D) 
+        {
+            if (shift_pressed) 
+            {
+                if (scancode == 0x48) 
+                { // SHIFT + UP
                     const char* cmd = history_navigate_up();
-                    if (cmd != nullptr) {
+                    if (cmd != nullptr) 
+                    {
                         replace_current_command(cmd);
                     }
                 } 
-                else if (scancode == 0x50) { // SHIFT + DOWN
+                else if (scancode == 0x50) 
+                { // SHIFT + DOWN
                     const char* cmd = history_navigate_down();
-                    if (cmd != nullptr) {
+                    if (cmd != nullptr) 
+                    {
                         replace_current_command(cmd);
                     }
                 }
             } 
-            else {
+            else 
+            {
                 // RUCH MYSZĄ
                 int speed = 5;
 
                 if (scancode == 0x48 && mouse_y >= speed)
+                {
                     mouse_y -= speed;
+                }
                 else if (scancode == 0x50 && mouse_y + 20 < (int)fb->height)
+                {
                     mouse_y += speed;
+                }
                 else if (scancode == 0x4B && mouse_x >= speed)
+                {
                     mouse_x -= speed;
+                }
                 else if (scancode == 0x4D && mouse_x + 20 < (int)fb->width)
+                {
                     mouse_x += speed;
+                }
             }
             return;
         }
@@ -207,50 +241,66 @@ void handle_keyboard()
     }
 
     // 3. Normalne puszczenie klawisza (Break Code)
-    if (scancode & 0x80) {
+    if (scancode & 0x80) 
+    {
         uint8_t rel = scancode & 0x7F;
-        if (rel == 0x2A || rel == 0x36) {
+
+        if (rel == 0x2A || rel == 0x36) 
+        {
             shift_pressed = false;
         }
         return;
     }
 
     // 4. SHIFT DOWN
-    if (scancode == 0x2A || scancode == 0x36) {
+    if (scancode == 0x2A || scancode == 0x36) 
+    {
         shift_pressed = true;
         return;
     }
 
     // 5. BACKSPACE
-    if (scancode == 0x0E) {
+    if (scancode == 0x0E) 
+    {
         if(active_window)
         {
-            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) 
+            {
                 send_key_to_window('\b');
             }
         }
-        if(shell_input_enabled && !is_mouse_over_any_window(mouse_x, mouse_y)) {
-            if (cmd_idx > 0) {
+        if(shell_input_enabled && !is_mouse_over_any_window(mouse_x, mouse_y)) 
+        {
+            if (cmd_idx > 0) 
+            {
                 cmd_idx--;
                 delete_last_char();
             }
+
             return;
         }
     }
 
     // 6. ENTER
-    if (scancode == 0x1C) {
-        if (is_mouse_over_start(mouse_x, mouse_y)) {
-            if (!is_menu_start_open) {
+    if (scancode == 0x1C) 
+    {
+        if (is_mouse_over_start(mouse_x, mouse_y)) 
+        {
+            if (!is_menu_start_open) 
+            {
                 open_start_menu();
-            } else {
+            } 
+            else 
+            {
                 close_start_menu();
             }
         } 
-        else if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+        else if(is_mouse_over_any_window(mouse_x, mouse_y)) 
+        {
             handle_window_mouse_click(mouse_x, mouse_y);
         }
-        else if(shell_input_enabled) {
+        else if(shell_input_enabled) 
+        {
             command_buffer[cmd_idx] = '\0';
             
             history_add(command_buffer);
@@ -262,7 +312,8 @@ void handle_keyboard()
         }
         if(active_window)
         {
-            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) 
+            {
                 send_key_to_window('\n');
             }
         }
@@ -278,7 +329,8 @@ void handle_keyboard()
     {
         if(active_window)
         {
-            if(is_mouse_over_any_window(mouse_x, mouse_y)) {
+            if(is_mouse_over_any_window(mouse_x, mouse_y)) 
+            {
                 send_key_to_window(c);
             }
         }

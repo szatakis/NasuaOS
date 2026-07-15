@@ -76,7 +76,7 @@ void pic_remap()
     io_wait();
 
     /*
-        Maskowanie:
+        Mask:
         
         IRQ0  = ON
         reszta = OFF

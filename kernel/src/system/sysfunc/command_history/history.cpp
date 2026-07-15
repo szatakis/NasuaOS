@@ -13,7 +13,6 @@ void history_add(const char* cmd)
 {
     if (cmd[0] == '\0') return;
 
-    // Zabezpieczenie przed powielaniem tej samej komendy podrząd
     if (history_count > 0) {
         int last_pos = (history_head - 1 + HISTORY_SIZE) % HISTORY_SIZE;
         if (strcmp(command_history[last_pos], cmd) == 0) {
@@ -64,6 +63,6 @@ const char* history_navigate_down()
         return command_history[pos];
     } else {
         history_index = -1;
-        return ""; // Zwracamy pusty ciąg, by poinformować main, że wchodzimy w "nową komendę"
+        return "";
     }
 }

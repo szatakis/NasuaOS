@@ -16,7 +16,8 @@
 
 // ---------------- HELPERS ----------------
 
-static inline void put_pixel(size_t x, size_t y, uint32_t color) {
+static inline void put_pixel(size_t x, size_t y, uint32_t color) 
+{
     if (!fb) return;
 
     uint32_t* bb_ptr = get_backbuffer();
@@ -28,12 +29,16 @@ static inline void put_pixel(size_t x, size_t y, uint32_t color) {
 }
 
 // ---------------- FONT 8x8 ----------------
-void draw_char8(unsigned char c, size_t x, size_t y, uint32_t color) {
-    for (int row = 0; row < 8; row++) {
+void draw_char8(unsigned char c, size_t x, size_t y, uint32_t color) 
+{
+    for (int row = 0; row < 8; row++) 
+    {
         uint8_t bits = font8x8[c][row];
 
-        for (int col = 0; col < 8; col++) {
-            if (bits & (1 << (7 - col))) {
+        for (int col = 0; col < 8; col++) 
+        {
+            if (bits & (1 << (7 - col))) 
+            {
                 put_pixel(x + col, y + row, color);
             }
         }
@@ -41,12 +46,16 @@ void draw_char8(unsigned char c, size_t x, size_t y, uint32_t color) {
 }
 
 // ---------------- FONT 10x10 ----------------
-void draw_char10(unsigned char c, size_t x, size_t y, uint32_t color) {
-    for (int row = 0; row < 10; row++) {
+void draw_char10(unsigned char c, size_t x, size_t y, uint32_t color) 
+{
+    for (int row = 0; row < 10; row++) 
+    {
         uint16_t bits = font10x10[c][row];
 
-        for (int col = 0; col < 10; col++) {
-            if (bits & (1 << (9 - col))) {
+        for (int col = 0; col < 10; col++) 
+        {
+            if (bits & (1 << (9 - col))) 
+            {
                 put_pixel(x + col, y + row, color);
             }
         }
@@ -54,12 +63,16 @@ void draw_char10(unsigned char c, size_t x, size_t y, uint32_t color) {
 }
 
 // ---------------- FONT 12x12 ----------------
-void draw_char12(unsigned char c, size_t x, size_t y, uint32_t color) {
-    for (int row = 0; row < 12; row++) {
+void draw_char12(unsigned char c, size_t x, size_t y, uint32_t color) 
+{
+    for (int row = 0; row < 12; row++) 
+    {
         uint16_t bits = font12x12[c][row];
 
-        for (int col = 0; col < 12; col++) {
-            if (bits & (1 << (11 - col))) {
+        for (int col = 0; col < 12; col++) 
+        {
+            if (bits & (1 << (11 - col))) 
+            {
                 put_pixel(x + col, y + row, color);
             }
         }
@@ -67,19 +80,24 @@ void draw_char12(unsigned char c, size_t x, size_t y, uint32_t color) {
 }
 
 // ---------------- FONT 16x16 ----------------
-void draw_char16(unsigned char c, size_t x, size_t y, uint32_t color) {
-    for (int row = 0; row < 16; row++) {
+void draw_char16(unsigned char c, size_t x, size_t y, uint32_t color) 
+{
+    for (int row = 0; row < 16; row++) 
+    {
         uint16_t bits = font16x16[c][row];
 
-        for (int col = 0; col < 16; col++) {
-            if (bits & (1 << (15 - col))) {
+        for (int col = 0; col < 16; col++) 
+        {
+            if (bits & (1 << (15 - col))) 
+            {
                 put_pixel(x + col, y + row, color);
             }
         }
     }
 }
 
-void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y) {
+void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y) 
+{
     if (!fb) return;
 
     uint32_t* bb_ptr = get_backbuffer();
@@ -90,14 +108,17 @@ void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y
     if (x + size_x > fb->width)  size_x = fb->width - x;
     if (y + size_y > fb->height) size_y = fb->height - y;
 
-    for (size_t dy = 0; dy < size_y; dy++) {
-        for (size_t dx = 0; dx < size_x; dx++) {
+    for (size_t dy = 0; dy < size_y; dy++) 
+    {
+        for (size_t dx = 0; dx < size_x; dx++) 
+        {
             bb_ptr[(y + dy) * pitch + (x + dx)] = color;
         }
     }
 }
 
-void update_start() {
+void update_start() 
+{
     if (!fb) return;
     size_t bar_h = 36;
     size_t start_y = fb->height - bar_h;
@@ -106,7 +127,8 @@ void update_start() {
     draw_start_button(5, start_y + 2);
 }
 
-void update_time() {
+void update_time() 
+{
     if (!fb) return;
 
     RtcTime time = get_rtc_time();
@@ -151,32 +173,54 @@ void update_time() {
     print_at8(date_buf, text_x, start_y + 20, COLOR_WHITE);
 }
 
-void draw_rect(int x1, int y1, int x2, int y2, uint32_t color) {
+void draw_rect(int x1, int y1, int x2, int y2, uint32_t color) 
+{
     if (!fb) return;
 
     // 1. Zabezpieczenie współrzędnych
-    if (x1 > x2) { int tmp = x1; x1 = x2; x2 = tmp; }
-    if (y1 > y2) { int tmp = y1; y1 = y2; y2 = tmp; }
+    if (x1 > x2) 
+    { 
+        int tmp = x1; x1 = x2; x2 = tmp; 
+    }
+    if (y1 > y2) 
+    { 
+        int tmp = y1; y1 = y2; y2 = tmp; 
+    }
 
     // 2. Clipping (ochrona przed wyjściem poza ekran)
-    if (x1 < 0) x1 = 0;
-    if (y1 < 0) y1 = 0;
-    if (x2 >= static_cast<int>(fb->width))  x2 = static_cast<int>(fb->width) - 1;
-    if (y2 >= static_cast<int>(fb->height)) y2 = static_cast<int>(fb->height) - 1;
+    if (x1 < 0) 
+    {
+        x1 = 0;
+    }
+    if (y1 < 0) 
+    {
+        y1 = 0;
+    }
+    if (x2 >= static_cast<int>(fb->width))  
+    {
+        x2 = static_cast<int>(fb->width) - 1;
+    }
+    if (y2 >= static_cast<int>(fb->height)) 
+    {
+        y2 = static_cast<int>(fb->height) - 1;
+    }
 
     // 3. Pobranie wskaźnika na backbuffer
     uint32_t* bb_ptr = get_backbuffer();
     int pixels_per_pitch = get_backbuffer_pitch();
 
     // 4. Rysowanie prostokąta
-    for (int y = y1; y < y2; ++y) {
-        for (int x = x1; x < x2; ++x) {
+    for (int y = y1; y < y2; ++y) 
+    {
+        for (int x = x1; x < x2; ++x) 
+        {
             bb_ptr[y * pixels_per_pitch + x] = color;
         }
     }
 }
 
-void update_bottom_bar() {
+void update_bottom_bar() 
+{
     if (!fb) return;
 
     size_t bar_h = 36;
@@ -188,7 +232,8 @@ void update_bottom_bar() {
 
     // Nakładamy ikony po prawej stronie
     draw_icon<32, 32>(speaker_icon, start_x - 175, start_y + ((bar_h - 32) / 2));
-    if(notification_count <= 0) {
+    if(notification_count <= 0) 
+    {
         draw_icon<32, 32>(notification_icon, start_x - 145, start_y + ((bar_h - 32) / 2));
     }
     else 
@@ -201,7 +246,8 @@ void update_bottom_bar() {
     update_time();
 }
 
-void update_gui() {
+void update_gui() 
+{
     update_gui_state(mouse_x, mouse_y);
 
     update_bottom_bar();

@@ -5,8 +5,7 @@
 #include "libs/libc/libc.h"
 
 
-struct calculator_state
-{
+struct calculator_state {
     char display[64];
 
     int value1;
@@ -17,9 +16,7 @@ struct calculator_state
     bool entering_second;
 };
 
-
-static calculator_state calc_data =
-{
+static calculator_state calc_data = {
     .display = "0",
     .value1 = 0,
     .value2 = 0,
@@ -29,24 +26,20 @@ static calculator_state calc_data =
 
 
 
-void calculator_key(window_struct* win, char key)
-{
+void calculator_key(window_struct* win, char key) {
     calculator_state* calc =
         (calculator_state*)win->userdata;
 
 
-    // cyfry
-    if(key >= '0' && key <= '9')
-    {
+    // numbers
+    if(key >= '0' && key <= '9') {
         size_t len = strlen(calc->display);
 
-        if(len < 62)
-        {
-            if(len == 1 && calc->display[0] == '0')
-            {
+        if(len < 62) {
+            if(len == 1 && calc->display[0] == '0') {
                 calc->display[0] = key;
             }
-            else
+            else 
             {
                 calc->display[len] = key;
                 calc->display[len+1] = 0;
@@ -57,9 +50,8 @@ void calculator_key(window_struct* win, char key)
     }
 
 
-    // czyszczenie
-    if(key == 'c' || key == 'C')
-    {
+    // clean
+    if(key == 'c' || key == 'C') {
         strcpy(calc->display,"0");
 
         calc->value1 = 0;
@@ -71,12 +63,8 @@ void calculator_key(window_struct* win, char key)
     }
 
 
-    // operatory
-    if(key=='+' ||
-       key=='-' ||
-       key=='*' ||
-       key=='/')
-    {
+    // operators
+    if(key=='+' || key=='-' || key=='*' || key=='/') {
         calc->value1 = atoi(calc->display);
 
         calc->operation = key;
@@ -88,17 +76,13 @@ void calculator_key(window_struct* win, char key)
         return;
     }
 
-
-    // wynik
-    if(key=='=')
-    {
+    // resoult
+    if(key=='=') {
         calc->value2 = atoi(calc->display);
 
         int result = 0;
 
-
-        switch(calc->operation)
-        {
+        switch(calc->operation) {
             case '+':
                 result = calc->value1 + calc->value2;
                 break;
@@ -121,8 +105,6 @@ void calculator_key(window_struct* win, char key)
         char buf[32];
 
         itoa(result,buf);
-
-
         strcpy(calc->display,buf);
 
 
@@ -132,65 +114,27 @@ void calculator_key(window_struct* win, char key)
 }
 
 
-
-
-void draw_button(
-    int x,
-    int y,
-    const char* text
-)
-{
-    fill_block(
-        x,
-        y,
-        COLOR_TITLEBAR,
-        50,
-        35
-    );
-
-
-    print_at8(
-        text,
-        x+15,
-        y+12,
-        COLOR_WHITE
-    );
+void draw_button(int x, int y, const char* text) {
+    fill_block(x, y, COLOR_TITLEBAR, 50, 35);
+    print_at8(text, x+15, y+12, COLOR_WHITE);
 }
 
 
+void draw_calculator(window_struct* win) {
 
-
-void draw_calculator(window_struct* win)
-{
-
-    calculator_state* calc =
-        (calculator_state*)win->userdata;
-
-
-
+    calculator_state* calc = (calculator_state*)win->userdata;
     int title = win->height/10;
 
-    if(title < 18)
-        title=18;
+
+    if(title < 18) {
+        title = 18;
+    }
+
+    // display
+    fill_block(win->pos_x+10, win->pos_y+title+10, COLOR_BLACK, 220, 40);
 
 
-
-    // ekran
-    fill_block(
-        win->pos_x+10,
-        win->pos_y+title+10,
-        COLOR_BLACK,
-        220,
-        40
-    );
-
-
-    print_at8(
-        calc->display,
-        win->pos_x+20,
-        win->pos_y+title+25,
-        COLOR_GREEN
-    );
+    print_at8(calc->display, win->pos_x+20, win->pos_y+title+25, COLOR_GREEN);
 
 
 
@@ -226,31 +170,30 @@ void draw_calculator(window_struct* win)
     draw_button(x+60,y,"C");
     draw_button(x+120,y,"=");
     draw_button(x+180,y,"+");
-
 }
 
 
 
-void calculator_mouse(window_struct* win, int mx, int my)
+void calculator_mouse(window_struct* win, int mx, int my) 
 {
-    calculator_state* calc =
-        (calculator_state*)win->userdata;
+    calculator_state* calc = (calculator_state*)win->userdata;
 
+    (void)calc;
 
     int title = win->height / 10;
 
-    if(title < 18)
+    if(title < 18) 
+    {
         title = 18;
+    }
 
 
     int x = win->pos_x + 10;
     int y = win->pos_y + title + 70;
 
-
     char key = 0;
 
-
-    struct button
+    struct button 
     {
         int x;
         int y;
@@ -258,7 +201,7 @@ void calculator_mouse(window_struct* win, int mx, int my)
     };
 
 
-    button buttons[] =
+    button buttons[] = 
     {
         {0,0,'7'},
         {60,0,'8'},
@@ -282,36 +225,31 @@ void calculator_mouse(window_struct* win, int mx, int my)
     };
 
 
-    for(size_t i=0;i<16;i++)
+    for(size_t i=0;i<16;i++) 
     {
         int bx = x + buttons[i].x;
         int by = y + buttons[i].y;
 
-
-        if(mx >= bx &&
-           mx < bx + 50 &&
-           my >= by &&
-           my < by + 35)
+        if(mx >= bx && mx < bx + 50 && my >= by && my < by + 35) 
         {
             key = buttons[i].key;
             break;
         }
     }
 
-
-    if(key)
+    if(key) 
+    {
         calculator_key(win,key);
+    }
 }
 
 
-window_struct calculator =
-{
+window_struct calculator = {
     .name="Calculator",
     .id=0,
 
     .pos_x=10,
     .pos_y=10,
-
     .width=260,
     .height=320,
 
@@ -323,7 +261,6 @@ window_struct calculator =
     .drag_offset_y=0,
 
     .userdata=&calc_data,
-
     .draw_content=draw_calculator,
     .key_press=calculator_key,
     .mouse_click=calculator_mouse

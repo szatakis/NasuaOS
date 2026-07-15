@@ -7,13 +7,15 @@
 #define CLAWFS_FILE 0
 #define CLAWFS_DIRECTORY 1
 
-struct CLAWFSHeader {
+struct CLAWFSHeader 
+{
     char signature[6];
     uint8_t version;
     uint16_t entryCount;
 } __attribute__((packed));
 
-struct CLAWFSEntry {
+struct CLAWFSEntry 
+{
     char name[28];
     uint32_t type;
 } __attribute__((packed));

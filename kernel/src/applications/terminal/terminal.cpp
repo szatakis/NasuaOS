@@ -1,7 +1,8 @@
 #include "terminal.h"
 #include "../shell/commands.h"
 
-struct terminal_state {
+struct terminal_state 
+{
     char input[256];
     int cursor;
 
@@ -11,11 +12,12 @@ struct terminal_state {
 
 terminal_state terminal_data;
 
-void terminal_key(window_struct* win, char key)
+void terminal_key(window_struct* win, char key) 
 {
     terminal_state* term = (terminal_state*)win->userdata;
 
-    if (key == '\n') {
+    if (key == '\n') 
+    {
         execute_command(term->input);
 
         term->cursor = 0;
@@ -23,8 +25,10 @@ void terminal_key(window_struct* win, char key)
         return;
     }
 
-    if (key == '\b') {
-        if (term->cursor > 0) {
+    if (key == '\b') 
+    {
+        if (term->cursor > 0) 
+        {
             term->cursor--;
             term->input[term->cursor] = '\0';
         }
@@ -35,31 +39,24 @@ void terminal_key(window_struct* win, char key)
     term->input[term->cursor] = '\0';
 }
 
-void draw_terminal(window_struct* win)
+void draw_terminal(window_struct* win) 
 {
     terminal_state* term = (terminal_state*)win->userdata;
 
     int title = win->height / 10;
-    if (title < 18)
+    if (title < 18) 
+    {
         title = 18;
+    }
 
-    fill_block(
-        win->pos_x + 2,
-        win->pos_y + title + 2,
-        COLOR_BLACK,
-        win->width - 4,
-        win->height - title - 4
-    );
+    fill_block(win->pos_x + 2, win->pos_y + title + 2, COLOR_BLACK, win->width - 4, win->height - title - 4);
 
     print_at8("NasuaOS Terminal", win->pos_x + 8, win->pos_y + title + 8, COLOR_GREEN);
-
-    print_at8(term->input,
-        win->pos_x + 8,
-        win->pos_y + title + 24,
-        COLOR_WHITE);
+    print_at8(term->input, win->pos_x + 8, win->pos_y + title + 24, COLOR_WHITE);
 }
 
-window_struct terminal = {
+window_struct terminal = 
+{
     .name = "Terminal",
     .id = 0,
 
@@ -76,7 +73,6 @@ window_struct terminal = {
     .drag_offset_y = 0,
 
     .userdata = &terminal_data,
-
     .draw_content = draw_terminal,
     .key_press = terminal_key,
     .mouse_click = nullptr

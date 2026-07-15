@@ -6,7 +6,6 @@
 
 extern "C" void irq0();
 
-
 struct IDTEntry
 {
     uint16_t offset_low;
@@ -44,8 +43,6 @@ void idt_init()
 {
     Uart::puts("[IDT] Initializing...\n");
     log(INFO,"IDT","Initializing...");
-
-    // Wszystkie wektory na default handler
 
     for(int i = 0; i < 256; i++)
     {

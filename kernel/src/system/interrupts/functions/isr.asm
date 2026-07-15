@@ -5,18 +5,11 @@ global isr_default
 global isr_divide_error
 global isr_page_fault
 global irq0
-
-
 extern isr_handler
-
-
 
 section .text
 
-
-
 %macro PUSH_REGS 0
-
     push rax
     push rbx
     push rcx
@@ -37,10 +30,7 @@ section .text
 
 %endmacro
 
-
-
 %macro POP_REGS 0
-
     pop r15
     pop r14
     pop r13
@@ -62,15 +52,11 @@ section .text
 %endmacro
 
 
-
-
-
 ; ==========================
 ; DEFAULT INTERRUPT
 ; ==========================
 
 isr_default:
-
     cli
 
     push 0
@@ -78,66 +64,44 @@ isr_default:
 
     jmp isr_common
 
-
-
-
-
 ; ==========================
 ; DIVIDE ERROR (#DE)
 ; ==========================
 
 isr_divide_error:
-
     cli
 
     push 0
     push 0
 
     jmp isr_common
-
-
-
-
 
 ; ==========================
 ; PAGE FAULT (#PF)
 ; ==========================
 
 isr_page_fault:
-
     cli
-
-    ; CPU już wrzucił error code
 
     push 14
 
     jmp isr_common
-
-
-
-
 
 ; ==========================
 ; IRQ0 PIT
 ; ==========================
 
 irq0:
-
     push 0
     push 32
 
     jmp isr_common
-
-
-
-
 
 ; ==========================
 ; COMMON HANDLER
 ; ==========================
 
 isr_common:
-
     cld
 
     PUSH_REGS

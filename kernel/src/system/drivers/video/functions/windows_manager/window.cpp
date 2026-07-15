@@ -13,10 +13,15 @@ extern void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t
 static window_struct* window_list[MAX_WINDOWS];
 static int window_count = 0;
 
-void register_window(window_struct* window) {
+void register_window(window_struct* window) 
+{
     if (window_count >= MAX_WINDOWS) return;
-    for (int i = 0; i < window_count; i++) {
-        if (window_list[i] == window) return;
+    for (int i = 0; i < window_count; i++) 
+    {
+        if (window_list[i] == window) 
+        {
+            return;
+        }
     }
     window->is_dragging = false; // Inicjalizacja flagi bezpieczeństwa
     window_list[window_count++] = window;
@@ -25,10 +30,14 @@ void register_window(window_struct* window) {
     window->focused = true;
 }
 
-void unregister_window(window_struct* window) {
-    for (int i = 0; i < window_count; i++) {
-        if (window_list[i] == window) {
-            for (int j = i; j < window_count - 1; j++) {
+void unregister_window(window_struct* window) 
+{
+    for (int i = 0; i < window_count; i++) 
+    {
+        if (window_list[i] == window) 
+        {
+            for (int j = i; j < window_count - 1; j++) 
+            {
                 window_list[j] = window_list[j + 1];
             }
             window_count--;
@@ -75,55 +84,70 @@ void send_key_to_window(char key)
 
 // NOWA FUNKCJA: Aktualizuje pozycje przeciąganych okien na podstawie aktualnej pozycji myszy.
 // WYWOŁAJ TO W KAŻDEJ KLATCE! (Zaraz na początku pętli, przed rysowaniem)
-void update_windows_positions(int current_mouse_x, int current_mouse_y) {
-    for (int i = 0; i < window_count; i++) {
+void update_windows_positions(int current_mouse_x, int current_mouse_y) 
+{
+    for (int i = 0; i < window_count; i++) 
+    {
         window_struct* win = window_list[i];
-        if (win->visible && win->is_dragging) {
+        if (win->visible && win->is_dragging) 
+        {
             win->pos_x = current_mouse_x - win->drag_offset_x;
             win->pos_y = current_mouse_y - win->drag_offset_y;
             
             // Opcjonalnie: zabezpieczenie, żeby okno nie uciekło całkowicie pod pasek zadań
-            if (fb) {
-                if (win->pos_y > (int)fb->height - 50) win->pos_y = (int)fb->height - 50;
+            if (fb) 
+            {
+                if (win->pos_y > (int)fb->height - 50) 
+                {
+                    win->pos_y = (int)fb->height - 50;
+                }
             }
         }
     }
 }
 
 // ZMODYFIKOWANA FUNKCJA: Obsługuje kliknięcia, włączanie i wyłączanie przeciągania (drag)
-void handle_window_mouse_click(int mouse_x, int mouse_y) {
+void handle_window_mouse_click(int mouse_x, int mouse_y) 
+{
     // KROK 1: Sprawdzamy najpierw, czy JAKIEKOLWIEK okno jest już przeciągane. 
     // Jeśli tak, kliknięcie oznacza "puść okno".
-    for (int i = window_count - 1; i >= 0; i--) {
-        if (window_list[i]->visible && window_list[i]->is_dragging) {
+    for (int i = window_count - 1; i >= 0; i--) 
+    {
+        if (window_list[i]->visible && window_list[i]->is_dragging) 
+        {
             window_list[i]->is_dragging = false;
             return; // Upuściliśmy okno, kończymy obsługę kliknięcia
         }
     }
 
     // KROK 2: Jeśli żadne okno nie było ciągnięte, szukamy okna do kliknięcia
-    for (int i = window_count - 1; i >= 0; i--) {
+    for (int i = window_count - 1; i >= 0; i--) 
+    {
         window_struct* win = window_list[i];
         if (!win->visible) continue;
 
         // Sprawdzamy czy kliknięto w 3 ikony kontrolne (X, [], -)
         window_button btn = get_window_button(win, mouse_x, mouse_y);
 
-        if (btn == BUTTON_CLOSE) {
+        if (btn == BUTTON_CLOSE) 
+        {
             win->visible = false;
             unregister_window(win);
             return;
         }
-        else if (btn == BUTTON_MINIMIZE) {
+        else if (btn == BUTTON_MINIMIZE) 
+        {
             win->visible = false;
             return;
         }
-        else if (btn == BUTTON_MAXIMIZE) {
+        else if (btn == BUTTON_MAXIMIZE) 
+        {
             return;
         }
         
         // KROK 3: Jeśli mysz jest na pasku tytułowym, ale NIE na ikonach -> Zaczynamy przeciąganie!
-        if (is_mouse_over_window_title(win, mouse_x, mouse_y)) {
+        if (is_mouse_over_window_title(win, mouse_x, mouse_y)) 
+        {
             bring_window_to_front(i);            // Wysuwamy okno na sam wierzch
             win->is_dragging = true;              // Aktywujemy drag
             win->drag_offset_x = mouse_x - win->pos_x; // Zapamiętujemy odległość od krawędzi okna
@@ -131,7 +155,8 @@ void handle_window_mouse_click(int mouse_x, int mouse_y) {
             return;
         }
 
-        if (is_mouse_over_window(win, mouse_x, mouse_y)) {
+        if (is_mouse_over_window(win, mouse_x, mouse_y)) 
+        {
 
             bring_window_to_front(i);
 
@@ -151,15 +176,19 @@ void handle_window_mouse_click(int mouse_x, int mouse_y) {
 }
 
 // --- Reszta Twoich funkcji rysujących i pomocniczych (draw_window, itp.) pozostaje bez zmian ---
-void draw_windows() {
-    for (int i = 0; i < window_count; i++) {
-        if (window_list[i]->visible) {
+void draw_windows() 
+{
+    for (int i = 0; i < window_count; i++) 
+    {
+        if (window_list[i]->visible) 
+        {
             draw_window(window_list[i]);
         }
     }
 }
 
-void draw_window(window_struct* window) {
+void draw_window(window_struct* window) 
+{
     if (!window || !window->visible || !fb) return;
     if (window->pos_x >= (int)fb->width || window->pos_y >= (int)fb->height) return;
     if (window->pos_x + window->width <= 0 || window->pos_y + window->height <= 0) return;
@@ -167,9 +196,12 @@ void draw_window(window_struct* window) {
     int title_height = window->height / 10;
     if (title_height < 18) title_height = 18; 
 
-    if (window->pos_x >= 0 && window->pos_y >= 0) {
+    if (window->pos_x >= 0 && window->pos_y >= 0) 
+    {
         fill_block(window->pos_x, window->pos_y, COLOR_WINDOW, window->width, window->height);
-    } else {
+    } 
+    else 
+    {
         int draw_x = window->pos_x < 0 ? 0 : window->pos_x;
         int draw_y = window->pos_y < 0 ? 0 : window->pos_y;
         int draw_w = window->pos_x < 0 ? window->width + window->pos_x : window->width;
@@ -183,32 +215,40 @@ void draw_window(window_struct* window) {
     int title_draw_h = window->pos_y < 0 ? title_height + window->pos_y : title_height;
     if (title_draw_w > 0 && title_draw_h > 0) fill_block(title_draw_x, title_draw_y, COLOR_TITLEBAR, title_draw_w, title_draw_h);
 
-    if (window->pos_x + 10 < (int)fb->width && window->pos_y + (title_height - 8) / 2 < (int)fb->height) {
+    if (window->pos_x + 10 < (int)fb->width && window->pos_y + (title_height - 8) / 2 < (int)fb->height) 
+    {
         print_at8(window->name, window->pos_x + 10, window->pos_y + (title_height - 8) / 2, COLOR_WHITE);
     }
 
     int button_x = window->pos_x + window->width - 55;
     int button_y = window->pos_y + (title_height - 8) / 2;
 
-    if (button_x < (int)fb->width && button_y < (int)fb->height) {
+    if (button_x < (int)fb->width && button_y < (int)fb->height) 
+    {
         print_at8("-", button_x, button_y, COLOR_WHITE);
         print_at8("[]", button_x + 16, button_y, COLOR_WHITE);
         print_at8("X", button_x + 42, button_y, COLOR_WHITE);
     }
 
     // narysuj zawartość okna
-    if (window->draw_content) {
+    if (window->draw_content) 
+    {
         window->draw_content(window);
     }
 }
 
-bool is_mouse_over_window(window_struct* window, int mouse_x, int mouse_y) {
-    if (!window || !window->visible) return false;
-    return (mouse_x >= window->pos_x && mouse_x < window->pos_x + window->width &&
-            mouse_y >= window->pos_y && mouse_y < window->pos_y + window->height);
+bool is_mouse_over_window(window_struct* window, int mouse_x, int mouse_y) 
+{
+    if (!window || !window->visible) 
+    {
+        return false;
+    }
+
+    return (mouse_x >= window->pos_x && mouse_x < window->pos_x + window->width && mouse_y >= window->pos_y && mouse_y < window->pos_y + window->height);
 }
 
-bool is_mouse_over_window_title(window_struct* window, int mouse_x, int mouse_y) {
+bool is_mouse_over_window_title(window_struct* window, int mouse_x, int mouse_y) 
+{
     if (!window || !window->visible) return false;
     int title_height = window->height / 10;
     if (title_height < 18) title_height = 18;
@@ -216,26 +256,40 @@ bool is_mouse_over_window_title(window_struct* window, int mouse_x, int mouse_y)
             mouse_y >= window->pos_y && mouse_y < window->pos_y + title_height);
 }
 
-window_button get_window_button(window_struct* window, int mouse_x, int mouse_y) {
+window_button get_window_button(window_struct* window, int mouse_x, int mouse_y) 
+{
     if (!window || !window->visible) return BUTTON_NONE;
     int title_height = window->height / 10;
     if (title_height < 18) title_height = 18;
 
-    if (mouse_y >= window->pos_y && mouse_y < window->pos_y + title_height) {
+    if (mouse_y >= window->pos_y && mouse_y < window->pos_y + title_height) 
+    {
         int minimize_start = window->pos_x + window->width - 58; 
         int rel_x = mouse_x - minimize_start;
 
-        if (rel_x >= 0 && rel_x < 14) return BUTTON_MINIMIZE;
-        if (rel_x >= 14 && rel_x < 36) return BUTTON_MAXIMIZE;
-        if (rel_x >= 36 && rel_x < 56) return BUTTON_CLOSE;
+        if (rel_x >= 0 && rel_x < 14) 
+        {
+            return BUTTON_MINIMIZE;
+        }
+        if (rel_x >= 14 && rel_x < 36) 
+        {
+            return BUTTON_MAXIMIZE;
+        }
+        if (rel_x >= 36 && rel_x < 56) 
+        {
+            return BUTTON_CLOSE;
+        }
     }
     return BUTTON_NONE;
 }
 
 // Zwraca true, jeśli myszka unosi się nad jakimkolwiek widocznym oknem
-bool is_mouse_over_any_window(int mouse_x, int mouse_y) {
-    for (int i = 0; i < window_count; i++) {
-        if (window_list[i]->visible && is_mouse_over_window(window_list[i], mouse_x, mouse_y)) {
+bool is_mouse_over_any_window(int mouse_x, int mouse_y) 
+{
+    for (int i = 0; i < window_count; i++) 
+    {
+        if (window_list[i]->visible && is_mouse_over_window(window_list[i], mouse_x, mouse_y)) 
+        {
             return true;
         }
     }

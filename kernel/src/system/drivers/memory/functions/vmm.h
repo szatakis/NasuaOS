@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 
-
 #define PAGE_PRESENT 0x001
 #define PAGE_WRITE   0x002
 #define PAGE_USER    0x004

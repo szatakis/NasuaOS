@@ -5,15 +5,18 @@
 extern const char arrow_cursor[][CURSOR_W];
 
 // Pobiera kształt z arrow_cursor i renderuje go bezpośrednio do backbuffera
-void handle_mouse() {
+void handle_mouse() 
+{
 
     if (!fb) return;
 
     uint32_t* bb_ptr = get_backbuffer();
     size_t bb_pitch = get_backbuffer_pitch();
 
-    for (int y = 0; y < CURSOR_H; y++) {
-        for (int x = 0; x < CURSOR_W; x++) {
+    for (int y = 0; y < CURSOR_H; y++) 
+    {
+        for (int x = 0; x < CURSOR_W; x++) 
+        {
             int px = mouse_x + x;
             int py = mouse_y + y;
 
@@ -25,11 +28,16 @@ void handle_mouse() {
             uint32_t color = 0;
 
             // Logika wyboru koloru / przezroczystości
-            if (p == 'W') {
+            if (p == 'W') 
+            {
                 color = COLOR_MOUSE;
-            } else if (p == 'B') {
+            } 
+            else if (p == 'B') 
+            {
                 color = 0x00000000; // Czarny / krawędź
-            } else {
+            } 
+            else 
+            {
                 continue; // Piksel przezroczysty - pomiń i nie nadpisuj backbuffera
             }
 

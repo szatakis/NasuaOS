@@ -27,11 +27,12 @@ extern bool debug_mode;
 
 // --- GŁÓWNA FUNKCJA SHELLA ---
 
-void execute_command(const char *cmd) {
-
+void execute_command(const char *cmd) 
+{
     print("\n");
     
-    if (cmd == nullptr || *cmd == '\0') {
+    if (cmd == nullptr || *cmd == '\0') 
+    {
         print_cmd();
         return;
     }
@@ -43,16 +44,20 @@ void execute_command(const char *cmd) {
     char single_char_buf[2] = {0, 0};
 
     print(CMD_TEXT_WHITE);
-    // komenda: help
-    if (cmd_name_len == 4 && strncmp(cmd, "help", 4)) {
+    // Command: help
+    if (cmd_name_len == 4 && strncmp(cmd, "help", 4)) 
+    {
         const char* arg_check = args;
 
-        while (*arg_check == ' ') {
+        while (*arg_check == ' ') 
+        {
             arg_check++;
         }
 
-        if (*arg_check != '\0') {
-            if (!strncmp(arg_check, "--page ", 7)) {
+        if (*arg_check != '\0') 
+        {
+            if (!strncmp(arg_check, "--page ", 7)) 
+            {
                 print_error("Syntax error!\n");
                 print_info("Usage: help --page [1-10]\n");
                 print_cmd();
@@ -64,12 +69,14 @@ void execute_command(const char *cmd) {
 
         const char* page_flag = strstr(args, "--page ");
 
-        if (page_flag) {
+        if (page_flag) 
+        {
             const char* page_num = page_flag + 7;
 
             page = parse_number(page_num);
 
-            if (page < 1 || page > 10) {
+            if (page < 1 || page > 10) 
+            {
                 print_error("Syntax error!\n");
                 print_info("Usage: help --page [1-10]\n");
                 print_cmd();
@@ -77,7 +84,8 @@ void execute_command(const char *cmd) {
             }
         }
 
-        if (page == 1) {
+        if (page == 1) 
+        {
             print_info("Available commands (Page 1/10):\n");
             print(" -help                               - Show the first page of help\n");
             print("   --page [1-10]                     - Show specific help page\n");
@@ -94,7 +102,8 @@ void execute_command(const char *cmd) {
             print("   --off                             - (Required 1 of 2) Disable debug mode\n");
         } 
 
-        else if (page == 2) {
+        else if (page == 2) 
+        {
             print_info("Available commands (Page 2/10):\n");
             print(" -clear                              - Clear the terminal screen\n");
             print(" -fetch                              - Display system summary and ASCII logo\n");
@@ -111,7 +120,8 @@ void execute_command(const char *cmd) {
             print("   --info                            - (Required 1 of 3) Display CMOS storage and RTC battery status\n");
         }
 
-        else if (page == 3) {
+        else if (page == 3) 
+        {
             print_info("Available commands (Page 3/10):\n");
             print(" -uptime                             - Display system uptime since boot\n");
             print(" -panic                              - Trigger kernel panic for debugging\n");
@@ -128,7 +138,8 @@ void execute_command(const char *cmd) {
 
         }
 
-        else if (page == 4) {
+        else if (page == 4) 
+        {
             print_info("Available commands (Page 4/10):\n");
             print(" -beep                               - System PC Speaker sound generator utility\n");
             print("    --freq \"Hz\"                      - (Optional) Sound frequency in Hertz (Default: 1000 Hz)\n");
@@ -142,120 +153,134 @@ void execute_command(const char *cmd) {
             print("    --max \"value\"                   - (Required) Upper bound of the range\n");
         }
 
-        else if (page == 5) {
+        else if (page == 5) 
+        {
             print_info("Available commands (Page 5/10):\n");
             print("More commands coming soon...\n");
         }
 
-        else if (page == 6) {
+        else if (page == 6) 
+        {
             print_info("Available commands (Page 6/10):\n");
             print("More commands coming soon...\n");
         }
 
-        else if (page == 7) {
+        else if (page == 7) 
+        {
             print_info("Available commands (Page 7/10):\n");
             print("More commands coming soon...\n");
         }
 
-        else if (page == 8) {
+        else if (page == 8) 
+        {
             print_info("Available commands (Page 8/10):\n");
             print("More commands coming soon...\n");
         }
 
-        else if (page == 9) {
+        else if (page == 9) 
+        {
             print_info("Available commands (Page 9/10):\n");
             print("More commands coming soon...\n");
         }
 
-        else if (page == 10) {
+        else if (page == 10) 
+        {
             print_info("Available commands (Page 10/10):\n");
             print("More commands coming soon...\n");
         }
     }
-    // 2. Komenda: clear
-    else if (cmd_name_len == 5 && strncmp(cmd, "clear", 5)) {
-        // 1. Resetowanie wirtualnego bufora tekstu (czyszczenie pamięci konsoli)
+    // 2. Command: clear
+    else if (cmd_name_len == 5 && strncmp(cmd, "clear", 5)) 
+    {
         init_text_buffer();
         return; 
     } 
-    // 3. Komenda: echo
-    else if (cmd_name_len == 4 && strncmp(cmd, "echo", 4)) {
-        // Szukamy parametru --text w dowolnym miejscu argumentów
+    // 3. Command: echo
+    else if (cmd_name_len == 4 && strncmp(cmd, "echo", 4)) 
+    {
         const char* text_flag = strstr(args, "--text ");
         
-        if (text_flag) {
-            const char* text_content = text_flag + 7; // Przesunięcie za "--text "
+        if (text_flag) 
+        {
+            const char* text_content = text_flag + 7;
 
             uint32_t old_color = current_text_color;
 
-            // Szukamy parametru --color w argumentach
             const char* color_flag = strstr(args, "--color ");
-            if (color_flag) {
-                const char* color_val = color_flag + 8; // Przesunięcie za "--color "
-                // Parsujemy podany przez użytkownika kolor HEX i ustawiamy go w systemie graficznym
+            if (color_flag) 
+            {
+                const char* color_val = color_flag + 8;
                 current_text_color = parse_hex_color(color_val);
             }
 
-        const char* file_flag = strstr(args, "--file ");
-        if (file_flag) {
-            const char* file_name = file_flag + 7;
+            const char* file_flag = strstr(args, "--file ");
+            if (file_flag) 
+            {
+                const char* file_name = file_flag + 7;
     
-            // Bufor na nową nazwę pliku
-            char file_name_n[128] = {0}; 
+                // Bufor for new file name
+                char file_name_n[128] = {0}; 
 
-            // Sprawdź, czy nazwa zaczyna się od cudzysłowu
-            if (file_name[0] == '"') {
-                file_name++; // Przesuń początek za pierwszy cudzysłów
+                if (file_name[0] == '"') 
+                {
+                    file_name++;
 
-                // Znajdź końcowy cudzysłów lub koniec stringa
-                size_t len = 0;
-                while (file_name[len] != '\0' && file_name[len] != '"') {
-                    len++;
-                }
-
-                // Ręczne kopiowanie znaków zamiast strncpy
-                if (len < sizeof(file_name_n)) {
-                    for (size_t i = 0; i < len; i++) {
-                        file_name_n[i] = file_name[i];
+                    size_t len = 0;
+                    while (file_name[len] != '\0' && file_name[len] != '"') 
+                    {
+                        len++;
                     }
-                    file_name_n[len] = '\0'; // Bezpieczne domknięcie stringa
-                }
-            } 
-            else {
-                // Jeśli nie ma cudzysłowów, kopiuj do spacji lub końca stringa
-                size_t len = 0;
-                while (file_name[len] != '\0' && file_name[len] != ' ') {
-                    len++;
+
+                    if (len < sizeof(file_name_n)) 
+                    {
+                        for (size_t i = 0; i < len; i++) 
+                        {
+                            file_name_n[i] = file_name[i];
+                        }
+                        file_name_n[len] = '\0';
+                    }
+                } 
+                else 
+                {
+                    size_t len = 0;
+                    while (file_name[len] != '\0' && file_name[len] != ' ') 
+                    {
+                        len++;
+                    }
+
+                    if (len < sizeof(file_name_n)) 
+                    {
+                        for (size_t i = 0; i < len; i++) 
+                        {
+                            file_name_n[i] = file_name[i];
+                        }
+                        file_name_n[len] = '\0';
+                    }
                 }
 
-                if (len < sizeof(file_name_n)) {
-                    for (size_t i = 0; i < len; i++) {
-                        file_name_n[i] = file_name[i];
-                    }
-                    file_name_n[len] = '\0';
-                }
+                clawfs_create_file(file_name_n);
+
+                print_info("Saved to file ");
+                print(file_name_n);
+                print(" with text ");
             }
 
-            clawfs_create_file(file_name_n);
-
-            print_info("Saved to file ");
-            print(file_name_n);
-            print(" with text ");
-        }
-
-
-            // Wypisywanie tekstu
-            if (*text_content == '"') {
+            // Printing text
+            if (*text_content == '"') 
+            {
                 text_content++; 
-                while (*text_content && *text_content != '"') {
+                while (*text_content && *text_content != '"') 
+                {
                     single_char_buf[0] = *text_content;
                     print(single_char_buf);
                     text_content++;
                 }
             } 
-            else {
-                // Jeśli brak cudzysłowów, wypisujemy do momentu napotkania kolejnej flagi '-' lub końca
-                while (*text_content && *text_content != '-') {
+            else 
+            {
+                // If arg don't have closing " do to next arg '-'
+                while (*text_content && *text_content != '-') 
+                {
                     single_char_buf[0] = *text_content;
                     print(single_char_buf);
                     text_content++;
@@ -263,37 +288,40 @@ void execute_command(const char *cmd) {
             }
             print("\n");
 
-            // Przywracamy domyślny kolor tekstu (żeby następne komendy nie pisały w HEX)
+            // Return to orginal color
             current_text_color = old_color;
         } 
-        else {
+        else 
+        {
             print_error("Syntax error!\n");
             print_info("Usage: echo --text \"your text\" --color \"0xRRGGBB\"\n");
         }
     } 
-    // 4.komenda: fetch
-    else if (cmd_name_len == 5 && strncmp(cmd, "fetch", 5)) {
+    // 4.Command: fetch
+    else if (cmd_name_len == 5 && strncmp(cmd, "fetch", 5)) 
+    {
         fetch();
     }
-    // 5. komenda: time
-    else if (cmd_name_len == 4 && strncmp(cmd, "time", 4)) {
-        // Sprawdzamy, czy użytkownik podał flagę --set lub --get
+    // 5. Command: time
+    else if (cmd_name_len == 4 && strncmp(cmd, "time", 4)) 
+    {
         const char* set_flag = strstr(args, "--set ");
         const char* get_flag = strstr(args, "--get");
         const char* status_flag = strstr(args, "--info");
 
-        // Opcja A: ZAPIS CZASU (--set)
-        if (set_flag) {
-            // Oczekiwany format po "--set ": "DD.MM.YYYY HH:MM:SS"
-            // set_flag + 6 wskazuje na początek daty
+        if (set_flag) 
+        {
+            // format "--set ": "DD.MM.YYYY HH:MM:SS"
             const char* date_ptr = set_flag + 6;
 
-            // Walidacja długości (DD.MM.YYYY HH:MM:SS to dokładnie 19 znaków)
-            if (strlen(date_ptr) < 19 || date_ptr[2] != '.' || date_ptr[5] != '.' || date_ptr[10] != ' ' || date_ptr[13] != ':' || date_ptr[16] != ':') {
+            // Walidation to (DD.MM.YYYY HH:MM:SS to dokładnie 19 znaków)
+            if (strlen(date_ptr) < 19 || date_ptr[2] != '.' || date_ptr[5] != '.' || date_ptr[10] != ' ' || date_ptr[13] != ':' || date_ptr[16] != ':') 
+            {
                 print_error("Syntax error!\n");
                 print_info("Usage: time --set DD.MM.YYYY HH:MM:SS\n");
             } 
-            else {
+            else 
+            {
                 RtcTime new_time;
                 new_time.day    = parse_digits(date_ptr, 2);
                 new_time.month  = parse_digits(date_ptr + 3, 2);
@@ -302,25 +330,25 @@ void execute_command(const char *cmd) {
                 new_time.minute = parse_digits(date_ptr + 14, 2);
                 new_time.second = parse_digits(date_ptr + 17, 2);
 
-                // Zapisujemy czas do kości RTC
+                // Saving time to RTC
                 set_rtc_time(new_time);
                 print_info("System time updated successfully!\n");
             }
         }
-        // Opcja B: ODCZYT CZASU (wymaga jawnego --get)
-        else if (get_flag) {
+        else if (get_flag) 
+        {
             RtcTime time = get_rtc_time();
             
-            // Wyświetlanie daty: DD.MM.YYYY
+            // Display date: DD.MM.YYYY
             print_num_padded(time.day);
             print(".");
             print_num_padded(time.month);
             print(".");
             print_year(time.year);
 
-            print(" "); // Odstęp
+            print(" ");
 
-            // Wyświetlanie czasu: HH:MM:SS
+            // Display time: HH:MM:SS
             print_num_padded(time.hour);
             print(":");
             print_num_padded(time.minute);
@@ -328,16 +356,19 @@ void execute_command(const char *cmd) {
             print_num_padded(time.second);
             print("\n");
         }
-        else if (status_flag) {
-            if (!is_rtc_battery_ok()) {
+        else if (status_flag) 
+        {
+            if (!is_rtc_battery_ok()) 
+            {
                 print_warn("CMOS battery is dead. System time may be incorrect.\n");
             } 
-            else {
+            else 
+            {
                 print_info("CMOS battery is working properly.\n");
             }
         }
-        // Obsługa braku argumentów lub niepoprawnych flag (np. "time", "time --byleco")
-        else {
+        else 
+        {
             print_error("Syntax error!\n");
             print("Usage:\n");
             print("  time --get   - display current time\n");
@@ -345,74 +376,85 @@ void execute_command(const char *cmd) {
             print("  time --info - Checks RTC battery status\n");
         }
     }
-    // 6. komenda: reboot
-    else if (cmd_name_len == 6 && strncmp(cmd, "reboot", 6)) {
+    // 6. Command: reboot
+    else if (cmd_name_len == 6 && strncmp(cmd, "reboot", 6)) 
+    {
         acpi_reboot();
     }
-    // 7. komenda: shutdown
-    else if (cmd_name_len == 8 && strncmp(cmd, "shutdown", 8)) {
+    // 7. Command: shutdown
+    else if (cmd_name_len == 8 && strncmp(cmd, "shutdown", 8)) 
+    {
         acpi_shutdown();
     }
-    // 8. komenda: format
-    else if(cmd_name_len == 6 && strncmp(cmd,"format", 6)){
+    // 8. Command: format
+    else if(cmd_name_len == 6 && strncmp(cmd,"format", 6))
+    {
         print_warn("Formatting CLAWFS...\n");
-
         clawfs_format();
-
         print_info("Done.\n");
     }
-    // 9. komenda: dir
-    else if(cmd_name_len == 3 && strncmp(cmd, "dir", 3)){
+    // 9. Command: dir
+    else if(cmd_name_len == 3 && strncmp(cmd, "dir", 3))
+    {
         clawfs_dir();
     }
-    // 10. komenda: mount
-    else if(cmd_name_len == 5 && strncmp(cmd, "mount", 5)) {
+    // 10. Command: mount
+    else if(cmd_name_len == 5 && strncmp(cmd, "mount", 5)) 
+    {
         clawfs_exists();
     }
-    // 11. komenda: touch
-    else if (cmd_name_len == 5 && strncmp(cmd, "touch", 5)) {
+    // 11. Command: touch
+    else if (cmd_name_len == 5 && strncmp(cmd, "touch", 5)) 
+    {
         const char* filename_flag = strstr(args, "--file ");
 
-        if (filename_flag) {
-            const char* filename_ptr = filename_flag + 7; // Przesunięcie za "--file "
-            char name_buf[64]; // Bufor na wyciągniętą nazwę pliku
+        if (filename_flag) 
+        {
+            const char* filename_ptr = filename_flag + 7;
+            char name_buf[64]; // Bufor for file name
             int i = 0;
 
-            // Obsługa nazwy w cudzysłowie
-            if (*filename_ptr == '"') {
+            if (*filename_ptr == '"') 
+            {
                 filename_ptr++;
 
-                while (*filename_ptr && *filename_ptr != '"' && i < 63) {
+                while (*filename_ptr && *filename_ptr != '"' && i < 63) 
+                {
                     name_buf[i++] = *filename_ptr++;
                 }
             } 
-            // Obsługa nazwy bez cudzysłowów (do spacji, kolejnej flagi lub końca)
-            else {
-                while (*filename_ptr && *filename_ptr != ' ' && *filename_ptr != '-' && i < 63) {
+            else 
+            {
+                while (*filename_ptr && *filename_ptr != ' ' && *filename_ptr != '-' && i < 63) 
+                {
                     name_buf[i++] = *filename_ptr++;
                 }
             }
-            name_buf[i] = '\0'; // Zamknięcie ciągu znaków
+            name_buf[i] = '\0';
 
-            // Sprawdzamy czy nazwa pliku nie jest pusta
-            if (i > 0) {
+            if (i > 0) 
+            {
                 clawfs_create_file(name_buf);
             } 
-            else {
+            else 
+            {
                 print_error("Error: Filename cannot be empty!\n");
             }
         }
-        else {
+        else 
+        {
             print_error("Syntax error!\n");
             print_info("Usage: touch --file \"name.file_extension\"\n");
         }
     }
-    // 12. komenda: info
-    else if (cmd_name_len == 4 && strncmp(cmd, "info", 4)) {
+    // 12. Command: info
+    else if (cmd_name_len == 4 && strncmp(cmd, "info", 4)) 
+    {
         char cpu_name[49];
         char buf[32];
-        // Wersja DLA TEKSTU (używana do CPU)
-        auto print_line = [&](const char* label, const char* value) {
+
+        auto print_line = [&](const char* label, const char* value) 
+        {
             print(CMD_TEXT_WHITE);
             print(label);
             print(CMD_TEXT_GRAY);
@@ -420,7 +462,8 @@ void execute_command(const char *cmd) {
             print("\n");
         };
 
-        auto print_line_mb = [&](const char* label, const char* value) {
+        auto print_line_mb = [&](const char* label, const char* value) 
+        {
             print(CMD_TEXT_WHITE);
             print(label);
             print(CMD_TEXT_GRAY);
@@ -429,8 +472,8 @@ void execute_command(const char *cmd) {
             print("\n");
         };
 
-        // Wersja DLA LICZBY (używana do RAMu i Dysku)
-        auto print_numeric = [&](const char* label, uint64_t bytes) {
+        auto print_numeric = [&](const char* label, uint64_t bytes) 
+        {
             uint64_t mb = bytes / 1024 / 1024;
             itoa(mb, buf);
         
@@ -442,43 +485,46 @@ void execute_command(const char *cmd) {
         };
     
         cpu_get_brand(cpu_name);
-        storage_init(); // Uwaga: Docelowo przenieś do kernel_main
 
-        // 1. Sekcja: Software
+        // 1. Section: Software
         print_info("Software information\n");
-        print_line("System Version: ", "NasuaOS 0.04");
+        print_line("System Version: ", "NasuaOS 0.05");
         print_line("Kernel Version: ", "0.02\n\n");
 
         print_info("Hardware information\n");
 
-        // 2. Sekcja: Hardware (wszystko wyświetlane jednolicie)
+        // 2. Section: Hardware
         print_line("CPU:            ", cpu_name);
         print_line_mb("Total RAM:      ", memory_total());
         print_numeric("Used RAM:       ", memory_used());
         print_numeric("Total Storage:  ", storage_total());
         print_numeric("Used Storage:   ", storage_used());
 
-        // Przywrócenie domyślnego koloru konsoli na końcu
+        // Return to orginal color
         print(CMD_TEXT_WHITE);
     }
-    // 13. komenda: source
-    else if (cmd_name_len == 6 && strncmp(cmd, "source", 6)) {
+    // 13. Command: source
+    else if (cmd_name_len == 6 && strncmp(cmd, "source", 6)) 
+    {
         print_info("Source anvible at: https://github.com/szatakis/NasuaOS \n");
     }
-    // 14. komenda: uart
-    else if (cmd_name_len == 4 && strncmp(cmd, "uart", 4)) {
+    // 14. Command: uart
+    else if (cmd_name_len == 4 && strncmp(cmd, "uart", 4)) 
+    {
         const char* text_flag = strstr(args, "--text ");
 
-        // Wymagaj flagi --text. Jeśli args jest puste lub nie ma poprawnej flagi -> błąd
-        if (strlen(args) == 0 || !text_flag) {
+        if (strlen(args) == 0 || !text_flag) 
+        {
             print_error("Syntax error! Argument '--text' is required.\n");
             print_info("Usage: uart --text \"text\"\n");
         }
-        else {
-            const char* text = text_flag + 7; // za "--text "
+        else 
+        {
+            const char* text = text_flag + 7;
 
-            if (*text == '"') {
-                text++; // pomijamy pierwszy cudzysłów
+            if (*text == '"') 
+            {
+                text++;
 
                 char buf[128];
                 size_t i = 0;
@@ -492,119 +538,117 @@ void execute_command(const char *cmd) {
                 Uart::puts(buf);
                 Uart::puts("\n");
             } 
-            else {
+            else 
+            {
                 Uart::puts(text);
                 Uart::puts("\n");
             }
         }
     }
-    // 15. komenda: debug
-    else if (cmd_name_len == 5 && strncmp(cmd, "debug", 5)) {
-        if (strlen(args) == 0) {
+    // 15. Command: debug
+    else if (cmd_name_len == 5 && strncmp(cmd, "debug", 5)) 
+    {
+        if (strlen(args) == 0) 
+        {
             print_error("Syntax error! Argument required.\n");
             print_info("Usage: debug --on | --off\n");
         }
-        else if (strncmp(args, "--on", 4)) {
+        else if (strncmp(args, "--on", 4)) 
+        {
             debug_mode = true;
 
             print_info("Debug mode ON\n");
             Uart::puts("Debug ON\n");
         }
-        else if (strncmp(args, "--off", 5)) {
+        else if (strncmp(args, "--off", 5)) 
+        {
             debug_mode = false;
 
             print_info("Debug mode OFF\n");
             Uart::puts("Debug OFF\n");
         }
-        else {
+        else 
+        {
             print_error("Syntax error! Unknown argument.\n");
             print_info("Usage: debug --on | --off\n");
         }
     }
-    // 16. komenda: resolution
-    else if (cmd_name_len == 10 && strncmp(cmd, "resolution", 10)) {
+    // 16. Command: resolution
+    else if (cmd_name_len == 10 && strncmp(cmd, "resolution", 10)) 
+    {
         print_resolution();
     }
-    // 17. komenda: uptime
-    else if (cmd_name_len == 6 && strncmp(cmd, "uptime", 6)) {
+    // 17. Command: uptime
+    else if (cmd_name_len == 6 && strncmp(cmd, "uptime", 6)) 
+    {
         print_uptime();
     }
-    // 18. komenda: panic
-    else if (cmd_name_len == 5 && strncmp(cmd, "panic", 5)) {
+    // 18. Command: panic
+    else if (cmd_name_len == 5 && strncmp(cmd, "panic", 5)) 
+    {
         kernel_panic("Manual panic triggered by user");
     }
-    // 19. komenda: logs
-    else if (cmd_name_len == 4 && strncmp(cmd, "logs", 4)) {
-        // logs bez argumentów
-        if(strstr(args, "--show"))
+    // 19. Command: logs
+    else if (cmd_name_len == 4 && strncmp(cmd, "logs", 4)) 
+    {
+        if(strstr(args, "--show")) 
         {
             print_logs();
         }
-
-        // logs --clear
-        else if(strstr(args, "--clear"))
+        else if(strstr(args, "--clear")) 
         {
             clear_logs();
-
             print_info("Kernel log buffer cleared\n");
         }
-
-        // logs --put "text" (automatycznie: INFO, USER)
-        else if(strstr(args, "--put "))
+        else if(strstr(args, "--put ")) 
         {
             const char* put_arg = strstr(args, "--put ") + 6;
 
-            char text[128]; // Maksymalna długość wiadomości tekstowej
+            char text[128]; // Max lenght of info
             int i = 0;
 
-            // Ominięcie otwierającego cudzysłowu jeśli istnieje
-            if(put_arg[0] == '"') {
+            if(put_arg[0] == '"') 
+            {
                 put_arg++;
             }
 
-            // Wyciąganie wiadomości tekstowej aż do zamknięcia cudzysłowu lub końca stringa
-            while(put_arg[i] != '"' && put_arg[i] != '\0' && i < 127) {
+            while(put_arg[i] != '"' && put_arg[i] != '\0' && i < 127) 
+            {
                 text[i] = put_arg[i];
                 i++;
             }
             text[i] = '\0';
 
-            // Sprawdzenie poprawności i wywołanie funkcji docelowej
-            if(strlen(text) > 0) {
+            if(strlen(text) > 0) 
+            {
                 log(parse_log_level("INFO"), "USER", text);
                 print_info("Log added successfully\n");
             } 
-            else {
+            else 
+            {
                 print_error("Invalid --put format! Use: logs --put \"your message\"\n");
             }
         }
-
-        // logs --level "ERROR"
-        else if(strstr(args, "--level "))
+        else if(strstr(args, "--level ")) 
         {
             const char* level_arg = strstr(args, "--level ") + 8;
 
             char level_name[16];
             int i = 0;
 
-            // obsługa cudzysłowów
-            if(level_arg[0] == '"')
+            if(level_arg[0] == '"') 
             {
                 level_arg++;
 
-                while(level_arg[i] != '"' &&
-                      level_arg[i] != '\0' &&
-                      i < 15)
+                while(level_arg[i] != '"' && level_arg[i] != '\0' && i < 15) 
                 {
                     level_name[i] = level_arg[i];
                     i++;
                 }
             }
-            else
+            else 
             {
-                while(level_arg[i] != ' ' &&
-                      level_arg[i] != '\0' &&
-                      i < 15)
+                while(level_arg[i] != ' ' && level_arg[i] != '\0' && i < 15) 
                 {
                     level_name[i] = level_arg[i];
                     i++;
@@ -615,32 +659,26 @@ void execute_command(const char *cmd) {
 
             print_logs_level(parse_log_level(level_name));
         }
-
-        // logs --subsystem "USB"
-        else if(strstr(args, "--subsystem "))
+        else if(strstr(args, "--subsystem ")) 
         {
             const char* subsystem_arg = strstr(args, "--subsystem ") + 12;
 
             char subsystem[32];
             int i = 0;
 
-            if(subsystem_arg[0] == '"')
+            if(subsystem_arg[0] == '"') 
             {
                 subsystem_arg++;
 
-                while(subsystem_arg[i] != '"' &&
-                    subsystem_arg[i] != '\0' &&
-                    i < 31)
+                while(subsystem_arg[i] != '"' && subsystem_arg[i] != '\0' && i < 31) 
                 {
                     subsystem[i] = subsystem_arg[i];
                     i++;
                 }
             }
-            else
+            else 
             {
-                while(subsystem_arg[i] != ' ' &&
-                      subsystem_arg[i] != '\0' &&
-                      i < 31)
+                while(subsystem_arg[i] != ' ' && subsystem_arg[i] != '\0' && i < 31) 
                 {
                     subsystem[i] = subsystem_arg[i];
                     i++;
@@ -651,9 +689,7 @@ void execute_command(const char *cmd) {
 
             print_logs_subsystem(subsystem);
         }
-
-
-        else
+        else 
         {
             print_error("Syntax error!\n");
 
@@ -665,13 +701,14 @@ void execute_command(const char *cmd) {
             print("  logs --put \"your message\"\n");
         }
     }
-    // 20. komenda: bootapp
-    else if (cmd_name_len == 7 && strncmp(cmd, "bootapp", 7)) {
-
+    // 20. Command: bootapp
+    else if (cmd_name_len == 7 && strncmp(cmd, "bootapp", 7)) 
+    {
         const char* app_flag = strstr(args, "--app ");
         const char* list_flag = strstr(args, "--list");
 
-        if(list_flag) {
+        if(list_flag) 
+        {
 
             print_info("Available applications:\n");
 
@@ -683,233 +720,283 @@ void execute_command(const char *cmd) {
             print(" bootapp --app \"application_name\"\n");
 
         }
-        else if(app_flag) {
-            const char* app_name = app_flag + 6; // po "--app "
+        else if(app_flag) 
+        {
+            const char* app_name = app_flag + 6;
 
-            if (*app_name == '"') {
+            if (*app_name == '"') 
+            {
                 app_name++;
 
                 char app_name_buf[64] = {0};
 
                 size_t len = 0;
-                while (app_name[len] != '\0' && app_name[len] != '"') {
+                while (app_name[len] != '\0' && app_name[len] != '"') 
+                {
                     len++;
                 }
 
-                if (len < sizeof(app_name_buf)) {
-                    for (size_t i = 0; i < len; i++) {
+                if (len < sizeof(app_name_buf)) 
+                {
+                    for (size_t i = 0; i < len; i++) 
+                    {
                         app_name_buf[i] = app_name[i];
                     }
 
                     app_name_buf[len] = '\0';
                 }
 
-                if (strncmp(app_name_buf, "terminal", 8)) {
-                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                if (strncmp(app_name_buf, "terminal", 8)) 
+                {
                     terminal.visible = true;
                     terminal.id = current_id;
                     current_id++;
                     register_window(&terminal);
                 }
-                else if (strncmp(app_name_buf, "suaedit", 7)) {
-                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                else if (strncmp(app_name_buf, "suaedit", 7)) 
+                {
                     suaedit.visible = true;
-                    suaedit.id = current_id; // Poprawiono z terminal.id na suaedit.id
+                    suaedit.id = current_id;
                     current_id++;
                     register_window(&suaedit);
                 }
-                else if (strncmp(app_name_buf, "calculator", 10)) {
-                    // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
+                else if (strncmp(app_name_buf, "calculator", 10)) 
+                {
                     calculator.visible = true;
                     calculator.id = current_id;
                     current_id++;
                     register_window(&calculator);
                 }
-                else {
+                else 
+                {
                     print_error("Unknown app\n");
                 }
             }
         }
-        else {
+        else 
+        {
             print_error("Syntax error!\n");
             print_info("Usage:\n");
             print("  bootapp --list\n");
             print("  bootapp --app \"app_name\"\n");
         }
     }
-    // 21. komenda: beep
-    else if (cmd_name_len == 4 && strncmp(cmd, "beep", 4)) {
-        int freq = 1000; // Domyślna częstotliwość w Hz
-        int dur = 200;   // Domyślny czas trwania w ms
+    // 21. Command: beep
+    else if (cmd_name_len == 4 && strncmp(cmd, "beep", 4)) 
+    {
+        int freq = 1000; // Default freqency in Hz
+        int dur = 200;   // Default time in ms
         
         const char* freq_flag = strstr(args, "--freq ");
         const char* dur_flag = strstr(args, "--dur ");
         
-        // 1. Parsowanie częstotliwości (--freq)
-        if (freq_flag) {
+        if (freq_flag) 
+        {
             const char* freq_arg = freq_flag + 7;
             char freq_buf[16];
             int i = 0;
             
-            if (freq_arg[0] == '"') {
+            if (freq_arg[0] == '"') 
+            {
                 freq_arg++;
-                while (freq_arg[i] != '"' && freq_arg[i] != '\0' && i < 15) {
+                while (freq_arg[i] != '"' && freq_arg[i] != '\0' && i < 15) 
+                {
                     freq_buf[i] = freq_arg[i];
                     i++;
                 }
             } 
-            else {
-                while (freq_arg[i] != ' ' && freq_arg[i] != '\0' && i < 15) {
+            else 
+            {
+                while (freq_arg[i] != ' ' && freq_arg[i] != '\0' && i < 15) 
+                {
                     freq_buf[i] = freq_arg[i];
                     i++;
                 }
             }
             freq_buf[i] = '\0';
             
-            if (strlen(freq_buf) > 0) {
+            if (strlen(freq_buf) > 0) 
+            {
                 freq = atoi(freq_buf);
             }
         }
-        
-        // 2. Parsowanie czasu trwania (--dur)
-        if (dur_flag) {
+        if (dur_flag) 
+        {
             const char* dur_arg = dur_flag + 6;
             char dur_buf[16];
             int i = 0;
             
-            if (dur_arg[0] == '"') {
+            if (dur_arg[0] == '"') 
+            {
                 dur_arg++;
-                while (dur_arg[i] != '"' && dur_arg[i] != '\0' && i < 15) {
+                while (dur_arg[i] != '"' && dur_arg[i] != '\0' && i < 15) 
+                {
                     dur_buf[i] = dur_arg[i];
                     i++;
                 }
             } 
-            else {
-                while (dur_arg[i] != ' ' && dur_arg[i] != '\0' && i < 15) {
+            else 
+            {
+                while (dur_arg[i] != ' ' && dur_arg[i] != '\0' && i < 15) 
+                {
                     dur_buf[i] = dur_arg[i];
                     i++;
                 }
             }
             dur_buf[i] = '\0';
             
-            if (strlen(dur_buf) > 0) {
+            if (strlen(dur_buf) > 0) 
+            {
                 dur = atoi(dur_buf);
             }
         }
         
-        // 3. Walidacja i wywołanie funkcji buzzera
-        if (freq > 0 && dur > 0) {
-            // Wywołaj swoją systemową funkcję generującą dźwięk
-            // Na przykład: buzzer_beep(freq, dur); lub play_sound(freq, dur);
+        if (freq > 0 && dur > 0) 
+        {
             print_info("Beeping... Freq: "); 
             print_num8(freq);
             print(" Hz, Duration: ");
             print_num8(dur);
             print(" ms\n");
 
+            sleep(10);
+
             beep(freq, dur);
         } 
-        else {
+        else 
+        {
             print_error("Invalid arguments!\n");
             print_info("Usage:\n");
             print("  beep\n");
             print("  beep --freq \"frequency\" --dur \"time\"\n");
         }
     }
-        // 22. komenda: calc
-    else if (cmd_name_len == 4 && strncmp(cmd, "calc", 4)) {
+    // 22. Command: calc
+    else if (cmd_name_len == 4 && strncmp(cmd, "calc", 4)) 
+    {
         const char* op_flag  = strstr(args, "--op ");
         const char* num1_flag = strstr(args, "--num1 ");
         const char* num2_flag = strstr(args, "--num2 ");
 
-        if (op_flag && num1_flag && num2_flag) {
+        if (op_flag && num1_flag && num2_flag) 
+        {
             char op_buf[8] = {0};
             char num1_buf[16] = {0};
             char num2_buf[16] = {0};
             int i = 0;
 
-            // 1. Parsowanie --op
+            // --op
             const char* op_arg = op_flag + 5;
             i = 0;
-            if (op_arg[0] == '"') {
+            if (op_arg[0] == '"') 
+            {
                 op_arg++;
                 while (op_arg[i] != '"' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
             } 
-            else {
+            else 
+            {
                 while (op_arg[i] != ' ' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
             }
             op_buf[i] = '\0';
 
-            // 2. Parsowanie --num1
+            // --num1
             const char* num1_arg = num1_flag + 7;
             i = 0;
-            if (num1_arg[0] == '"') {
+            if (num1_arg[0] == '"') 
+            {
                 num1_arg++;
-                while (num1_arg[i] != '"' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
+                while (num1_arg[i] != '"' && num1_arg[i] != '\0' && i < 15) 
+                { 
+                    num1_buf[i] = num1_arg[i]; 
+                    i++; 
+                }
             } 
-            else {
-                while (num1_arg[i] != ' ' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
+            else 
+            {
+                while (num1_arg[i] != ' ' && num1_arg[i] != '\0' && i < 15) 
+                { 
+                    num1_buf[i] = num1_arg[i];
+                    i++; 
+                }
             }
             num1_buf[i] = '\0';
 
-            // 3. Parsowanie --num2
+            // --num2
             const char* num2_arg = num2_flag + 7;
             i = 0;
-            if (num2_arg[0] == '"') {
+            if (num2_arg[0] == '"') 
+            {
                 num2_arg++;
-                while (num2_arg[i] != '"' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
+                while (num2_arg[i] != '"' && num2_arg[i] != '\0' && i < 15) 
+                { 
+                    num2_buf[i] = num2_arg[i]; 
+                    i++; 
+                }
             } 
-            else {
-                while (num2_arg[i] != ' ' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
+            else 
+            {
+                while (num2_arg[i] != ' ' && num2_arg[i] != '\0' && i < 15) 
+                { 
+                    num2_buf[i] = num2_arg[i]; 
+                    i++; 
+                }
             }
             num2_buf[i] = '\0';
 
-            // Konwersja na liczby
             int n1 = atoi(num1_buf);
             int n2 = atoi(num2_buf);
             int result = 0;
 
-            // Wykonanie operacji
-            if (strncmp(op_buf, "add", 3)) {
+            // Doing calculations
+            if (strncmp(op_buf, "add", 3)) 
+            {
                 result = n1 + n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
             } 
-            else if (strncmp(op_buf, "sub", 3)) {
+            else if (strncmp(op_buf, "sub", 3)) 
+            {
                 result = n1 - n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
             } 
-            else if (strncmp(op_buf, "mul", 3)) {
+            else if (strncmp(op_buf, "mul", 3)) 
+            {
                 result = n1 * n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
             } 
-            else if (strncmp(op_buf, "div", 3)) {
-                if (n2 == 0) {
+            else if (strncmp(op_buf, "div", 3)) 
+            {
+                if (n2 == 0) 
+                {
                     print_error("Division by zero error!\n");
                 } 
-                else {
+                else 
+                {
                     result = n1 / n2;
                     print_info("Result: ");
                     print_num8(result);
                     print("\n");
                 }
             } 
-            else {
+            else 
+            {
                 print_error("Unknown operation! Use: add, sub, mul, div\n");
             }
         } 
-        else {
+        else 
+        {
             print_error("Syntax error! Missing required arguments.\n");
             print_info("Usage: calc --op \"add|sub|mul|div\" --num1 [val] --num2 [val]\n");
         }
     }
-    // 23. komenda: rand
-    else if (cmd_name_len == 4 && strncmp(cmd, "rand", 4)) {
+    // 23. Command: rand
+    else if (cmd_name_len == 4 && strncmp(cmd, "rand", 4)) 
+    {
         const char* min_flag = strstr(args, "--min ");
         const char* max_flag = strstr(args, "--max ");
 
@@ -917,21 +1004,26 @@ void execute_command(const char *cmd) {
         int max_val = 0;
         int has_max = 0;
 
-        // 1. Parsowanie --min (opcjonalne)
-        if (min_flag) {
-            const char* min_arg = min_flag + 6; // Przesunięcie o długość "--min "
+        if (min_flag) 
+        {
+            const char* min_arg = min_flag + 6;
             char min_buf[16] = {0};
             int i = 0;
 
-            if (min_arg[0] == '"') {
-                min_arg++; // Pomiń otwierający cudzysłów
-                while (min_arg[i] != '"' && min_arg[i] != '\0' && i < 15) {
+            if (min_arg[0] == '"') 
+            {
+                min_arg++;
+
+                while (min_arg[i] != '"' && min_arg[i] != '\0' && i < 15) 
+                {
                     min_buf[i] = min_arg[i];
                     i++;
                 }
             } 
-            else {
-                while (min_arg[i] != ' ' && min_arg[i] != '\0' && i < 15) {
+            else 
+            {
+                while (min_arg[i] != ' ' && min_arg[i] != '\0' && i < 15) 
+                {
                     min_buf[i] = min_arg[i];
                     i++;
                 }
@@ -939,22 +1031,26 @@ void execute_command(const char *cmd) {
             min_buf[i] = '\0';
             min_val = atoi(min_buf);
         }
-
-        // 2. Parsowanie --max (wymagane)
-        if (max_flag) {
-            const char* max_arg = max_flag + 6; // Przesunięcie o długość "--max "
+        if (max_flag) 
+        {
+            const char* max_arg = max_flag + 6;
             char max_buf[16] = {0};
             int i = 0;
 
-            if (max_arg[0] == '"') {
-                max_arg++; // Pomiń otwierający cudzysłów
-                while (max_arg[i] != '"' && max_arg[i] != '\0' && i < 15) {
+            if (max_arg[0] == '"') 
+            {
+                max_arg++;
+
+                while (max_arg[i] != '"' && max_arg[i] != '\0' && i < 15) 
+                {
                     max_buf[i] = max_arg[i];
                     i++;
                 }
             } 
-            else {
-                while (max_arg[i] != ' ' && max_arg[i] != '\0' && i < 15) {
+            else 
+            {
+                while (max_arg[i] != ' ' && max_arg[i] != '\0' && i < 15) 
+                {
                     max_buf[i] = max_arg[i];
                     i++;
                 }
@@ -964,35 +1060,37 @@ void execute_command(const char *cmd) {
             has_max = 1;
         }
 
-        // 3. Walidacja i wykonanie
-        if (has_max) {
-            if (min_val > max_val) {
+
+        if (has_max) 
+        {
+            if (min_val > max_val) 
+            {
                 print_error("Invalid range! Min cannot be greater than Max.\n");
             } 
-            else {
+            else 
+            {
                 int range = max_val - min_val + 1;
                 
-                // Zabezpieczenie przed dzieleniem przez zero (gdy min_val == max_val)
-                int random_num = min_val;
-                if (range > 0) {
-                    random_num += (system_rand() % range);
-                }
+                int random_num = min_val + ((system_rand() & 0x7fffffff) % range);
                 
                 print_info("Random number: ");
-                print_num8(random_num); // Twoja funkcja do drukowania liczb
+                print_num8(random_num);
                 print("\n");
             }
         } 
-        else {
+        else 
+        {
             print_error("Syntax error!\n");
             print_info("Usage: rand --min [val] --max [val]\n");
         }
     }
 
-    // Obsługa nieznanej komendy
-    else {
+    // Command: Unknown
+    else 
+    {
         print_error("Unknown command: ");
-        for (size_t i = 0; i < cmd_name_len; i++) {
+        for (size_t i = 0; i < cmd_name_len; i++) 
+        {
             single_char_buf[0] = cmd[i];
             print(single_char_buf);
         }

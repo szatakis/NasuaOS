@@ -8,8 +8,6 @@
 
 #include "libs/asm/asm.h"
 
-
-
 extern "C"
 void isr_handler(Registers* regs)
 {
@@ -25,16 +23,6 @@ void isr_handler(Registers* regs)
         page_fault_handler(regs->error);
         return;
     }
-
-    /*
-        // Spurious interrupt (Local APIC, wektor 0xFF wg konwencji Intela) -
-        // nie jest to prawdziwy błąd procesora, EOI nie jest wymagane, po
-        // prostu ignorujemy i wracamy.
-        if(regs->vector == 0xFF)
-        {
-            return;
-        }
-    */
 
     Uart::puts("\n========== EXCEPTION ==========\n");
     Uart::puts("Vector: ");

@@ -14,7 +14,7 @@
 #define PANIC_LINES 12
 
 
-uint32_t panic_start_x()
+uint32_t panic_start_x() 
 {
     uint32_t char_size = 8 + FONT_SPACING_W;
     uint32_t dialog_width = PANIC_WIDTH * char_size;
@@ -22,7 +22,7 @@ uint32_t panic_start_x()
 }
 
 
-void panic_set_position()
+void panic_set_position() 
 {
     uint32_t height = PANIC_LINES * CHAR_HEIGHT;
 
@@ -32,14 +32,16 @@ void panic_set_position()
 
 
 
-void panic_print_border()
+void panic_print_border() 
 {
     cursor_x = panic_start_x();
 
     print("+");
 
-    for (int i = 0; i < PANIC_WIDTH - 2; i++)
+    for (int i = 0; i < PANIC_WIDTH - 2; i++) 
+    {
         print("-");
+    }
 
     print("+");
 
@@ -47,14 +49,16 @@ void panic_print_border()
     cursor_x = panic_start_x();
 }
 
-void panic_print_empty()
+void panic_print_empty() 
 {
     cursor_x = panic_start_x();
 
     print("|");
 
-    for (int i = 0; i < PANIC_WIDTH - 2; i++)
+    for (int i = 0; i < PANIC_WIDTH - 2; i++) 
+    {
         print(" ");
+    }
 
     print("|");
 
@@ -105,7 +109,9 @@ void panic_print_line(const char* text)
         PANIC_WIDTH - 3 - len;
 
     for (uint32_t i = 0; i < spaces; i++)
+    {
         print(" ");
+    }
 
     print("|");
 

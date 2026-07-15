@@ -1,6 +1,7 @@
 #include "../driver.h"
 
-void Uart::init() {
+void Uart::init() 
+{
     outb(COM1_PORT + 1, 0x00);    // Wyłącz przerwania
     outb(COM1_PORT + 3, 0x80);    // Włącz DLAB
     outb(COM1_PORT + 0, 0x01);    // 115200 baud (low byte)
@@ -10,21 +11,26 @@ void Uart::init() {
     outb(COM1_PORT + 4, 0x0B);    // IRQs włączone, RTS/DSR ustawione
 }
 
-void Uart::putc(char c) {
+void Uart::putc(char c) 
+{
     while (!is_transmit_empty());
     outb(COM1_PORT, c);
 }
 
-void Uart::puts(const char* str) {
-    while (*str) {
+void Uart::puts(const char* str) 
+{
+    while (*str) 
+    {
         putc(*str++);
     }
 }
 
-void Uart::puthex(uint64_t val) {
+void Uart::puthex(uint64_t val) 
+{
     const char* hex_digits = "0123456789ABCDEF";
     puts("0x");
-    for (int i = 60; i >= 0; i -= 4) {
+    for (int i = 60; i >= 0; i -= 4) 
+    {
         putc(hex_digits[(val >> i) & 0xF]);
     }
 }

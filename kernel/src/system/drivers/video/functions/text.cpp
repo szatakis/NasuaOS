@@ -39,14 +39,17 @@ extern char user_name[16];
 extern char pc_name[16];
 
 // Funkcja czyszcząca pamięć bufora tekstowego (wywołaj raz przy starcie systemu oraz przy clear_screen)
-void init_text_buffer() {
+void init_text_buffer() 
+{
     // Resetowanie wirtualnej pozycji kursora na samą górę ekranu
     text_col = 0;
     text_row = 0;
 
     // Czyszczenie całej macierzy znaków
-    for (size_t r = 0; r < TEXT_ROWS; r++) {
-        for (size_t c = 0; c < TEXT_COLS; c++) {
+    for (size_t r = 0; r < TEXT_ROWS; r++) 
+    {
+        for (size_t c = 0; c < TEXT_COLS; c++) 
+        {
             text_buffer[r][c].ch = ' ';
             text_buffer[r][c].color = COLOR_WHITE;
         }
@@ -59,39 +62,48 @@ void init_text_buffer() {
 }
 
 // Funkcja przewijająca tekst w górę, gdy zabraknie miejsca na dole
-static void scroll_text() {
-    for (size_t r = 1; r < TEXT_ROWS; r++) {
-        for (size_t c = 0; c < TEXT_COLS; c++) {
+static void scroll_text() 
+{
+    for (size_t r = 1; r < TEXT_ROWS; r++) 
+    {
+        for (size_t c = 0; c < TEXT_COLS; c++) 
+        {
             text_buffer[r - 1][c] = text_buffer[r][c];
         }
     }
     // Wyczyszczenie ostatniej linii
-    for (size_t c = 0; c <TEXT_COLS; c++) {
+    for (size_t c = 0; c <TEXT_COLS; c++) 
+    {
         text_buffer[TEXT_ROWS - 1][c].ch = ' ';
         text_buffer[TEXT_ROWS - 1][c].color = COLOR_WHITE;
     }
-    if (text_row > 0) {
+    if (text_row > 0) 
+    {
         text_row--;
     }
 }
 
 // Rysuje cały zapisany tekst z bufora tekstowego bezpośrednio do backbuffera
 // WYWOŁAJ TO W KAŻDEJ KLATCE!
-void draw_text_buffer() {
+void draw_text_buffer() 
+{
     size_t start_y = 0;
     
-    for (size_t r = 0; r < TEXT_ROWS; r++) {
+    for (size_t r = 0; r < TEXT_ROWS; r++) 
+    {
         size_t start_x = 0;
         
         // Sprawdzenie, czy nie wchodzimy na dolny pasek zadań
         if (start_y + 8 >= (fb->height - 45)) break;
 
-        for (size_t c = 0; c < TEXT_COLS; c++) {
+        for (size_t c = 0; c < TEXT_COLS; c++) 
+        {
             if (start_x + 8 >= fb->width) break;
 
             char ch = text_buffer[r][c].ch;
             // Rysujemy tylko rzeczywiste znaki (spacje ignorujemy lub nadpisujemy tłem)
-            if (ch != ' ' && ch != '\0') {
+            if (ch != ' ' && ch != '\0') 
+            {
                 draw_char8(ch, start_x, start_y, text_buffer[r][c].color);
             }
             
@@ -105,14 +117,17 @@ void draw_text_buffer() {
     cursor_y = text_row * (8 + FONT_SPACING_H);
 }
 
-void print_char8(char c) {
-    if (c == '\n') {
+void print_char8(char c) 
+{
+    if (c == '\n') 
+    {
         text_col = 0;
         text_row++;
         
         // Obliczamy limit linii na podstawie wysokości ekranu i paska dolnego
         size_t max_rows = (fb->height - 45) / (8 + FONT_SPACING_H);
-        if (text_row >= max_rows || text_row >= TEXT_ROWS) {
+        if (text_row >= max_rows || text_row >= TEXT_ROWS) 
+        {
             scroll_text();
         }
         return;
@@ -120,7 +135,8 @@ void print_char8(char c) {
 
     // Maksymalna szerokość w znakach
     size_t max_cols = fb->width / (8 + FONT_SPACING_W);
-    if (text_col >= max_cols || text_col >= TEXT_COLS) {
+    if (text_col >= max_cols || text_col >= TEXT_COLS) 
+    {
         print_char8('\n');
     }
 
@@ -131,31 +147,39 @@ void print_char8(char c) {
     text_col++;
 }
 
-void print_num8(uint32_t num) {
+void print_num8(uint32_t num) 
+{
     char buffer[12];
     int i = 0;
 
-    if (num == 0) {
+    if (num == 0) 
+    {
         print("0");
         return;
     }
 
-    while (num > 0) {
+    while (num > 0) 
+    {
         buffer[i++] = '0' + (num % 10);
         num /= 10;
     }
 
-    while (i > 0) {
+    while (i > 0) 
+    {
         print_char8(buffer[--i]);
     }
 }
 
-void print(const char* str) {
-    while (*str) {
-        if (*str == '\x1B' && *(str + 1) == '[') {
+void print(const char* str) 
+{
+    while (*str) 
+    {
+        if (*str == '\x1B' && *(str + 1) == '[') 
+        {
             char code = *(str + 2);
 
-            switch (code) {
+            switch (code) 
+            {
                 case 'w': current_text_color = COLOR_WHITE; break;
                 case 'r': current_text_color = COLOR_RED; break;
                 case 'g': current_text_color = COLOR_GREEN; break;
@@ -172,26 +196,31 @@ void print(const char* str) {
     }
 }
 
-void print_int(int value) {
+void print_int(int value) 
+{
     char buffer[32];
     int i = 0;
 
-    if (value == 0) {
+    if (value == 0) 
+    {
         print("0");
         return;
     }
 
-    if (value < 0) {
+    if (value < 0) 
+    {
         print("-");
         value = -value;
     }
 
-    while (value > 0) {
+    while (value > 0) 
+    {
         buffer[i++] = '0' + (value % 10);
         value /= 10;
     }
 
-    for (int j = i - 1; j >= 0; j--) {
+    for (int j = i - 1; j >= 0; j--) 
+    {
         char c[2];
         c[0] = buffer[j];
         c[1] = '\0';
@@ -200,10 +229,13 @@ void print_int(int value) {
 }
 
 // Funkcje print_at ignorują bufor terminala i rysują "sztywny" tekst na ekranie co klatkę
-void print_at8(const char* str, size_t x, size_t y, uint32_t color) {
+void print_at8(const char* str, size_t x, size_t y, uint32_t color) 
+{
     size_t start_x = x;
-    while (*str) {
-        if (*str == '\n') {
+    while (*str) 
+    {
+        if (*str == '\n') 
+        {
             x = start_x;
             y += 8 + FONT_SPACING_H;
             str++;
@@ -215,10 +247,13 @@ void print_at8(const char* str, size_t x, size_t y, uint32_t color) {
     }
 }
 
-void print_at10(const char* str, size_t x, size_t y, uint32_t color) {
+void print_at10(const char* str, size_t x, size_t y, uint32_t color) 
+{
     size_t start_x = x;
-    while (*str) {
-        if (*str == '\n') {
+    while (*str) 
+    {
+        if (*str == '\n') 
+        {
             x = start_x;
             y += 10 + FONT_SPACING_H;
             str++;
@@ -230,10 +265,13 @@ void print_at10(const char* str, size_t x, size_t y, uint32_t color) {
     }
 }
 
-void print_at12(const char* str, size_t x, size_t y, uint32_t color) {
+void print_at12(const char* str, size_t x, size_t y, uint32_t color) 
+{
     size_t start_x = x;
-    while (*str) {
-        if (*str == '\n') {
+    while (*str) 
+    {
+        if (*str == '\n') 
+        {
             x = start_x;
             y += 12 + FONT_SPACING_H;
             str++;
@@ -245,10 +283,13 @@ void print_at12(const char* str, size_t x, size_t y, uint32_t color) {
     }
 }
 
-void print_at16(const char* str, size_t x, size_t y, uint32_t color) {
+void print_at16(const char* str, size_t x, size_t y, uint32_t color) 
+{
     size_t start_x = x;
-    while (*str) {
-        if (*str == '\n') {
+    while (*str) 
+    {
+        if (*str == '\n') 
+        {
             x = start_x;
             y += 16 + FONT_SPACING_H;
             str++;
@@ -261,11 +302,14 @@ void print_at16(const char* str, size_t x, size_t y, uint32_t color) {
 }
 
 // Backspace usuwa teraz znak bezpośrednio z bufora tekstowego w pamięci
-void delete_last_char() {
-    if (text_col > 0) {
+void delete_last_char() 
+{
+    if (text_col > 0) 
+    {
         text_col--;
         text_buffer[text_row][text_col].ch = ' ';
-    } else if (text_row > 0) {
+    } else if (text_row > 0) 
+    {
         text_row--;
         // Przeskakujemy na koniec poprzedniej linii
         size_t max_cols = fb->width / (8 + FONT_SPACING_W);
@@ -275,43 +319,50 @@ void delete_last_char() {
 }
 
 // Czyszczenie aktualnie wpisywanej linii z bufora tekstowego
-void clear_line() {
+void clear_line() 
+{
     size_t start_col = text_col - cmd_idx;
     
-    for (size_t c = start_col; c < text_col; c++) {
+    for (size_t c = start_col; c < text_col; c++) 
+    {
         text_buffer[text_row][c].ch = ' ';
     }
     
     text_col = start_col;
 
-    for (size_t i = 0; i < sizeof(command_buffer); i++) {
+    for (size_t i = 0; i < sizeof(command_buffer); i++) 
+    {
         command_buffer[i] = '\0';
     }
     cmd_idx = 0;
 }
 
-void print_info(const char* msg) {
+void print_info(const char* msg) 
+{
     print(CMD_TEXT_GREEN);
     print("[info]: ");
     print(CMD_TEXT_WHITE);
     print(msg);
 }
 
-void print_warn(const char* msg) {
+void print_warn(const char* msg) 
+{
     print(CMD_TEXT_YELLOW);
     print("[warning]: ");
     print(CMD_TEXT_WHITE);
     print(msg);
 }
 
-void print_error(const char* msg) {
+void print_error(const char* msg) 
+{
     print(CMD_TEXT_RED);
     print("[error]: ");
     print(CMD_TEXT_WHITE);
     print(msg);
 }
 
-void fetch() {
+void fetch() 
+{
     print(CMD_TEXT_WHITE);
     print("\n $$\\   $$\\                                          $$$$$$\\   $$$$$$\\  \n");
     print(" $$$\\  $$ |                                        $$  __$$\\ $$  __$$\\ \n");
@@ -324,7 +375,8 @@ void fetch() {
     print(" \\__|  \\__| \\_______|\\_______/  \\______/  \\_______| \\______/  \\______/ \n\n");
 }
 
-void print_cmd() {
+void print_cmd() 
+{
     print(CMD_TEXT_BLUE);
     print(user_name);
     print("@");
@@ -338,7 +390,8 @@ void print_cmd() {
     print(CMD_TEXT_WHITE); 
 }
 
-void print_num_padded(uint32_t num) {
+void print_num_padded(uint32_t num) 
+{
     char buf[3];
     buf[0] = '0' + (num / 10);
     buf[1] = '0' + (num % 10);
@@ -346,7 +399,8 @@ void print_num_padded(uint32_t num) {
     print(buf);
 }
 
-void print_year(uint32_t year) {
+void print_year(uint32_t year) 
+{
     char buf[5];
     buf[0] = '0' + (year / 1000);
     buf[1] = '0' + ((year % 1000) / 100);
@@ -356,11 +410,14 @@ void print_year(uint32_t year) {
     print(buf);
 }
 
-void print_resolution() {
-    if (!fb) {
+void print_resolution() 
+{
+    if (!fb) 
+    {
         print("Framebuffer not available\n");
         return;
     }
+    
     print_info("Screen resolution: ");
     print_int(fb->width);
     print("x");
