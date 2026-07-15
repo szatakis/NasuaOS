@@ -79,7 +79,6 @@ char* itoa(int64_t value, char* str)
     return str;
 }
 
-
 // Uniwersalna funkcja parsująca określoną liczbę cyfr (od 1 do np. 10 cyfr dla uint32_t)
 uint32_t parse_digits(const char* str, uint8_t count) {
     uint32_t result = 0;
@@ -96,13 +95,7 @@ uint32_t parse_digits(const char* str, uint8_t count) {
     return result;
 }
 
-size_t shell_strlen(const char *str) {
-    size_t len = 0;
-    while (str[len]) len++;
-    return len;
-}
-
-bool shell_strncmp(const char *s1, const char *s2, size_t n) {
+bool strncmp(const char *s1, const char *s2, size_t n) {
     for (size_t i = 0; i < n; i++) {
         if (s1[i] != s2[i]) return false;
         if (s1[i] == '\0') return true;
@@ -110,7 +103,7 @@ bool shell_strncmp(const char *s1, const char *s2, size_t n) {
     return true;
 }
 
-const char* shell_strchr(const char *str, char c) {
+const char* strchr(const char *str, char c) {
     while (*str) {
         if (*str == c) return str;
         str++;
@@ -119,7 +112,7 @@ const char* shell_strchr(const char *str, char c) {
 }
 
 // Szuka podciągu (np. "--color") wewnątrz całych argumentów (odpowiednik strstr)
-const char* shell_strstr(const char *haystack, const char *needle) {
+const char* strstr(const char *haystack, const char *needle) {
     if (!*needle) return haystack;
     while (*haystack) {
         const char *h = haystack;

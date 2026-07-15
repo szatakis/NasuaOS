@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 enum LogLevel{INFO, WARN, ERROR, DEBUG};
-
+LogLevel parse_log_level(const char* level);
 
 void logger_init();
 void log(LogLevel level, const char* subsystem, const char* message);

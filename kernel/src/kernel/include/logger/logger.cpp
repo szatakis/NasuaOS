@@ -3,10 +3,29 @@
 
 #include "system/drivers/video/driver.h"
 #include "system/drivers/rtc/driver.h"
+#include "libs/libc/libc.h"
 
 
 #define LOG_BUFFER_SIZE 128
 
+
+LogLevel parse_log_level(const char* level)
+{
+    if(strncmp(level, "INFO", 4))
+        return INFO;
+
+    if(strncmp(level, "WARN", 4))
+        return WARN;
+
+    if(strncmp(level, "ERROR", 5))
+        return ERROR;
+
+    if(strncmp(level, "DEBUG", 5))
+        return DEBUG;
+
+
+    return INFO;
+}
 
 struct LogEntry
 {

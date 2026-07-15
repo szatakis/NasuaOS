@@ -25,24 +25,6 @@
 extern uint32_t current_text_color;
 extern bool debug_mode;
 
-static LogLevel parse_log_level(const char* level)
-{
-    if(shell_strncmp(level, "INFO", 4))
-        return INFO;
-
-    if(shell_strncmp(level, "WARN", 4))
-        return WARN;
-
-    if(shell_strncmp(level, "ERROR", 5))
-        return ERROR;
-
-    if(shell_strncmp(level, "DEBUG", 5))
-        return DEBUG;
-
-
-    return INFO;
-}
-
 // --- GŁÓWNA FUNKCJA SHELLA ---
 
 void execute_command(const char *cmd) {
@@ -54,24 +36,23 @@ void execute_command(const char *cmd) {
         return;
     }
 
-    const char* space_ptr = shell_strchr(cmd, ' ');
-    size_t cmd_name_len = space_ptr ? (space_ptr - cmd) : shell_strlen(cmd);
+    const char* space_ptr = strchr(cmd, ' ');
+    size_t cmd_name_len = space_ptr ? (space_ptr - cmd) : strlen(cmd);
     const char* args = space_ptr ? (space_ptr + 1) : "";
 
     char single_char_buf[2] = {0, 0};
 
     print(CMD_TEXT_WHITE);
     // komenda: help
-    if (cmd_name_len == 4 && shell_strncmp(cmd, "help", 4)) {
-
+    if (cmd_name_len == 4 && strncmp(cmd, "help", 4)) {
         const char* arg_check = args;
 
-        while (*arg_check == ' ')
+        while (*arg_check == ' ') {
             arg_check++;
+        }
 
         if (*arg_check != '\0') {
-
-            if (!shell_strncmp(arg_check, "--page ", 7)) {
+            if (!strncmp(arg_check, "--page ", 7)) {
                 print_error("Syntax error!\n");
                 print_info("Usage: help --page [1-10]\n");
                 print_cmd();
@@ -81,7 +62,7 @@ void execute_command(const char *cmd) {
 
         int page = 1; // domyślna strona
 
-        const char* page_flag = shell_strstr(args, "--page ");
+        const char* page_flag = strstr(args, "--page ");
 
         if (page_flag) {
             const char* page_num = page_flag + 7;
@@ -192,31 +173,30 @@ void execute_command(const char *cmd) {
         }
     }
     // 2. Komenda: clear
-    else if (cmd_name_len == 5 && shell_strncmp(cmd, "clear", 5)) {
+    else if (cmd_name_len == 5 && strncmp(cmd, "clear", 5)) {
         // 1. Resetowanie wirtualnego bufora tekstu (czyszczenie pamięci konsoli)
         init_text_buffer();
         return; 
     } 
     // 3. Komenda: echo
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "echo", 4)) {
+    else if (cmd_name_len == 4 && strncmp(cmd, "echo", 4)) {
         // Szukamy parametru --text w dowolnym miejscu argumentów
-        const char* text_flag = shell_strstr(args, "--text ");
+        const char* text_flag = strstr(args, "--text ");
         
         if (text_flag) {
             const char* text_content = text_flag + 7; // Przesunięcie za "--text "
-            
-            // Zapisujemy oryginalny kolor, aby przywrócić go po zakończeniu polecenia echo
+
             uint32_t old_color = current_text_color;
 
             // Szukamy parametru --color w argumentach
-            const char* color_flag = shell_strstr(args, "--color ");
+            const char* color_flag = strstr(args, "--color ");
             if (color_flag) {
                 const char* color_val = color_flag + 8; // Przesunięcie za "--color "
                 // Parsujemy podany przez użytkownika kolor HEX i ustawiamy go w systemie graficznym
                 current_text_color = parse_hex_color(color_val);
             }
 
-        const char* file_flag = shell_strstr(args, "--file ");
+        const char* file_flag = strstr(args, "--file ");
         if (file_flag) {
             const char* file_name = file_flag + 7;
     
@@ -240,7 +220,8 @@ void execute_command(const char *cmd) {
                     }
                     file_name_n[len] = '\0'; // Bezpieczne domknięcie stringa
                 }
-            } else {
+            } 
+            else {
                 // Jeśli nie ma cudzysłowów, kopiuj do spacji lub końca stringa
                 size_t len = 0;
                 while (file_name[len] != '\0' && file_name[len] != ' ') {
@@ -271,7 +252,8 @@ void execute_command(const char *cmd) {
                     print(single_char_buf);
                     text_content++;
                 }
-            } else {
+            } 
+            else {
                 // Jeśli brak cudzysłowów, wypisujemy do momentu napotkania kolejnej flagi '-' lub końca
                 while (*text_content && *text_content != '-') {
                     single_char_buf[0] = *text_content;
@@ -283,21 +265,22 @@ void execute_command(const char *cmd) {
 
             // Przywracamy domyślny kolor tekstu (żeby następne komendy nie pisały w HEX)
             current_text_color = old_color;
-        } else {
+        } 
+        else {
             print_error("Syntax error!\n");
             print_info("Usage: echo --text \"your text\" --color \"0xRRGGBB\"\n");
         }
     } 
     // 4.komenda: fetch
-    else if (cmd_name_len == 5 && shell_strncmp(cmd, "fetch", 5)) {
+    else if (cmd_name_len == 5 && strncmp(cmd, "fetch", 5)) {
         fetch();
     }
     // 5. komenda: time
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "time", 4)) {
+    else if (cmd_name_len == 4 && strncmp(cmd, "time", 4)) {
         // Sprawdzamy, czy użytkownik podał flagę --set lub --get
-        const char* set_flag = shell_strstr(args, "--set ");
-        const char* get_flag = shell_strstr(args, "--get");
-        const char* status_flag = shell_strstr(args, "--info");
+        const char* set_flag = strstr(args, "--set ");
+        const char* get_flag = strstr(args, "--get");
+        const char* status_flag = strstr(args, "--info");
 
         // Opcja A: ZAPIS CZASU (--set)
         if (set_flag) {
@@ -306,10 +289,11 @@ void execute_command(const char *cmd) {
             const char* date_ptr = set_flag + 6;
 
             // Walidacja długości (DD.MM.YYYY HH:MM:SS to dokładnie 19 znaków)
-            if (shell_strlen(date_ptr) < 19 || date_ptr[2] != '.' || date_ptr[5] != '.' || date_ptr[10] != ' ' || date_ptr[13] != ':' || date_ptr[16] != ':') {
+            if (strlen(date_ptr) < 19 || date_ptr[2] != '.' || date_ptr[5] != '.' || date_ptr[10] != ' ' || date_ptr[13] != ':' || date_ptr[16] != ':') {
                 print_error("Syntax error!\n");
                 print_info("Usage: time --set DD.MM.YYYY HH:MM:SS\n");
-            } else {
+            } 
+            else {
                 RtcTime new_time;
                 new_time.day    = parse_digits(date_ptr, 2);
                 new_time.month  = parse_digits(date_ptr + 3, 2);
@@ -347,7 +331,8 @@ void execute_command(const char *cmd) {
         else if (status_flag) {
             if (!is_rtc_battery_ok()) {
                 print_warn("CMOS battery is dead. System time may be incorrect.\n");
-            } else {
+            } 
+            else {
                 print_info("CMOS battery is working properly.\n");
             }
         }
@@ -361,15 +346,15 @@ void execute_command(const char *cmd) {
         }
     }
     // 6. komenda: reboot
-    else if (cmd_name_len == 6 && shell_strncmp(cmd, "reboot", 6)) {
+    else if (cmd_name_len == 6 && strncmp(cmd, "reboot", 6)) {
         acpi_reboot();
     }
     // 7. komenda: shutdown
-    else if (cmd_name_len == 8 && shell_strncmp(cmd, "shutdown", 8)) {
+    else if (cmd_name_len == 8 && strncmp(cmd, "shutdown", 8)) {
         acpi_shutdown();
     }
     // 8. komenda: format
-    else if(cmd_name_len == 6 && shell_strncmp(cmd,"format", 6)){
+    else if(cmd_name_len == 6 && strncmp(cmd,"format", 6)){
         print_warn("Formatting CLAWFS...\n");
 
         clawfs_format();
@@ -377,17 +362,16 @@ void execute_command(const char *cmd) {
         print_info("Done.\n");
     }
     // 9. komenda: dir
-    else if(cmd_name_len == 3 && shell_strncmp(cmd, "dir", 3)){
+    else if(cmd_name_len == 3 && strncmp(cmd, "dir", 3)){
         clawfs_dir();
     }
     // 10. komenda: mount
-    else if(cmd_name_len == 5 && shell_strncmp(cmd, "mount", 5)) {
+    else if(cmd_name_len == 5 && strncmp(cmd, "mount", 5)) {
         clawfs_exists();
     }
     // 11. komenda: touch
-    else if (cmd_name_len == 5 && shell_strncmp(cmd, "touch", 5)) {
-        // Szukamy parametru --filename w argumentach
-        const char* filename_flag = shell_strstr(args, "--file ");
+    else if (cmd_name_len == 5 && strncmp(cmd, "touch", 5)) {
+        const char* filename_flag = strstr(args, "--file ");
 
         if (filename_flag) {
             const char* filename_ptr = filename_flag + 7; // Przesunięcie za "--file "
@@ -396,7 +380,8 @@ void execute_command(const char *cmd) {
 
             // Obsługa nazwy w cudzysłowie
             if (*filename_ptr == '"') {
-                filename_ptr++; // Pomiń początkowy cudzysłów
+                filename_ptr++;
+
                 while (*filename_ptr && *filename_ptr != '"' && i < 63) {
                     name_buf[i++] = *filename_ptr++;
                 }
@@ -412,16 +397,18 @@ void execute_command(const char *cmd) {
             // Sprawdzamy czy nazwa pliku nie jest pusta
             if (i > 0) {
                 clawfs_create_file(name_buf);
-            } else {
+            } 
+            else {
                 print_error("Error: Filename cannot be empty!\n");
             }
-        } else {
+        }
+        else {
             print_error("Syntax error!\n");
             print_info("Usage: touch --file \"name.file_extension\"\n");
         }
     }
     // 12. komenda: info
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "info", 4)) {
+    else if (cmd_name_len == 4 && strncmp(cmd, "info", 4)) {
         char cpu_name[49];
         char buf[32];
         // Wersja DLA TEKSTU (używana do CPU)
@@ -459,8 +446,8 @@ void execute_command(const char *cmd) {
 
         // 1. Sekcja: Software
         print_info("Software information\n");
-        print_line("System Version: ", "NasuaOS 0.0.3");
-        print_line("Kernel Version: ", "0.0.1\n\n");
+        print_line("System Version: ", "NasuaOS 0.04");
+        print_line("Kernel Version: ", "0.02\n\n");
 
         print_info("Hardware information\n");
 
@@ -475,15 +462,15 @@ void execute_command(const char *cmd) {
         print(CMD_TEXT_WHITE);
     }
     // 13. komenda: source
-    else if (cmd_name_len == 6 && shell_strncmp(cmd, "source", 6)) {
+    else if (cmd_name_len == 6 && strncmp(cmd, "source", 6)) {
         print_info("Source anvible at: https://github.com/szatakis/NasuaOS \n");
     }
     // 14. komenda: uart
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "uart", 4)) {
-        const char* text_flag = shell_strstr(args, "--text ");
+    else if (cmd_name_len == 4 && strncmp(cmd, "uart", 4)) {
+        const char* text_flag = strstr(args, "--text ");
 
         // Wymagaj flagi --text. Jeśli args jest puste lub nie ma poprawnej flagi -> błąd
-        if (shell_strlen(args) == 0 || !text_flag) {
+        if (strlen(args) == 0 || !text_flag) {
             print_error("Syntax error! Argument '--text' is required.\n");
             print_info("Usage: uart --text \"text\"\n");
         }
@@ -512,18 +499,18 @@ void execute_command(const char *cmd) {
         }
     }
     // 15. komenda: debug
-    else if (cmd_name_len == 5 && shell_strncmp(cmd, "debug", 5)) {
-        if (shell_strlen(args) == 0) {
+    else if (cmd_name_len == 5 && strncmp(cmd, "debug", 5)) {
+        if (strlen(args) == 0) {
             print_error("Syntax error! Argument required.\n");
             print_info("Usage: debug --on | --off\n");
         }
-        else if (shell_strncmp(args, "--on", 4)) {
+        else if (strncmp(args, "--on", 4)) {
             debug_mode = true;
 
             print_info("Debug mode ON\n");
             Uart::puts("Debug ON\n");
         }
-        else if (shell_strncmp(args, "--off", 5)) {
+        else if (strncmp(args, "--off", 5)) {
             debug_mode = false;
 
             print_info("Debug mode OFF\n");
@@ -535,27 +522,27 @@ void execute_command(const char *cmd) {
         }
     }
     // 16. komenda: resolution
-    else if (cmd_name_len == 10 && shell_strncmp(cmd, "resolution", 10)) {
+    else if (cmd_name_len == 10 && strncmp(cmd, "resolution", 10)) {
         print_resolution();
     }
     // 17. komenda: uptime
-    else if (cmd_name_len == 6 && shell_strncmp(cmd, "uptime", 6)) {
+    else if (cmd_name_len == 6 && strncmp(cmd, "uptime", 6)) {
         print_uptime();
     }
     // 18. komenda: panic
-    else if (cmd_name_len == 5 && shell_strncmp(cmd, "panic", 5)) {
+    else if (cmd_name_len == 5 && strncmp(cmd, "panic", 5)) {
         kernel_panic("Manual panic triggered by user");
     }
     // 19. komenda: logs
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "logs", 4)) {
+    else if (cmd_name_len == 4 && strncmp(cmd, "logs", 4)) {
         // logs bez argumentów
-        if(shell_strstr(args, "--show"))
+        if(strstr(args, "--show"))
         {
             print_logs();
         }
 
         // logs --clear
-        else if(shell_strstr(args, "--clear"))
+        else if(strstr(args, "--clear"))
         {
             clear_logs();
 
@@ -563,9 +550,9 @@ void execute_command(const char *cmd) {
         }
 
         // logs --put "text" (automatycznie: INFO, USER)
-        else if(shell_strstr(args, "--put "))
+        else if(strstr(args, "--put "))
         {
-            const char* put_arg = shell_strstr(args, "--put ") + 6;
+            const char* put_arg = strstr(args, "--put ") + 6;
 
             char text[128]; // Maksymalna długość wiadomości tekstowej
             int i = 0;
@@ -583,18 +570,19 @@ void execute_command(const char *cmd) {
             text[i] = '\0';
 
             // Sprawdzenie poprawności i wywołanie funkcji docelowej
-            if(shell_strlen(text) > 0) {
+            if(strlen(text) > 0) {
                 log(parse_log_level("INFO"), "USER", text);
                 print_info("Log added successfully\n");
-            } else {
+            } 
+            else {
                 print_error("Invalid --put format! Use: logs --put \"your message\"\n");
             }
         }
 
         // logs --level "ERROR"
-        else if(shell_strstr(args, "--level "))
+        else if(strstr(args, "--level "))
         {
-            const char* level_arg = shell_strstr(args, "--level ") + 8;
+            const char* level_arg = strstr(args, "--level ") + 8;
 
             char level_name[16];
             int i = 0;
@@ -629,9 +617,9 @@ void execute_command(const char *cmd) {
         }
 
         // logs --subsystem "USB"
-        else if(shell_strstr(args, "--subsystem "))
+        else if(strstr(args, "--subsystem "))
         {
-            const char* subsystem_arg = shell_strstr(args, "--subsystem ") + 12;
+            const char* subsystem_arg = strstr(args, "--subsystem ") + 12;
 
             char subsystem[32];
             int i = 0;
@@ -678,10 +666,10 @@ void execute_command(const char *cmd) {
         }
     }
     // 20. komenda: bootapp
-    else if (cmd_name_len == 7 && shell_strncmp(cmd, "bootapp", 7)) {
+    else if (cmd_name_len == 7 && strncmp(cmd, "bootapp", 7)) {
 
-        const char* app_flag = shell_strstr(args, "--app ");
-        const char* list_flag = shell_strstr(args, "--list");
+        const char* app_flag = strstr(args, "--app ");
+        const char* list_flag = strstr(args, "--list");
 
         if(list_flag) {
 
@@ -716,21 +704,21 @@ void execute_command(const char *cmd) {
                     app_name_buf[len] = '\0';
                 }
 
-                if (shell_strncmp(app_name_buf, "terminal", 8)) {
+                if (strncmp(app_name_buf, "terminal", 8)) {
                     // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
                     terminal.visible = true;
                     terminal.id = current_id;
                     current_id++;
                     register_window(&terminal);
                 }
-                else if (shell_strncmp(app_name_buf, "suaedit", 7)) {
+                else if (strncmp(app_name_buf, "suaedit", 7)) {
                     // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
                     suaedit.visible = true;
                     suaedit.id = current_id; // Poprawiono z terminal.id na suaedit.id
                     current_id++;
                     register_window(&suaedit);
                 }
-                else if (shell_strncmp(app_name_buf, "calculator", 10)) {
+                else if (strncmp(app_name_buf, "calculator", 10)) {
                     // Nowa logika: aktywacja i rejestracja okna do ciągłego renderowania
                     calculator.visible = true;
                     calculator.id = current_id;
@@ -750,12 +738,12 @@ void execute_command(const char *cmd) {
         }
     }
     // 21. komenda: beep
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "beep", 4)) {
+    else if (cmd_name_len == 4 && strncmp(cmd, "beep", 4)) {
         int freq = 1000; // Domyślna częstotliwość w Hz
         int dur = 200;   // Domyślny czas trwania w ms
         
-        const char* freq_flag = shell_strstr(args, "--freq ");
-        const char* dur_flag = shell_strstr(args, "--dur ");
+        const char* freq_flag = strstr(args, "--freq ");
+        const char* dur_flag = strstr(args, "--dur ");
         
         // 1. Parsowanie częstotliwości (--freq)
         if (freq_flag) {
@@ -769,7 +757,8 @@ void execute_command(const char *cmd) {
                     freq_buf[i] = freq_arg[i];
                     i++;
                 }
-            } else {
+            } 
+            else {
                 while (freq_arg[i] != ' ' && freq_arg[i] != '\0' && i < 15) {
                     freq_buf[i] = freq_arg[i];
                     i++;
@@ -777,8 +766,8 @@ void execute_command(const char *cmd) {
             }
             freq_buf[i] = '\0';
             
-            if (shell_strlen(freq_buf) > 0) {
-                freq = atoi(freq_buf); // Użyj swojej funkcji konwersji (np. shell_atoi lub atoi)
+            if (strlen(freq_buf) > 0) {
+                freq = atoi(freq_buf);
             }
         }
         
@@ -794,7 +783,8 @@ void execute_command(const char *cmd) {
                     dur_buf[i] = dur_arg[i];
                     i++;
                 }
-            } else {
+            } 
+            else {
                 while (dur_arg[i] != ' ' && dur_arg[i] != '\0' && i < 15) {
                     dur_buf[i] = dur_arg[i];
                     i++;
@@ -802,8 +792,8 @@ void execute_command(const char *cmd) {
             }
             dur_buf[i] = '\0';
             
-            if (shell_strlen(dur_buf) > 0) {
-                dur = atoi(dur_buf); // Użyj swojej funkcji konwersji (np. shell_atoi lub atoi)
+            if (strlen(dur_buf) > 0) {
+                dur = atoi(dur_buf);
             }
         }
         
@@ -827,10 +817,10 @@ void execute_command(const char *cmd) {
         }
     }
         // 22. komenda: calc
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "calc", 4)) {
-        const char* op_flag  = shell_strstr(args, "--op ");
-        const char* num1_flag = shell_strstr(args, "--num1 ");
-        const char* num2_flag = shell_strstr(args, "--num2 ");
+    else if (cmd_name_len == 4 && strncmp(cmd, "calc", 4)) {
+        const char* op_flag  = strstr(args, "--op ");
+        const char* num1_flag = strstr(args, "--num1 ");
+        const char* num2_flag = strstr(args, "--num2 ");
 
         if (op_flag && num1_flag && num2_flag) {
             char op_buf[8] = {0};
@@ -844,7 +834,8 @@ void execute_command(const char *cmd) {
             if (op_arg[0] == '"') {
                 op_arg++;
                 while (op_arg[i] != '"' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
-            } else {
+            } 
+            else {
                 while (op_arg[i] != ' ' && op_arg[i] != '\0' && i < 7) { op_buf[i] = op_arg[i]; i++; }
             }
             op_buf[i] = '\0';
@@ -855,7 +846,8 @@ void execute_command(const char *cmd) {
             if (num1_arg[0] == '"') {
                 num1_arg++;
                 while (num1_arg[i] != '"' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
-            } else {
+            } 
+            else {
                 while (num1_arg[i] != ' ' && num1_arg[i] != '\0' && i < 15) { num1_buf[i] = num1_arg[i]; i++; }
             }
             num1_buf[i] = '\0';
@@ -866,7 +858,8 @@ void execute_command(const char *cmd) {
             if (num2_arg[0] == '"') {
                 num2_arg++;
                 while (num2_arg[i] != '"' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
-            } else {
+            } 
+            else {
                 while (num2_arg[i] != ' ' && num2_arg[i] != '\0' && i < 15) { num2_buf[i] = num2_arg[i]; i++; }
             }
             num2_buf[i] = '\0';
@@ -877,42 +870,48 @@ void execute_command(const char *cmd) {
             int result = 0;
 
             // Wykonanie operacji
-            if (shell_strncmp(op_buf, "add", 3)) {
+            if (strncmp(op_buf, "add", 3)) {
                 result = n1 + n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
-            } else if (shell_strncmp(op_buf, "sub", 3)) {
+            } 
+            else if (strncmp(op_buf, "sub", 3)) {
                 result = n1 - n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
-            } else if (shell_strncmp(op_buf, "mul", 3)) {
+            } 
+            else if (strncmp(op_buf, "mul", 3)) {
                 result = n1 * n2;
                 print_info("Result: ");
                 print_num8(result);
                 print("\n");
-            } else if (shell_strncmp(op_buf, "div", 3)) {
+            } 
+            else if (strncmp(op_buf, "div", 3)) {
                 if (n2 == 0) {
                     print_error("Division by zero error!\n");
-                } else {
+                } 
+                else {
                     result = n1 / n2;
                     print_info("Result: ");
                     print_num8(result);
                     print("\n");
                 }
-            } else {
+            } 
+            else {
                 print_error("Unknown operation! Use: add, sub, mul, div\n");
             }
-        } else {
+        } 
+        else {
             print_error("Syntax error! Missing required arguments.\n");
             print_info("Usage: calc --op \"add|sub|mul|div\" --num1 [val] --num2 [val]\n");
         }
     }
     // 23. komenda: rand
-    else if (cmd_name_len == 4 && shell_strncmp(cmd, "rand", 4)) {
-        const char* min_flag = shell_strstr(args, "--min ");
-        const char* max_flag = shell_strstr(args, "--max ");
+    else if (cmd_name_len == 4 && strncmp(cmd, "rand", 4)) {
+        const char* min_flag = strstr(args, "--min ");
+        const char* max_flag = strstr(args, "--max ");
 
         int min_val = 0;
         int max_val = 0;
@@ -930,7 +929,8 @@ void execute_command(const char *cmd) {
                     min_buf[i] = min_arg[i];
                     i++;
                 }
-            } else {
+            } 
+            else {
                 while (min_arg[i] != ' ' && min_arg[i] != '\0' && i < 15) {
                     min_buf[i] = min_arg[i];
                     i++;
@@ -952,7 +952,8 @@ void execute_command(const char *cmd) {
                     max_buf[i] = max_arg[i];
                     i++;
                 }
-            } else {
+            } 
+            else {
                 while (max_arg[i] != ' ' && max_arg[i] != '\0' && i < 15) {
                     max_buf[i] = max_arg[i];
                     i++;
@@ -967,7 +968,8 @@ void execute_command(const char *cmd) {
         if (has_max) {
             if (min_val > max_val) {
                 print_error("Invalid range! Min cannot be greater than Max.\n");
-            } else {
+            } 
+            else {
                 int range = max_val - min_val + 1;
                 
                 // Zabezpieczenie przed dzieleniem przez zero (gdy min_val == max_val)
@@ -980,7 +982,8 @@ void execute_command(const char *cmd) {
                 print_num8(random_num); // Twoja funkcja do drukowania liczb
                 print("\n");
             }
-        } else {
+        } 
+        else {
             print_error("Syntax error!\n");
             print_info("Usage: rand --min [val] --max [val]\n");
         }
