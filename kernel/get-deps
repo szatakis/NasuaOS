@@ -13,7 +13,7 @@ rm -rf temp
 
 git clone --depth 1 \
     --branch main \
-    https://github.com/szatakis/NasuaOS-Bootloader.git \
+    https://github.com/Szatakis/NasuaOS-Bootloader.git \
     temp
 
 cp -r temp/freestanding-c-hdrs .

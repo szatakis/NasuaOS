@@ -1,5 +1,5 @@
-#include <cstddef> // Definiuje size_t
-#include <cstdint> // DODANE: Definiuje uint32_t dla kolorów HEX
+#include <cstddef>
+#include <cstdint>
 #include <stdint.h>
 #include <stddef.h>
 #include <limine.h>
@@ -506,7 +506,7 @@ void execute_command(const char *cmd)
     // 13. Command: source
     else if (cmd_name_len == 6 && strncmp(cmd, "source", 6)) 
     {
-        print_info("Source anvible at: https://github.com/szatakis/NasuaOS \n");
+        print_info("Source anvible at: https://github.com/Szatakis/NasuaOS \n");
     }
     // 14. Command: uart
     else if (cmd_name_len == 4 && strncmp(cmd, "uart", 4)) 

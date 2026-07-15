@@ -18,25 +18,25 @@ NasuaOS is an experimental operating system focused on learning, low-level progr
 
 ## Project Information
 
-[![GitHub last commit](https://img.shields.io/github/last-commit/szatakis/NasuaOS)](https://github.com/szatakis/NasuaOS)
+[![GitHub last commit](https://img.shields.io/github/last-commit/Szatakis/NasuaOS)](https://github.com/Szatakis/NasuaOS)
 [![Language](https://img.shields.io/badge/Language-C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
 [![Architecture](https://img.shields.io/badge/Architecture-x86__64%20%7C%20ARM64%20%7C%20RISC--V%20%7C%20LoongArch64-FF8C00)](https://github.com/limine-bootloader/limine-cxx-template)
-[![License](https://img.shields.io/github/license/szatakis/NasuaOS)](LICENSE.md)
+[![License](https://img.shields.io/github/license/Szatakis/NasuaOS)](LICENSE.md)
 
 ## Share NasuaOS
 
-[![X](https://img.shields.io/badge/Share%20on-X-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20NasuaOS%20-%20a%20hobby%20operating%20system%20written%20from%20scratch:%20https://github.com/szatakis/NasuaOS%20%23OSDev%20%23OperatingSystem)
-[![Facebook](https://img.shields.io/badge/Share-Facebook-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/szatakis/NasuaOS)
-[![LinkedIn](https://img.shields.io/badge/Share-LinkedIn-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/szatakis/NasuaOS)
-[![Reddit](https://img.shields.io/badge/Share-Reddit-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/submit?title=Check%20out%20NasuaOS%20on%20GitHub&url=https://github.com/szatakis/NasuaOS)
-[![Telegram](https://img.shields.io/badge/Share-Telegram-0088CC?logo=telegram&logoColor=white)](https://t.me/share/url?url=https://github.com/szatakis/NasuaOS&text=Check%20out%20NasuaOS%20on%20GitHub)
+[![X](https://img.shields.io/badge/Share%20on-X-000000?logo=x&logoColor=white)](https://x.com/intent/tweet?text=Check%20out%20NasuaOS%20-%20a%20hobby%20operating%20system%20written%20from%20scratch:%20https://github.com/Szatakis/NasuaOS%20%23OSDev%20%23OperatingSystem)
+[![Facebook](https://img.shields.io/badge/Share-Facebook-1877F2?logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/Szatakis/NasuaOS)
+[![LinkedIn](https://img.shields.io/badge/Share-LinkedIn-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/Szatakis/NasuaOS)
+[![Reddit](https://img.shields.io/badge/Share-Reddit-FF4500?logo=reddit&logoColor=white)](https://www.reddit.com/submit?title=Check%20out%20NasuaOS%20on%20GitHub&url=https://github.com/Szatakis/NasuaOS)
+[![Telegram](https://img.shields.io/badge/Share-Telegram-0088CC?logo=telegram&logoColor=white)](https://t.me/share/url?url=https://github.com/Szatakis/NasuaOS&text=Check%20out%20NasuaOS%20on%20GitHub)
 
 ## Documentation & Development
 
 [📚 Documentation](documentation/main_page.md)  
 [🔨 Build Instructions](documentation/build_instructions.md)  
 [🤝 Contributing](CONTRIBUTING.md)  
-[📦 Download ISO/HDD builds](https://github.com/szatakis/NasuaOS/tree/iso)
+[📦 Download ISO/HDD builds](https://github.com/Szatakis/NasuaOS/tree/iso)
 
 ---
 
@@ -94,7 +94,7 @@ The branch contains automatically generated builds:
 
 You can download the latest images from:
 
-[📦 Download ISO/HDD builds](https://github.com/szatakis/NasuaOS/tree/iso)
+[📦 Download ISO/HDD builds](https://github.com/Szatakis/NasuaOS/tree/iso)
 
 # Contributing
 

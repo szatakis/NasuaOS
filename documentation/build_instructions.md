@@ -19,7 +19,7 @@ Install the following tools before building:
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/szatakis/NasuaOS.git
+git clone https://github.com/Szatakis/NasuaOS.git
 cd NasuaOS
 ```
 
@@ -64,7 +64,7 @@ sudo apt install \
 Clone the repository:
 
 ```bash
-git clone https://github.com/szatakis/NasuaOS.git
+git clone https://github.com/Szatakis/NasuaOS.git
 cd NasuaOS
 ```
 

@@ -1,7 +1,7 @@
 # Nuke built-in rules.
 .SUFFIXES:
 
-BOOTLOADER_REPO=https://github.com/szatakis/NasuaOS-Bootloader/raw/main
+BOOTLOADER_REPO=https://github.com/Szatakis/NasuaOS-Bootloader/raw/main
 
 # Target architecture to build for. Default to x86_64.
 ARCH := x86_64
