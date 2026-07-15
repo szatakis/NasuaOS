@@ -21,7 +21,7 @@ NasuaOS is an experimental operating system focused on learning, low-level progr
 [![GitHub last commit](https://img.shields.io/github/last-commit/szatakis/NasuaOS)](https://github.com/szatakis/NasuaOS)
 [![Language](https://img.shields.io/badge/Language-C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)](https://isocpp.org/)
 [![Architecture](https://img.shields.io/badge/Architecture-x86__64%20%7C%20ARM64%20%7C%20RISC--V%20%7C%20LoongArch64-FF8C00)](https://github.com/limine-bootloader/limine-cxx-template)
-[![License](https://img.shields.io/github/license/szatakis/NasuaOS)](LICENSE)
+[![License](https://img.shields.io/github/license/szatakis/NasuaOS)](LICENSE.md)
 
 ## Share NasuaOS
 
