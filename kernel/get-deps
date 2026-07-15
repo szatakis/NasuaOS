@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 
 set -e
 
@@ -7,18 +7,22 @@ test -z "$srcdir" && srcdir=.
 
 cd "$srcdir"
 
-# Usuń stare zależności, jeśli istnieją w głównym katalogu
-rm -rf freestanding-c-hdrs freestanding-cxx-hdrs cc-runtime limine-protocol .deps-obtained
+rm -f .deps-obtained
 
-echo "Kopiowanie lokalnych zależności z folderu confile..."
+rm -rf temp
 
-# Kopiowanie folderów z confile do głównego katalogu projektu
-cp -r ../confile/freestanding-c-hdrs ./
-cp -r ../confile/freestanding-cxx-hdrs ./
-cp -r ../confile/cc-runtime ./
-cp -r ../confile/limine-protocol ./
+git clone --depth 1 \
+    --branch main \
+    https://github.com/szatakis/NasuaOS-Bootloader.git \
+    temp
 
-# Utworzenie wymaganego przez Makefile pliku-flagi
+cp -r temp/freestanding-c-hdrs .
+cp -r temp/freestanding-cxx-hdrs .
+cp -r temp/cc-runtime .
+cp -r temp/limine-protocol .
+
+rm -rf temp
+
 touch .deps-obtained
 
-printf "\nDependencies obtained successfully from local confile directory.\n"
+printf "\nDependencies obtained successfully.\n"

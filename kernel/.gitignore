@@ -5,5 +5,6 @@
 /freestanding-cxx-hdrs
 /cc-runtime
 /limine-protocol
+/temp
 /bin-*
 /obj-*

@@ -1,6 +1,8 @@
 # Nuke built-in rules.
 .SUFFIXES:
 
+BOOTLOADER_REPO=https://github.com/szatakis/NasuaOS-Bootloader/raw/main
+
 # Target architecture to build for. Default to x86_64.
 ARCH := x86_64
 
@@ -325,11 +327,11 @@ else
 endif
 
 edk2-ovmf-bins:
-	cp -r confile/edk2-ovmf-bins ./
+	curl -L $(BOOTLOADER_REPO)/edk2-ovmf-bins.tar.gz | tar -xz
 
 limine-binary/limine:
 	rm -rf limine-binary
-	cp -r confile/limine-binary ./
+	curl -L $(BOOTLOADER_REPO)/limine-binary.tar.gz | tar -xz
 	$(MAKE) -C limine-binary \
 		CC="$(HOST_CC)" \
 		CFLAGS="$(HOST_CFLAGS)" \
