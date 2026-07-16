@@ -31,8 +31,7 @@ jobs:
             clang \
             lld \
             nasm \
-            mtools \
-            qemu-system-x86
+            mtools
 
       - name: Build ISO
         run: |
