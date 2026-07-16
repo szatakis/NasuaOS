@@ -13,6 +13,7 @@
 #include "system/gui/gui.h"
 
 #include "kernel/include/logger/logger.hpp"
+#include "kernel/include/panic/kernel_panic.h"
 
 #include "libs/libc/libc.h"
 #include "libs/asm/asm.h"
@@ -63,6 +64,7 @@ namespace {
 // ---------------- DEBUG VARS ----------------
 
 bool debug_mode = false;
+bool kernel_panicked = false;
 
 // ---------------- KMAIN ----------------
 

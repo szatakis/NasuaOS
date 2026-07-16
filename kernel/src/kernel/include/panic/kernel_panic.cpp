@@ -21,7 +21,6 @@ uint32_t panic_start_x()
     return (fb->width - dialog_width) / 2;
 }
 
-
 void panic_set_position() 
 {
     uint32_t height = PANIC_LINES * CHAR_HEIGHT;
@@ -29,8 +28,6 @@ void panic_set_position()
     cursor_x = panic_start_x();
     cursor_y = (fb->height - height) / 2;
 }
-
-
 
 void panic_print_border() 
 {
@@ -119,8 +116,6 @@ void panic_print_line(const char* text)
     cursor_x = panic_start_x();
 }
 
-
-
 void panic_line(const char* prefix, const char* value)
 {
     char buffer[256];
@@ -132,6 +127,7 @@ void panic_line(const char* prefix, const char* value)
 
     panic_print_line(buffer);
 }
+
 
 void kernel_panic(const char* message)
 {
