@@ -1,3 +1,5 @@
+#include "gui.h"
+
 #include "./icons/icons.h"
 #include "system/drivers/video/driver.h"
 #include "system/drivers/memory/driver.h"
@@ -13,6 +15,7 @@ const uint32_t menu_w = 300;
 const uint32_t menu_h = 400;
 uint32_t menu_x = 0;
 uint32_t menu_y = 0;
+const int panel_width = 45;
 
 extern bool start_hover;
 extern bool is_menu_start_open;
@@ -22,8 +25,6 @@ extern void draw_start_menu_system_icons(int x, int y);
 
 void draw_start_menu_f(int x, int y, int w, int h) 
 {
-    int panel_width = 45;
-
     draw_rect(x, y, x + w, y + h, COLOR_NASUA_START_MENU);
     draw_rect(x, y, x + panel_width, y + h, COLOR_NASUA_START_MENU_P);
 

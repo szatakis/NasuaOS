@@ -4,6 +4,7 @@ bool start_hover = false;
 
 int icons_start_x = 0;
 int icons_start_y = 0;
+int icons_offset = 45;
 
 typedef struct 
 {
@@ -54,8 +55,14 @@ void draw_start_menu_system_icons(int x, int y, int p, int w, int h)
     draw_icon<32, 32>(terminal_icon, icons_start_x + 50, icons_start_y);
     print_at8("Terminal", icons_start_x + 85, icons_start_y + 12, COLOR_WHITE);
 
-    draw_icon<32, 32>(calculator_icon, icons_start_x + 50, icons_start_y + 45);
-    print_at8("Calculator", icons_start_x + 85, icons_start_y + 57, COLOR_WHITE);
+    draw_icon<32, 32>(settings_icon, icons_start_x + 50, icons_start_y + icons_offset);
+    print_at8("Settings", icons_start_x + 85, icons_start_y + 12 + icons_offset, COLOR_WHITE); // not work yet
+
+    draw_icon<32, 32>(suaedit_icon, icons_start_x + 50, icons_start_y + 2 * icons_offset);
+    print_at8("SuaEdit", icons_start_x + 85, icons_start_y + 12 + 2 * icons_offset, COLOR_WHITE); // not work yet
+
+    draw_icon<32, 32>(calculator_icon, icons_start_x + 50, icons_start_y + 3 * icons_offset);
+    print_at8("Calculator", icons_start_x + 85, icons_start_y + 12 + 3 * icons_offset, COLOR_WHITE);
 }
 
 bool is_mouse_over_start(int mouse_x, int mouse_y) 

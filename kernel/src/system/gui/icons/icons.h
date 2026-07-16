@@ -16,10 +16,13 @@ extern const uint32_t reboot_icon[1024];
 // Apps
 extern const uint32_t terminal_icon[1024];
 extern const uint32_t calculator_icon[1024];
+extern const uint32_t settings_icon[1024];
+extern const uint32_t suaedit_icon[1024];
 
 
 extern int icons_start_x;
 extern int icons_start_y;
+extern int icons_offset;
 
 extern bool is_menu_start_open;
 extern bool start_hover;

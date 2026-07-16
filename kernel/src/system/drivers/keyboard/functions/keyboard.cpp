@@ -1,7 +1,6 @@
 #include "../driver.h"
 #include "../../uart/driver.h"
 
-// Dołączamy wszystkie potrzebne pliki nagłówkowe (tak jak w main.cpp)
 #include "system/drivers/drivers.h"
 #include "system/interrupts/interrupts.h"
 #include "applications/shell/commands.h"
@@ -11,6 +10,8 @@
 #include "libs/asm/asm.h"
 #include "system/sysfunc/command_history/history.h"
 #include "system/gui/gui.h"
+#include "applications/applications.h"
+#include "system/vars/info_vars/info_vars.h"
 
 char command_buffer[64];
 size_t cmd_idx = 0;
@@ -18,6 +19,13 @@ size_t cmd_idx = 0;
 bool shift_pressed = false;
 bool extended_scancode = false;
 bool shell_input_enabled = true;
+
+window_struct* apps[] = {
+    &terminal,
+    &settings,
+    &suaedit,
+    &calculator
+};
 
 char scancode_to_ascii_normal(uint8_t scancode) 
 {
@@ -216,7 +224,7 @@ void handle_keyboard()
                 {
                     mouse_y -= speed;
                 }
-                else if (scancode == 0x50 && mouse_y + 20 < (int)fb->height)
+                else if (scancode == 0x50 && mouse_y + 5 < (int)fb->height)
                 {
                     mouse_y += speed;
                 }
@@ -224,7 +232,7 @@ void handle_keyboard()
                 {
                     mouse_x -= speed;
                 }
-                else if (scancode == 0x4D && mouse_x + 20 < (int)fb->width)
+                else if (scancode == 0x4D && mouse_x + 4 < (int)fb->width)
                 {
                     mouse_x += speed;
                 }
@@ -295,15 +303,24 @@ void handle_keyboard()
         }
         else if(!is_mouse_over_any_window(mouse_x, mouse_y)) 
         {
-            if (is_mouse_over_icon(mouse_x, mouse_y, icons_start_x, icons_start_y, 255, 32) && is_menu_start_open)
+            for (int i = 0; i < 4; i++) // 4 is apps numeber in start menu
             {
-                execute_command("bootapp --app \"terminal\"");
-                return;
+                if (is_menu_start_open && is_mouse_over_icon(mouse_x, mouse_y, icons_start_x + 50, icons_start_y + i * icons_offset, 250, 32))
+                {
+                    apps[i]->visible = true;
+                    apps[i]->id = current_id++;
+                    register_window(apps[i]);
+                    return;
+                }
             }
-            else if (is_mouse_over_icon(mouse_x, mouse_y, icons_start_x, icons_start_y + 45, 255, 32) && is_menu_start_open)
+
+            if(is_mouse_over_icon(mouse_x, mouse_y, icons_start_x, menu_y + menu_h - 80, 32, 32) && is_menu_start_open)
             {
-                execute_command("bootapp --app \"calculator\"");
-                return;
+                acpi_shutdown();
+            }
+            else if(is_mouse_over_icon(mouse_x, mouse_y, icons_start_x, menu_y + menu_h - 40, 32, 32) && is_menu_start_open)
+            {
+                acpi_reboot();
             }
             else if(shell_input_enabled) 
             {

@@ -4,5 +4,6 @@
 #include "terminal/terminal.h"
 #include "suaedit/suaedit.h"
 #include "calculator/calculator.h"
+#include "settings/settings.h"
 
 #endif // APPS_H
