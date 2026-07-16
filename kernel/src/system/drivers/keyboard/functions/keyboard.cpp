@@ -133,12 +133,6 @@ void handle_keyboard()
 
     uint8_t data = inb(0x60);
 
-    // Sprawdzamy czy to myszka (bit 5). Jeśli tak, to tu pomijamy.
-    if (status & 0x20) 
-    {
-        return; 
-    }
-
     uint8_t scancode = data;
 
     if (debug_mode) 
