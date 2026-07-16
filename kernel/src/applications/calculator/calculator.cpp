@@ -131,10 +131,8 @@ void draw_calculator(window_struct* win) {
     }
 
     // display
-    fill_block(win->pos_x+10, win->pos_y+title+10, COLOR_BLACK, 220, 40);
-
-
-    print_at8(calc->display, win->pos_x+20, win->pos_y+title+25, COLOR_GREEN);
+    fill_block(win->pos_x+15, win->pos_y+title+10, COLOR_BLACK, 220, 40);
+    print_at8(calc->display, win->pos_x+25, win->pos_y+title+25, COLOR_GREEN);
 
 
 
@@ -250,7 +248,7 @@ window_struct calculator = {
 
     .pos_x=10,
     .pos_y=10,
-    .width=260,
+    .width=250,
     .height=320,
 
     .visible=false,
