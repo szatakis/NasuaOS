@@ -116,6 +116,8 @@ extern "C" void kmain()
         handle_mouse();
 
         render_frame();
+
+        asm volatile("hlt");
     }
 }
 

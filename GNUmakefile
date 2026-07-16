@@ -84,6 +84,7 @@ ifeq ($(IS_WSL),1)
 		-drive id=$(FS_NAME),file=C:\\wsl_target\\$(FS_NAME).img,format=raw,if=none \
 		-device ide-hd,drive=$(FS_NAME),bus=ide.0,unit=0 \
 		-display sdl,gl=on \
+		-device virtio-vga \
 		-serial stdio \
 		-audiodev sdl,id=snd0 \
 		-machine pcspk-audiodev=snd0 \

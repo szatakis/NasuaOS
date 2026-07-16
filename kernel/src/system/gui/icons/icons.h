@@ -5,9 +5,18 @@
 #include "system/drivers/video/driver.h"
 #include "../vars/colors.h"
 
+extern const uint32_t start_icon[1024];
+extern const uint32_t start_icon_hover[1024];
 extern const uint32_t notification_icon[1024];
 extern const uint32_t notification_icon_h[1024];
 extern const uint32_t speaker_icon[1024];
+extern const uint32_t shutdown_icon[1024];
+extern const uint32_t reboot_icon[1024];
+
+// Apps
+extern const uint32_t terminal_icon[1024];
+extern const uint32_t calculator_icon[1024];
+
 
 extern int icons_start_x;
 extern int icons_start_y;
