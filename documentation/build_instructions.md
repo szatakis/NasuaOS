@@ -15,6 +15,7 @@ Install the following tools before building:
 - Clang
 - LLD
 - NASM
+- Mtools
 - QEMU *(optional, recommended for testing (best 10.2.50))*
 
 ## Clone the Repository
@@ -51,6 +52,7 @@ sudo apt update
 
 sudo apt install \
     git \
+    curl \
     gcc \
     g++ \
     cmake \
