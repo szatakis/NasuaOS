@@ -4,4 +4,4 @@
 *.hdd
 
 /limine-binary
-/edk2-ovmf-bins
+/edk2-bins
