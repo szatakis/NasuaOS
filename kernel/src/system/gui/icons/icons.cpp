@@ -2,6 +2,9 @@
 
 bool start_hover = false;
 
+int term_x = 0;
+int term_y = 0;
+
 // start_icon
 const uint32_t start_icon[1024] = {
     0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
@@ -958,10 +961,15 @@ void draw_start_button(size_t x, size_t y)
     print_at10("START", x + 32 + 6, y + 12, 0xFFFFFFFF);
 }
 
-void draw_start_menu_system_icons(int x, int y) 
+void draw_start_menu_system_icons(int x, int y, int p, int w, int h) 
 {
-    draw_icon<32, 32>(shutdown_icon, x, y);
-    draw_icon<32, 32>(reboot_icon, x, y + 40);
+    draw_icon<32, 32>(shutdown_icon, (x + (p - 32) / 2), (y + h - (32 * 2) - 16));
+    draw_icon<32, 32>(reboot_icon, (x + (p - 32) / 2), (y + h - (32 * 2) + 24));
+
+    term_x = x + 60;
+    term_y = y;
+
+    draw_icon<32, 32>(shutdown_icon, term_x, term_y);
 }
 
 bool is_mouse_over_start(int mouse_x, int mouse_y) 
@@ -971,4 +979,12 @@ bool is_mouse_over_start(int mouse_x, int mouse_y)
         return true;
     }
     return false;
+}
+
+bool is_mouse_over_icon(int mx, int my, int x, int y, int w, int h)
+{
+    return mx >= x &&
+           mx < x + w &&
+           my >= y &&
+           my < y + h;
 }

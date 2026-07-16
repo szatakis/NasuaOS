@@ -299,6 +299,11 @@ void handle_keyboard()
         {
             handle_window_mouse_click(mouse_x, mouse_y);
         }
+        else if (is_mouse_over_icon(mouse_x, mouse_y, term_x, term_y, 32, 32) && is_menu_start_open)
+        {
+            execute_command("bootapp --app \"terminal\"");
+            return;
+        }
         else if(shell_input_enabled) 
         {
             command_buffer[cmd_idx] = '\0';

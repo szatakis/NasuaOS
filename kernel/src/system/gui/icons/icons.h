@@ -9,6 +9,8 @@ extern const uint32_t notification_icon[1024];
 extern const uint32_t notification_icon_h[1024];
 extern const uint32_t speaker_icon[1024];
 
+extern int term_x;
+extern int term_y;
 
 extern bool is_menu_start_open;
 extern bool start_hover;
@@ -16,7 +18,9 @@ extern bool start_hover;
 void draw_start_button(size_t x, size_t y);
 bool is_mouse_over_start(int mouse_x, int mouse_y);
 
-void draw_start_menu_system_icons(int x, int y);
+void draw_start_menu_system_icons(int x, int y, int p, int w, int h);
+
+bool is_mouse_over_icon(int mx, int my, int x, int y, int w, int h);
 
 template <size_t width, size_t height>
 void draw_icon(const uint32_t* icon, size_t start_x, size_t start_y)

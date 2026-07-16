@@ -27,7 +27,7 @@ void draw_start_menu_f(int x, int y, int w, int h)
     draw_rect(x, y, x + w, y + h, COLOR_NASUA_START_MENU);
     draw_rect(x, y, x + panel_width, y + h, COLOR_NASUA_START_MENU_P);
 
-    draw_start_menu_system_icons((x + (panel_width - 32) / 2), (y + h - (32 * 2) - 16));
+    draw_start_menu_system_icons(x, y, panel_width, w, h);
 }
 
 void draw_start_menu() 
