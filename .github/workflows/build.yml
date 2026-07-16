@@ -23,6 +23,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y \
+            curl\
             gcc \
             g++ \
             cmake \
