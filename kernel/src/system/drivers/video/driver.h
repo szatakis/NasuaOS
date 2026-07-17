@@ -17,7 +17,7 @@ extern const uint32_t FONT_SPACING_H;
 void init_backbuffer(size_t width, size_t height, size_t pitch);
 uint32_t* get_backbuffer();
 size_t get_backbuffer_pitch();
-void render_frame();  // Copy entire backbuffer to framebuffer
+void render_frame();
 
 void init_text_buffer();
 void draw_text_buffer();
@@ -27,6 +27,7 @@ void clear_line();
 
 void print(const char* str);
 void print_int(int value);
+void print_hex(uint32_t value);
 void print_char8(char c);
 
 void print_at8(const char* str, size_t x, size_t y, uint32_t color);
@@ -38,10 +39,9 @@ void delete_last_char();
 
 void handle_mouse();
 
-// ---------------- DRAW API ----------------
 void update_bottom_bar();
 
-// ---------------- FONT DRAW ----------------
+// Font Draw
 void draw_char8(unsigned char c, size_t x, size_t y, uint32_t color);
 void draw_char10(unsigned char c, size_t x, size_t y, uint32_t color);
 void draw_char12(unsigned char c, size_t x, size_t y, uint32_t color);

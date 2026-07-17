@@ -19,3 +19,4 @@ uint8_t hex_char_to_val(char c);
 uint32_t parse_hex_color(const char *str);
 int parse_number(const char* str);
 void to_hex8(uint8_t value, char* out);
+uint32_t parse_hex(const char* str);

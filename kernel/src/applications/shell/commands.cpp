@@ -159,15 +159,12 @@ void execute_command(const char *cmd)
         else if (page == 5) 
         {
             print_info("Available commands (Page 5/10):\n");
-            print("More commands coming soon...\n");
-            /*
             print(" -inb                                - Read a byte from an I/O port\n");
             print("    --port \"0xHEX\"                   - (Required) Specify I/O port address\n");
             print(" -outb                               - Write a byte to an I/O port\n");
             print("    --port \"0xHEX\"                   - (Required) Specify I/O port address\n");
             print("    --val \"0xHEX\"                    - (Required) Value byte to write\n");
-            print(" -snake                              - Start a text-mode Snake game in terminal\n");
-            print(" -guessnum                           - Play a number guessing game against the OS\n");
+            /*
             print(" -asciiart                           - Convert text into large ASCII banner\n");
             print("    --text \"string\"                  - (Required) Text to transform\n");
             */
@@ -1112,6 +1109,55 @@ void execute_command(const char *cmd)
         {
             print_error("Syntax error!\n");
             print_info("Usage: rand --min [val] --max [val]\n");
+        }
+    }
+    // 24. Command: inb
+    else if (cmd_name_len == 3 && strncmp(cmd, "inb", 3))
+    {
+        const char* port_flag = strstr(args, "--port ");
+
+        if (!port_flag)
+        {
+            print_error("Syntax error!\n");
+            print_info("Usage: inb --port \"0xHEX\"\n");
+        } 
+        else {
+            const char* port_str = port_flag + 7;
+
+            uint16_t port = (uint16_t)parse_hex(port_str);
+
+            uint8_t value = inb(port);
+
+            print("Port ");
+            print_hex(port);
+            print(" = ");
+            print_hex(value);
+            print("\n");
+        }
+    }
+    // 25. Command: outb
+    else if (cmd_name_len == 4 && strncmp(cmd, "outb", 4))
+    {
+        const char* port_flag = strstr(args, "--port ");
+        const char* val_flag  = strstr(args, "--val ");
+
+        if (!port_flag || !val_flag)
+        {
+            print_error("Syntax error!\n");
+            print_info("Usage: outb --port \"0xHEX\" --val \"0xHEX\"\n");
+        }
+        else
+        {
+            uint16_t port = (uint16_t)parse_hex(port_flag + 7);
+            uint8_t value = (uint8_t)parse_hex(val_flag + 6);
+
+            outb(port, value);
+
+            print("Written ");
+            print_hex(value);
+            print(" -> ");
+            print_hex(port);
+            print("\n");
         }
     }
 

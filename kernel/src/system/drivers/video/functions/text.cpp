@@ -228,7 +228,32 @@ void print_int(int value)
     }
 }
 
-// Funkcje print_at ignorują bufor terminala i rysują "sztywny" tekst na ekranie co klatkę
+void print_hex(uint32_t value)
+{
+    print("0x");
+
+    bool started = false;
+
+    for (int i = 7; i >= 0; i--)
+    {
+        uint8_t digit = (value >> (i * 4)) & 0xF;
+
+        if (digit != 0 || started || i == 0)
+        {
+            started = true;
+
+            char c;
+
+            if (digit < 10)
+                c = '0' + digit;
+            else
+                c = 'A' + (digit - 10);
+
+            print_char8(c);
+        }
+    }
+}
+
 void print_at8(const char* str, size_t x, size_t y, uint32_t color) 
 {
     size_t start_x = x;

@@ -272,3 +272,43 @@ int atoi(const char* str)
 
     return sign * res;
 }
+
+uint32_t parse_hex(const char* str) {
+    if (!str)
+        return 0;
+
+    // 1. Najpierw pomiń spacje i cudzysłowy początkowe
+    while (*str == ' ' || *str == '"')
+        str++;
+
+    // 2. Dopiero teraz sprawdź i pomiń prefiks 0x / 0X
+    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X'))
+        str += 2;
+
+    uint32_t value = 0;
+
+    // 3. Przetwarzaj znaki
+    while (*str)
+    {
+        char c = *str++;
+
+        // Jeśli trafisz na kończący cudzysłów lub spację, przerwij
+        if (c == '"' || c == ' ')
+            break;
+
+        uint8_t digit = 0;
+        if (c >= '0' && c <= '9')
+            digit = c - '0';
+        else if (c >= 'A' && c <= 'F')
+            digit = c - 'A' + 10;
+        else if (c >= 'a' && c <= 'f')
+            digit = c - 'a' + 10;
+        else
+            break; // Nieprawidłowy znak hex
+
+        // Przesuń dotychczasową wartość i dodaj nową cyfrę
+        value = (value << 4) | digit;
+    }
+
+    return value;
+}
