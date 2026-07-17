@@ -9,6 +9,7 @@
 #include "screen.h"
 
 #include "applications/applications.h"
+#include "functions/functions.h"
 
 #include "system/drivers/drivers.h"
 #include "system/vars/info_vars/info_vars.h"
@@ -164,10 +165,8 @@ void execute_command(const char *cmd)
             print(" -outb                               - Write a byte to an I/O port\n");
             print("    --port \"0xHEX\"                   - (Required) Specify I/O port address\n");
             print("    --val \"0xHEX\"                    - (Required) Value byte to write\n");
-            /*
             print(" -asciiart                           - Convert text into large ASCII banner\n");
             print("    --text \"string\"                  - (Required) Text to transform\n");
-            */
         }
 
         else if (page == 6) 
@@ -1160,6 +1159,41 @@ void execute_command(const char *cmd)
             print("\n");
         }
     }
+    // 26. Command: asciiart
+    else if(cmd_name_len == 8 && strncmp(cmd, "asciiart", 8))
+    {
+        const char* text_flag = strstr(args, "--text ");
+
+        if(!text_flag)
+        {
+            print("Usage: asciiart --text \"text\"\n");
+        }
+        else
+        {
+            text_flag += 7;
+
+
+            if(text_flag[0] == '"')
+                text_flag++;
+
+
+            char buffer[128];
+
+            int i = 0;
+
+            while(text_flag[i] && text_flag[i] != '"' && i < 127)
+            {
+                buffer[i] = text_flag[i];
+                i++;
+            }
+
+            buffer[i] = 0;
+
+
+            print_ascii_art(buffer);
+        }
+    }
+
 
     // Command: Unknown
     else 
