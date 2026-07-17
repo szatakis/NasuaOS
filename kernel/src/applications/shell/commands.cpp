@@ -151,12 +151,26 @@ void execute_command(const char *cmd)
             print(" -rand                               - Random number generator\n");
             print("    --min \"value\"                   - (Optional) Lower bound of the range (Default: 0)\n");
             print("    --max \"value\"                   - (Required) Upper bound of the range\n");
+
+
+
         }
 
         else if (page == 5) 
         {
             print_info("Available commands (Page 5/10):\n");
             print("More commands coming soon...\n");
+            /*
+            print(" -inb                                - Read a byte from an I/O port\n");
+            print("    --port \"0xHEX\"                   - (Required) Specify I/O port address\n");
+            print(" -outb                               - Write a byte to an I/O port\n");
+            print("    --port \"0xHEX\"                   - (Required) Specify I/O port address\n");
+            print("    --val \"0xHEX\"                    - (Required) Value byte to write\n");
+            print(" -snake                              - Start a text-mode Snake game in terminal\n");
+            print(" -guessnum                           - Play a number guessing game against the OS\n");
+            print(" -asciiart                           - Convert text into large ASCII banner\n");
+            print("    --text \"string\"                  - (Required) Text to transform\n");
+            */
         }
 
         else if (page == 6) 
@@ -715,6 +729,8 @@ void execute_command(const char *cmd)
             print(" - terminal\n");
             print(" - suaedit\n");
             print(" - calculator\n");
+            print(" - taskmgr\n");
+            print(" - settings\n");
 
             print("\nUsage:\n");
             print(" bootapp --app \"application_name\"\n");
@@ -766,6 +782,20 @@ void execute_command(const char *cmd)
                     calculator.id = current_id;
                     current_id++;
                     register_window(&calculator);
+                }
+                else if (strncmp(app_name_buf, "taskmgr", 7)) 
+                {
+                    task_manager.visible = true;
+                    task_manager.id = current_id;
+                    current_id++;
+                    register_window(&task_manager);
+                }
+                else if (strncmp(app_name_buf, "settings", 8)) 
+                {
+                    settings.visible = true;
+                    settings.id = current_id;
+                    current_id++;
+                    register_window(&settings);
                 }
                 else 
                 {

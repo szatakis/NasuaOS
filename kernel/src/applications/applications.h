@@ -5,5 +5,6 @@
 #include "suaedit/suaedit.h"
 #include "calculator/calculator.h"
 #include "settings/settings.h"
+#include "task_manager/task_manager.h"
 
 #endif // APPS_H
