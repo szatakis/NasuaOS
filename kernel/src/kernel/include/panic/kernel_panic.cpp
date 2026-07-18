@@ -129,16 +129,16 @@ void panic_line(const char* prefix, const char* value)
 }
 
 
-void kernel_panic(const char* message)
+void kernel_panic(const char* message, const char* error_code, const char* rip, const char* rsp, const char* fault_address, const char* pid)
 {
     struct PanicInfo
     {
-        const char* error_code = "Unknown";
-        const char* rip = "Unknown";
-        const char* rsp = "Unknown";
-        const char* fault_address = "Unknown";
-        const char* cpu = "Unknown";
-        const char* pid = "Unknown";
+        const char* error_code = "";
+        const char* rip = "";
+        const char* rsp = "";
+        const char* fault_address = "";
+        const char* cpu = "";
+        const char* pid = "";
     };
     
     char cpu_name[49];
@@ -146,10 +146,12 @@ void kernel_panic(const char* message)
 
     PanicInfo info;
 
+    info.error_code = error_code;
+    info.rip = rip;
+    info.rsp = rsp;
+    info.fault_address = fault_address;
     info.cpu = cpu_name;
-
-
-    disable_interrupts();
+    info.pid = pid;
 
     clear_screen();
 
@@ -179,6 +181,7 @@ void kernel_panic(const char* message)
 
     sleep(2000);
 
+    disable_interrupts();
 
     while(true)
     {
