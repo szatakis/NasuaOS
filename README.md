@@ -107,9 +107,11 @@ If you would like to contribute, please open an issue or submit a pull request.
 
 **Szatakis**
 
-# Dependencies
+# Acknowledgments & Credits
 
-[💾 Bootloader](https://github.com/Szatakis/NasuaOS-Bootloader/)
+This project includes components from the [💾 Bootloader](https://github.com/Szatakis/NasuaOS-Bootloader/) repository.
+
+These components are part of my internal ecosystem. Please refer to the [💾 Bootloader](https://github.com/Szatakis/NasuaOS-Bootloader/) repository for full license information and original source documentation.
 
 # License
 
