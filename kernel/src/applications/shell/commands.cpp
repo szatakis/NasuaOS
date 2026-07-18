@@ -136,7 +136,7 @@ void execute_command(const char *cmd)
             print(" -bootapp                            - Application manager command\n");
             print("    --app \"application_name\"         - (Required) Load and execute selected application\n");
             print("    --list                           - List all available applications\n");
-            print(" -cd                                 - Change current working directory\n");
+            print(" -cd \"directory\"                     - Change current working directory\n");
         }
 
         else if (page == 4) 
@@ -152,9 +152,9 @@ void execute_command(const char *cmd)
             print(" -rand                               - Random number generator\n");
             print("    --min \"value\"                   - (Optional) Lower bound of the range (Default: 0)\n");
             print("    --max \"value\"                   - (Required) Upper bound of the range\n");
-
-
-
+            print(" -rm                               - Remove file or directory\n");
+            print("    --name \"name\"                   - (Required) Name of the item to remove\n");
+            print("    --type \"file|dir\"               - (Required) Specify if it is a file or directory\n");
         }
 
         else if (page == 5) 
@@ -172,7 +172,7 @@ void execute_command(const char *cmd)
 
 
 
-            
+
         }
 
         else if (page == 6) 
@@ -1294,6 +1294,59 @@ void execute_command(const char *cmd)
         {
             print_error("Syntax error!\n");
             print_info("Usage: mkdir --dir_name \"folder_name\"\n");
+        }
+    }
+    // 29. Command: rm
+    else if(cmd_name_len == 2 && strncmp(cmd, "rm", 2))
+    {
+        const char* name_flag = strstr(args, "--name ");
+        const char* type_flag = strstr(args, "--type ");
+
+        if (name_flag && type_flag)
+        {
+            char name_buf[64] = {0};
+            char type_buf[16] = {0};
+            int i = 0;
+
+            // Parsowanie --name
+            const char* name_arg = name_flag + 7;
+            if (*name_arg == '"') {
+                name_arg++;
+                while (*name_arg != '"' && *name_arg != '\0' && i < 63) name_buf[i++] = *name_arg++;
+            } else {
+                while (*name_arg != ' ' && *name_arg != '\0' && i < 63) name_buf[i++] = *name_arg++;
+            }
+            name_buf[i] = '\0';
+
+            // Parsowanie --type
+            const char* type_arg = type_flag + 7;
+            i = 0;
+            if (*type_arg == '"') {
+                type_arg++;
+                while (*type_arg != '"' && *type_arg != '\0' && i < 15) type_buf[i++] = *type_arg++;
+            } else {
+                while (*type_arg != ' ' && *type_arg != '\0' && i < 15) type_buf[i++] = *type_arg++;
+            }
+            type_buf[i] = '\0';
+
+            // Wybór typu
+            int type = -1;
+            if (strcmp(type_buf, "file") == 0) {
+                type = CLAWFS_FILE;
+            } else if (strcmp(type_buf, "dir") == 0) {
+                type = CLAWFS_DIRECTORY;
+            }
+
+            if (type != -1 && strlen(name_buf) > 0) {
+                clawfs_rm(current_path, name_buf, type);
+            } else {
+                print_error("Invalid type! Use: --type \"file\" or --type \"dir\"\n");
+            }
+        }
+        else
+        {
+            print_error("Syntax error!\n");
+            print_info("Usage: rm --name \"name\" --type \"file|dir\"\n");
         }
     }
 

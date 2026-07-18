@@ -178,3 +178,67 @@ bool clawfs_exists()
 
     return true;
 }
+
+void clawfs_rm(const char* parent_path, const char* name, uint32_t type)
+{
+    uint32_t parent_sector = get_sector_by_path(parent_path);
+
+    if(parent_sector == 0)
+    {
+        print_error("Parent directory not found!\n");
+        return;
+    }
+
+
+    uint8_t buffer[512];
+    disk_read_sector(parent_sector, buffer);
+
+    CLAWFSEntry* entries = (CLAWFSEntry*)buffer;
+
+
+    for(int i = 0; i < 12; i++)
+    {
+        if(entries[i].name[0] != '\0')
+        {
+            if(strcmp(entries[i].name, name) == 0 &&
+               entries[i].type == type)
+            {
+                // sprawdzenie czy folder jest pusty
+                if(type == CLAWFS_DIRECTORY)
+                {
+                    uint8_t dir_buffer[512];
+                    disk_read_sector(entries[i].data_sector, dir_buffer);
+
+                    CLAWFSEntry* sub_entries = (CLAWFSEntry*)dir_buffer;
+
+                    for(int j = 0; j < 12; j++)
+                    {
+                        if(sub_entries[j].name[0] != '\0')
+                        {
+                            print_error("Directory is not empty!\n");
+                            return;
+                        }
+                    }
+                }
+
+
+                // usunięcie wpisu
+                memclear(&entries[i], sizeof(CLAWFSEntry));
+
+                disk_write_sector(parent_sector, buffer);
+
+                print_info("Removed successfully.\n");
+                return;
+            }
+        }
+    }
+
+    if(type == CLAWFS_FILE)
+    {
+        print_error("File not found!\n");
+    }
+    else if(type == CLAWFS_DIRECTORY)
+    {
+        print_error("Directory not found!\n");
+    }
+}

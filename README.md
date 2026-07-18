@@ -107,6 +107,10 @@ If you would like to contribute, please open an issue or submit a pull request.
 
 **Szatakis**
 
+# Dependencies
+
+[💾 Bootloader](https://github.com/Szatakis/NasuaOS-Bootloader/)
+
 # License
 
 NasuaOS is released under the MIT License.
