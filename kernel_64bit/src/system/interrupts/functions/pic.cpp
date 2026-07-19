@@ -1,4 +1,5 @@
 #include "pic.h"
+#include "system/drivers/apic/driver.h"
 
 #include "libs/asm/asm.h"
 
@@ -28,6 +29,17 @@ void pic_send_eoi(uint8_t irq)
     }
 
     outb(PIC1_COMMAND, 0x20);
+}
+
+void irq_send_eoi(uint8_t irq)
+{
+    if(apic_is_active())
+    {
+        lapic_send_eoi();
+        return;
+    }
+
+    pic_send_eoi(irq);
 }
 
 void pic_remap()

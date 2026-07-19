@@ -5,5 +5,6 @@
 #include "functions/isr.h"
 #include "functions/page_fault.h"
 #include "functions/pic.h"
+#include "functions/madt.h"
 
 #endif

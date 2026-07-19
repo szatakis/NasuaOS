@@ -99,8 +99,7 @@ extern "C" void kmain()
     pmm_init();
     vmm_init();
     heap_init();
-    apic_disable();
-    pic_remap();
+    interrupts_controller_init();
     idt_init();
     pit_init();
 

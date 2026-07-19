@@ -4,6 +4,7 @@ bits 64
 global isr_default
 global isr_divide_error
 global isr_page_fault
+global isr_spurious
 global irq0
 extern isr_handler
 
@@ -60,7 +61,7 @@ isr_default:
     cli
 
     push 0
-    push 255
+    push 0xDE
 
     jmp isr_common
 
@@ -94,6 +95,16 @@ isr_page_fault:
 irq0:
     push 0
     push 32
+
+    jmp isr_common
+
+; ==========================
+; LAPIC SPURIOUS INTERRUPT (wektor 0xFF)
+; ==========================
+
+isr_spurious:
+    push 0
+    push 0xFF
 
     jmp isr_common
 

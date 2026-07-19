@@ -46,7 +46,7 @@ void pit_handler()
 
     redraw = true;
 
-    pic_send_eoi(0);
+    irq_send_eoi(0);
 }
 
 uint64_t pit_get_ticks()

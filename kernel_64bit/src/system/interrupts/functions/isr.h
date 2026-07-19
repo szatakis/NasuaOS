@@ -38,4 +38,5 @@ extern "C" void isr_handler(Registers* regs);
 extern "C" void isr_default();
 extern "C" void isr_divide_error();
 extern "C" void isr_page_fault();
+extern "C" void isr_spurious();
 extern "C" void irq0();
