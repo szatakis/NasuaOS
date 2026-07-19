@@ -227,9 +227,6 @@ void update_bottom_bar()
     size_t start_y = fb->height - bar_h;
     size_t start_x = fb->width;
 
-    // Rysujemy podkład paska zadań
-    fill_block(0, start_y, COLOR_NASUA_TASKBAR, fb->width, bar_h);
-
     // Nakładamy ikony po prawej stronie
     draw_icon<32, 32>(speaker_icon, start_x - 175, start_y + ((bar_h - 32) / 2));
     if(notification_count <= 0) 

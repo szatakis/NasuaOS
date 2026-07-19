@@ -115,6 +115,8 @@ extern "C" void kmain()
 
         clear_screen();
 
+        draw_background();
+
         update_gui();
         update_windows_gui();
 
