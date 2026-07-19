@@ -3,18 +3,18 @@ ARCH ?= x86_32
 OBJ_DIR := obj-$(ARCH)
 BIN_DIR := bin-$(ARCH)
 
-# Zmienne plików
+# Files varibles
 OBJ := $(OBJ_DIR)/boot.o
 BIN := $(BIN_DIR)/kernel_32bit
 
 all: $(BIN)
 
-# Tworzenie pliku wynikowego
+# Creating output file
 $(BIN): $(OBJ)
 	@mkdir -p $(BIN_DIR)
 	ld -m elf_i386 -Ttext 0x100000 -o $@ $^
 
-# Tworzenie pliku obiektowego
+# Creating bin file
 $(OBJ): src/boot.asm
 	@mkdir -p $(OBJ_DIR)
 	nasm -f elf32 src/boot.asm -o $@
