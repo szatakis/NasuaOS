@@ -5,7 +5,11 @@ on:
     branches:
       - main
     paths:
-      - "kernel/**"
+      - "kernel_32bit/**"
+      - "kernel_64bit/**"
+      - "config.mk"
+      - "GNUmakefile"
+      - "limine.conf"
   workflow_dispatch:
 
 jobs:
