@@ -23,7 +23,6 @@ void draw_start_button(size_t x, size_t taskbar_y)
 {
     constexpr int button_w = 100;
     constexpr int button_h = 31;
-    constexpr int bar_h = 36;
     constexpr int margin = 2;
 
     int button_y = taskbar_y + (bar_h_scaled - button_h) / 2 - 1;
