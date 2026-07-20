@@ -96,12 +96,18 @@ void clawfs_format() {
     setup_entry(&entries[1], "dev", CLAWFS_DIRECTORY, 103);
     setup_entry(&entries[2], "etc", CLAWFS_DIRECTORY, 104);
     setup_entry(&entries[3], "home", CLAWFS_DIRECTORY, 105);
+    setup_entry(&entries[4], "tmp", CLAWFS_DIRECTORY, 106);
+    setup_entry(&entries[5], "var", CLAWFS_DIRECTORY, 107);
     disk_write_sector(CLAWFS_ROOT_SECTOR, root_buffer);
 
     // 3. Podstruktura
     clawfs_create_file_in("/bin", "kernel_bin");
     clawfs_mkdir("/home", "user");
     clawfs_mkdir("/home", "root");
+    clawfs_mkdir("/home/user", "Desktop");
+    clawfs_mkdir("/home/user", "Documets");
+    clawfs_mkdir("/home/user", "Images");
+    clawfs_mkdir("/home/user", "Videos");
     
     print_info("Format complete.\n");
 }

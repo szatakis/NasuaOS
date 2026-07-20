@@ -1,4 +1,5 @@
 #include "icons.h"
+#include "system/gui/gui.h"
 
 bool start_hover = false;
 
@@ -25,7 +26,7 @@ void draw_start_button(size_t x, size_t taskbar_y)
     constexpr int bar_h = 36;
     constexpr int margin = 2;
 
-    int button_y = taskbar_y + (bar_h - button_h) / 2 - 1;
+    int button_y = taskbar_y + (bar_h_scaled - button_h) / 2 - 1;
 
     start_button.x1 = static_cast<int>(x);
     start_button.y1 = button_y;

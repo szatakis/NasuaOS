@@ -139,6 +139,13 @@ void handle_keyboard()
         return;
     }
 
+    // Bit 5 = dane z drugiego portu (mysz)
+    if (status & 0x20)
+    {
+        (void)inb(0x60); // wyrzuć bajt myszy
+        return;
+    }
+
     uint8_t data = inb(0x60);
 
     uint8_t scancode = data;

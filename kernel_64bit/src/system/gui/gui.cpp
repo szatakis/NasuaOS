@@ -36,7 +36,7 @@ void draw_start_menu()
     if (!fb || !is_menu_start_open) return;
 
     menu_x = 0;
-    menu_y = fb->height - 38 - menu_h;
+    menu_y = fb->height - bar_h_scaled - menu_h;
 
     draw_start_menu_f(menu_x, menu_y, menu_w, menu_h);
 }

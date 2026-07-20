@@ -11,6 +11,8 @@ static uint32_t* background_buffer = nullptr;
 static size_t background_pitch = 0;
 static size_t background_size = 0;
 
+// Nowa zmienna przechowująca przeskalowaną wysokość paska
+size_t bar_h_scaled = 0; 
 
 
 void image_init()
@@ -22,26 +24,28 @@ void image_init()
         get_backbuffer_pitch();
 
 
-
     background_size =
         background_pitch * fb->height * sizeof(uint32_t);
-
 
 
     background_buffer =
         (uint32_t*)kmalloc(background_size);
 
 
-
     if(!background_buffer)
         return;
 
+
+    /*
+        Obliczenie nowej wysokości paska po skalowaniu.
+        Mnożymy najpierw, aby uniknąć problemów z dzieleniem liczb całkowitych.
+    */
+    bar_h_scaled = (36 * fb->height) / 720;
 
 
     /*
         Czyszczenie tła
     */
-
     for(size_t y = 0; y < fb->height; y++)
     {
         for(size_t x = 0; x < fb->width; x++)
@@ -53,36 +57,24 @@ void image_init()
     }
 
 
-
     /*
         Stretched scaling
     */
-
     for(size_t y = 0; y < fb->height; y++)
     {
-
         size_t src_y =
             (y * background_height) / fb->height;
-
-
 
         if(src_y >= background_height)
             src_y = background_height - 1;
 
-
-
         for(size_t x = 0; x < fb->width; x++)
         {
-
             size_t src_x =
                 (x * background_width) / fb->width;
 
-
-
             if(src_x >= background_width)
                 src_x = background_width - 1;
-
-
 
             background_buffer[
                 y * background_pitch + x
@@ -94,9 +86,6 @@ void image_init()
         }
     }
 }
-
-
-
 
 void draw_background()
 {

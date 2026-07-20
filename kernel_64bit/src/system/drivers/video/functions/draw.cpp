@@ -120,10 +120,10 @@ void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y
 void update_start() 
 {
     if (!fb) return;
-    size_t bar_h = 36;
-    size_t start_y = fb->height - bar_h;
+    size_t start_x = 5;
+    size_t start_y = fb->height - bar_h_scaled + ((bar_h_scaled - 35) /2);
 
-    draw_start_button(5, start_y);
+    draw_start_button(start_x, start_y);
 }
 
 void update_time() 
