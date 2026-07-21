@@ -7,6 +7,9 @@ extern const char* CMD_TEXT_GREEN;
 extern const char* CMD_TEXT_BLUE;
 extern const char* CMD_TEXT_YELLOW;
 extern const char* CMD_TEXT_GRAY;
+extern const char* CMD_TERM_INFO;
+extern const char* CMD_TERM_WARN;
+extern const char* CMD_TERM_ERROR;
 
 // ===== BASIC =====
 inline constexpr uint32_t COLOR_BLACK               = 0xFF000000;
@@ -42,12 +45,10 @@ inline constexpr uint32_t COLOR_BUTTON_SHADOW       = 0xFF808080;
 inline constexpr uint32_t COLOR_BUTTON_HL           = 0xFFFFFFFF;
 
 // ===== TERMINAL COLORS =====
-inline constexpr uint32_t COLOR_TERM_BG             = 0xFF000000;
-inline constexpr uint32_t COLOR_TERM_FG             = 0xFF00FF00;
-inline constexpr uint32_t COLOR_TERM_WARN           = 0xFFFFFF00;
-inline constexpr uint32_t COLOR_TERM_ERROR          = 0xFFFF4444;
-inline constexpr uint32_t COLOR_TERM_INFO           = 0xFF59AEED;
+inline constexpr uint32_t COLOR_TERM_INFO           = 0xFF7EC2D6;
+inline constexpr uint32_t COLOR_TERM_WARN           = 0xFFEBCB8B;
+inline constexpr uint32_t COLOR_TERM_ERROR          = 0xFFBF616A;
 
 // ===== SHADOWS / DEPTH =====
-inline constexpr uint32_t COLOR_SHADOW              = 0xAA000000;
-inline constexpr uint32_t COLOR_HARD_SHADOW         = 0xFF202020;
+inline constexpr uint32_t COLOR_SHADOW              = 0xFF1C242F;
+inline constexpr uint32_t COLOR_HARD_SHADOW         = 0xFF161E29;

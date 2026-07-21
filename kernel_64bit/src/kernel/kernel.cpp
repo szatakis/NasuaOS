@@ -107,6 +107,10 @@ extern "C" void kmain()
 
     image_init();
 
+    print_info("elo");
+    print_warn("elo");
+    print_error("elo");
+
     // Main loop
     for (;;) 
     {

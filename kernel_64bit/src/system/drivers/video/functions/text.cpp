@@ -186,6 +186,9 @@ void print(const char* str)
                 case 'b': current_text_color = COLOR_BLUE; break;
                 case 'y': current_text_color = COLOR_YELLOW; break;
                 case 'a': current_text_color = COLOR_GRAY; break;
+                case 'e': current_text_color = COLOR_TERM_INFO; break;
+                case 't': current_text_color = COLOR_TERM_WARN; break;
+                case 'u': current_text_color = COLOR_TERM_ERROR; break;
             }
 
             str += 3;
@@ -364,7 +367,7 @@ void clear_line()
 
 void print_info(const char* msg) 
 {
-    print(CMD_TEXT_GREEN);
+    print(CMD_TERM_INFO);
     print("[info]: ");
     print(CMD_TEXT_WHITE);
     print(msg);
@@ -372,7 +375,7 @@ void print_info(const char* msg)
 
 void print_warn(const char* msg) 
 {
-    print(CMD_TEXT_YELLOW);
+    print(CMD_TERM_WARN);
     print("[warning]: ");
     print(CMD_TEXT_WHITE);
     print(msg);
@@ -380,7 +383,7 @@ void print_warn(const char* msg)
 
 void print_error(const char* msg) 
 {
-    print(CMD_TEXT_RED);
+    print(CMD_TERM_ERROR);
     print("[error]: ");
     print(CMD_TEXT_WHITE);
     print(msg);

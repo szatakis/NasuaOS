@@ -34,11 +34,11 @@ void draw_start_button(size_t x, size_t taskbar_y)
 
     draw_rect(start_button.x1 - margin, start_button.y1,
               start_button.x2 + margin, start_button.y2,
-              COLOR_NASUA_DARK);
+              COLOR_SHADOW);
 
     draw_rect(start_button.x1, start_button.y1 + margin,
               start_button.x2, start_button.y2 - margin,
-              COLOR_NASUA_DARKER);
+              COLOR_HARD_SHADOW);
 
     if(start_hover)
         draw_icon<32, 32>(start_icon_hover, x, button_y);
