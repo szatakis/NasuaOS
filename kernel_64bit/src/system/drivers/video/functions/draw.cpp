@@ -117,57 +117,6 @@ void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y
     }
 }
 
-void update_start() 
-{
-    if (!fb) return;
-    size_t start_x = 5;
-    size_t start_y = fb->height - bar_h_scaled + ((bar_h_scaled - 35) /2);
-
-    draw_start_button(start_x, start_y);
-}
-
-void update_time() 
-{
-    if (!fb) return;
-
-    RtcTime time = get_rtc_time();
-
-    char time_buf[9];
-    char date_buf[11];
-
-    // ---------------- TIME HH:MM:SS ----------------
-    time_buf[0] = '0' + (time.hour / 10);
-    time_buf[1] = '0' + (time.hour % 10);
-    time_buf[2] = ':';
-    time_buf[3] = '0' + (time.minute / 10);
-    time_buf[4] = '0' + (time.minute % 10);
-    time_buf[5] = ':';
-    time_buf[6] = '0' + (time.second / 10);
-    time_buf[7] = '0' + (time.second % 10);
-    time_buf[8] = '\0';
-
-    // ---------------- DATE DD-MM-YYYY ----------------
-    date_buf[0] = '0' + (time.day / 10);
-    date_buf[1] = '0' + (time.day % 10);
-    date_buf[2] = '-';
-    date_buf[3] = '0' + (time.month / 10);
-    date_buf[4] = '0' + (time.month % 10);
-    date_buf[5] = '-';
-
-    date_buf[6] = '0' + (time.year / 1000);
-    date_buf[7] = '0' + ((time.year / 100) % 10);
-    date_buf[8] = '0' + ((time.year / 10) % 10);
-    date_buf[9] = '0' + (time.year % 10);
-    date_buf[10] = '\0';
-
-    size_t text_x = fb->width - 105;
-    size_t start_y = fb->height - bar_h_scaled + 2;
-
-    // ---------------- DRAW ----------------
-    print_at8(time_buf, text_x, start_y + 8, COLOR_WHITE);
-    print_at8(date_buf, text_x, start_y + 20, COLOR_WHITE);
-}
-
 void draw_rect(int x1, int y1, int x2, int y2, uint32_t color) 
 {
     if (!fb) return;
@@ -212,6 +161,54 @@ void draw_rect(int x1, int y1, int x2, int y2, uint32_t color)
             bb_ptr[y * pixels_per_pitch + x] = color;
         }
     }
+}
+
+void update_start() 
+{
+    if (!fb) return;
+    draw_start_button(5, fb->height - bar_h_scaled);
+}
+
+void update_time() 
+{
+    if (!fb) return;
+
+    RtcTime time = get_rtc_time();
+
+    char time_buf[9];
+    char date_buf[11];
+
+    // ---------------- TIME HH:MM:SS ----------------
+    time_buf[0] = '0' + (time.hour / 10);
+    time_buf[1] = '0' + (time.hour % 10);
+    time_buf[2] = ':';
+    time_buf[3] = '0' + (time.minute / 10);
+    time_buf[4] = '0' + (time.minute % 10);
+    time_buf[5] = ':';
+    time_buf[6] = '0' + (time.second / 10);
+    time_buf[7] = '0' + (time.second % 10);
+    time_buf[8] = '\0';
+
+    // ---------------- DATE DD-MM-YYYY ----------------
+    date_buf[0] = '0' + (time.day / 10);
+    date_buf[1] = '0' + (time.day % 10);
+    date_buf[2] = '-';
+    date_buf[3] = '0' + (time.month / 10);
+    date_buf[4] = '0' + (time.month % 10);
+    date_buf[5] = '-';
+
+    date_buf[6] = '0' + (time.year / 1000);
+    date_buf[7] = '0' + ((time.year / 100) % 10);
+    date_buf[8] = '0' + ((time.year / 10) % 10);
+    date_buf[9] = '0' + (time.year % 10);
+    date_buf[10] = '\0';
+
+    size_t text_x = fb->width - 105;
+    size_t start_y = fb->height - bar_h_scaled + 2;
+
+    // ---------------- DRAW ----------------
+    print_at8(time_buf, text_x, start_y + 8, COLOR_WHITE);
+    print_at8(date_buf, text_x, start_y + 20, COLOR_WHITE);
 }
 
 void update_bottom_bar() 
