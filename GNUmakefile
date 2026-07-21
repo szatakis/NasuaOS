@@ -80,7 +80,7 @@ ifeq ($(IS_WSL),1)
 	$(PREPARE_WSL)
 	$(QEMU_X86_64) \
 		-M pc \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-x86_64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-x86_64.fd,readonly=on \
 		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
 		-drive id=$(FS_NAME),file=C:\\wsl_target\\$(FS_NAME).img,format=raw,if=none \
 		-device ide-hd,drive=$(FS_NAME),bus=ide.0,unit=0 \
@@ -93,7 +93,7 @@ ifeq ($(IS_WSL),1)
 else
 	$(QEMU_X86_64) \
 		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-x86_64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-x86_64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		-audiodev sdl,id=snd0 \
 		-machine pcspk-audiodev=snd0 \
@@ -111,7 +111,7 @@ ifeq ($(IS_WSL),1)
 
 	$(QEMU_X86_64) \
 		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-x86_64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-x86_64.fd,readonly=on \
 		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
 		$(QEMUFLAGS) \
 		-display sdl,gl=on \
@@ -119,7 +119,7 @@ ifeq ($(IS_WSL),1)
 else
 	$(QEMU_X86_64) \
 		-M q35 \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-x86_64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-x86_64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 endif
@@ -135,7 +135,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-aarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-aarch64.fd,readonly=on \
 		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 else
@@ -146,7 +146,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-aarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-aarch64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 endif
@@ -165,7 +165,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-aarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-aarch64.fd,readonly=on \
 		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 else
@@ -176,7 +176,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-aarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-aarch64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 endif
@@ -192,7 +192,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-riscv64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-riscv64.fd,readonly=on \
 		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 else
@@ -203,7 +203,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-riscv64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-riscv64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 endif
@@ -222,7 +222,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-riscv64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-riscv64.fd,readonly=on \
 		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 else
@@ -233,7 +233,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-riscv64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-riscv64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 endif
@@ -249,7 +249,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-loongarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-loongarch64.fd,readonly=on \
 		-cdrom C:\\wsl_target\\$(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 else
@@ -260,7 +260,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-loongarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-loongarch64.fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
 endif
@@ -279,7 +279,7 @@ ifeq ($(IS_WSL),1)
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\ovmf-code-loongarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=C:\\wsl_target\\edk2-bins\\code-loongarch64.fd,readonly=on \
 		-hda C:\\wsl_target\\$(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 else
@@ -290,7 +290,7 @@ else
 		-device qemu-xhci \
 		-device usb-kbd \
 		-device usb-tablet \
-		-drive if=pflash,unit=0,format=raw,file=edk2-bins/ovmf-code-loongarch64.fd,readonly=on \
+		-drive if=pflash,unit=0,format=raw,file=edk2-bins/code-loongarch64.fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
 endif

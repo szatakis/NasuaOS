@@ -13,8 +13,7 @@ typedef struct
     int x2, y2;
 } ButtonArea;
 
-int bar_h = 36; 
-int start_y = static_cast<int>(fb->height) - bar_h;  
+int start_y = static_cast<int>(fb->height) - bar_h_scaled;  
 bool is_menu_start_open = false;
 
 ButtonArea start_button = { 0, 0, 0, 0 }; 
@@ -25,7 +24,7 @@ void draw_start_button(size_t x, size_t taskbar_y)
     constexpr int button_h = 31;
     constexpr int margin = 2;
 
-    int button_y = taskbar_y + (bar_h_scaled - button_h) / 2 - 1;
+    int button_y = taskbar_y + (bar_h_scaled - button_h) / 2 - margin;
 
     start_button.x1 = static_cast<int>(x);
     start_button.y1 = button_y;

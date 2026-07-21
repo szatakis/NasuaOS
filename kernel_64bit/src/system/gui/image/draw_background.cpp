@@ -12,6 +12,7 @@ static size_t background_pitch = 0;
 static size_t background_size = 0;
 
 // Nowa zmienna przechowująca przeskalowaną wysokość paska
+size_t bar_h = 36;
 size_t bar_h_scaled = 0; 
 
 
@@ -40,7 +41,7 @@ void image_init()
         Obliczenie nowej wysokości paska po skalowaniu.
         Mnożymy najpierw, aby uniknąć problemów z dzieleniem liczb całkowitych.
     */
-    bar_h_scaled = (36 * fb->height) / 720;
+    bar_h_scaled = (bar_h * fb->height) / 720;
 
 
     /*

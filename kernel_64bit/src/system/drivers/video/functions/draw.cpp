@@ -161,11 +161,7 @@ void update_time()
     date_buf[10] = '\0';
 
     size_t text_x = fb->width - 105;
-    size_t bar_h = 36;
-    size_t start_y = fb->height - bar_h;
-
-    // Usunięto zbędne wywołania fill_block do czyszczenia tła pod tekstem zegarka,
-    // ponieważ cała linia paska jest świeżo narysowana w update_bottom_bar()
+    size_t start_y = fb->height - bar_h_scaled + 2;
 
     // ---------------- DRAW ----------------
     print_at8(time_buf, text_x, start_y + 8, COLOR_WHITE);
@@ -222,22 +218,19 @@ void update_bottom_bar()
 {
     if (!fb) return;
 
-    size_t bar_h = 36;
-    size_t start_y = fb->height - bar_h;
+    size_t start_y = fb->height - bar_h_scaled + 2;
     size_t start_x = fb->width;
 
-    // Nakładamy ikony po prawej stronie
-    draw_icon<32, 32>(speaker_icon, start_x - 175, start_y + ((bar_h - 32) / 2));
+    draw_icon<32, 32>(speaker_icon, start_x - 175, start_y + ((bar_h_scaled - 32) / 2));
     if(notification_count <= 0) 
     {
-        draw_icon<32, 32>(notification_icon, start_x - 145, start_y + ((bar_h - 32) / 2));
+        draw_icon<32, 32>(notification_icon, start_x - 145, start_y + ((bar_h_scaled - 32) / 2));
     }
     else 
     {
-        draw_icon<32, 32>(notification_icon_h, start_x - 145, start_y + ((bar_h - 32) / 2));
+        draw_icon<32, 32>(notification_icon_h, start_x - 145, start_y + ((bar_h_scaled - 32) / 2));
     }
 
-    // Rysujemy przycisk START i czas
     update_start();
     update_time();
 }
