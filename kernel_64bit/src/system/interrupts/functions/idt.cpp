@@ -67,10 +67,7 @@ void idt_init()
     Uart::puts("[IDT] IRQ0 installed\n");
     log(INFO,"IDT","IRQ0 installed");
 
-    // LAPIC Spurious Interrupt (wektor 0xFF) - odrebny od
-    // domyslnego isr_default, zeby isr_handler mogl bezpiecznie
-    // rozroznic prawdziwy spurious od nieznanego/nieobslugiwanego
-    // wyjatku (ktory nadal trafia w isr_default i haltuje).
+    // LAPIC Spurious Interrupt (vector 0xFF)
 
     extern void isr_spurious();
 

@@ -103,11 +103,6 @@ void fill_block(size_t x, size_t y, uint32_t color, size_t size_x, size_t size_y
     uint32_t* bb_ptr = get_backbuffer();
     size_t pitch = get_backbuffer_pitch();
 
-    // Clipping - zabezpieczenie przed wyjściem poza ekran
-    if (x >= fb->width || y >= fb->height) return;
-    if (x + size_x > fb->width)  size_x = fb->width - x;
-    if (y + size_y > fb->height) size_y = fb->height - y;
-
     for (size_t dy = 0; dy < size_y; dy++) 
     {
         for (size_t dx = 0; dx < size_x; dx++) 
@@ -121,39 +116,22 @@ void draw_rect(int x1, int y1, int x2, int y2, uint32_t color)
 {
     if (!fb) return;
 
-    // 1. Zabezpieczenie współrzędnych
     if (x1 > x2) 
     { 
-        int tmp = x1; x1 = x2; x2 = tmp; 
+        x1 = x1 + x2;
+        x2 = x1 - x2;
+        x1 = x1 - x2;
     }
     if (y1 > y2) 
     { 
-        int tmp = y1; y1 = y2; y2 = tmp; 
+        y1 = y1 + y2;
+        y2 = y1 - y2;
+        y1 = y1 - y2;
     }
 
-    // 2. Clipping (ochrona przed wyjściem poza ekran)
-    if (x1 < 0) 
-    {
-        x1 = 0;
-    }
-    if (y1 < 0) 
-    {
-        y1 = 0;
-    }
-    if (x2 >= static_cast<int>(fb->width))  
-    {
-        x2 = static_cast<int>(fb->width) - 1;
-    }
-    if (y2 >= static_cast<int>(fb->height)) 
-    {
-        y2 = static_cast<int>(fb->height) - 1;
-    }
-
-    // 3. Pobranie wskaźnika na backbuffer
     uint32_t* bb_ptr = get_backbuffer();
     int pixels_per_pitch = get_backbuffer_pitch();
 
-    // 4. Rysowanie prostokąta
     for (int y = y1; y < y2; ++y) 
     {
         for (int x = x1; x < x2; ++x) 
@@ -171,7 +149,10 @@ void update_start()
 
 void update_time() 
 {
-    if (!fb) return;
+    if (!fb) 
+    {
+        return;
+    }
 
     RtcTime time = get_rtc_time();
 
@@ -213,7 +194,10 @@ void update_time()
 
 void update_bottom_bar() 
 {
-    if (!fb) return;
+    if (!fb) 
+    {
+        return;
+    }
 
     size_t start_y = fb->height - bar_h_scaled + 2;
     size_t start_x = fb->width;

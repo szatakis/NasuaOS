@@ -4,7 +4,6 @@
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"
 
-// obiekty limine zdefiniowane w kernel.cpp
 extern volatile limine_rsdp_request rsdp_request;
 extern volatile limine_hhdm_request hhdm_request;
 
@@ -98,7 +97,7 @@ struct MADTInterruptSourceOverride
 
 static ACPISDTHeader* find_table_by_signature(const char* wanted, RSDPDescriptor* rsdp)
 {
-    // ACPI 2.0+: XSDT (wskazniki 64-bit), inaczej RSDT (32-bit)
+    // ACPI 2.0+
     if(rsdp->revision >= 2)
     {
         RSDPDescriptor20* rsdp2 = (RSDPDescriptor20*)rsdp;
@@ -168,8 +167,6 @@ MadtInfo madt_parse()
         return info;
     }
 
-    // Na base revision Limine != 3 adres RSDP jest juz zwracany jako
-    // uzywalny wskaznik (HHDM), wiec uzywamy go bezposrednio.
     RSDPDescriptor* rsdp = (RSDPDescriptor*)rsdp_request.response->address;
 
     if(!sig_matches(rsdp->signature, "RSD PTR ", 8))

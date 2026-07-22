@@ -11,10 +11,6 @@
 extern "C"
 void isr_handler(Registers* regs)
 {
-    // Spurious interrupt (m.in. wektor SVR ustawiony w LAPIC, oraz
-    // domyslny wektor kazdego niezmapowanego IRQ z isr_default).
-    // Zgodnie ze specyfikacja Intela spurious nie wymaga EOI -
-    // po prostu ignorujemy i wracamy.
     if(regs->vector == 0xFF)
     {
         return;

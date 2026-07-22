@@ -47,10 +47,6 @@ void image_init()
         }
     }
 
-
-    /*
-        Stretched scaling
-    */
     for(size_t y = 0; y < fb->height; y++)
     {
         size_t src_y = (y * background_height) / fb->height;
@@ -69,11 +65,7 @@ void image_init()
                 src_x = background_width - 1;
             }
 
-            background_buffer[y * background_pitch + x] =
-                background_data[
-                    src_y * background_width +
-                    src_x
-                ];
+            background_buffer[y * background_pitch + x] = background_data[src_y * background_width + src_x];
         }
     }
 }

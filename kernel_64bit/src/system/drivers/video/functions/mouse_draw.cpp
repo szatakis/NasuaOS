@@ -4,7 +4,6 @@
 
 extern const char arrow_cursor[][CURSOR_W];
 
-// Pobiera kształt z arrow_cursor i renderuje go bezpośrednio do backbuffera
 void handle_mouse() 
 {
     if (!fb) return;
@@ -19,28 +18,25 @@ void handle_mouse()
             int px = mouse_x + x;
             int py = mouse_y + y;
 
-            // Sprawdzenie granic ekranu
             if (px < 0 || py < 0) continue;
             if ((size_t)px >= fb->width || (size_t)py >= fb->height) continue;
 
             char p = arrow_cursor[y][x];
             uint32_t color = 0;
 
-            // Logika wyboru koloru / przezroczystości
             if (p == 'W') 
             {
                 color = COLOR_MOUSE;
             } 
             else if (p == 'B') 
             {
-                color = 0x00000000; // Czarny / krawędź
+                color = 0x00000000;
             } 
             else 
             {
-                continue; // Piksel przezroczysty - pomiń i nie nadpisuj backbuffera
+                continue;
             }
 
-            // Zapis bezpośrednio do BACKBUFFERA
             bb_ptr[py * bb_pitch + px] = color;
         }
     }

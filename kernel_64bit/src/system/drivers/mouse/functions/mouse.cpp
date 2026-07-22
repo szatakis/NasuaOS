@@ -4,7 +4,6 @@
 int32_t mouse_x = 200;
 int32_t mouse_y = 145;
 
-//Cursor
 const char arrow_cursor[CURSOR_H][CURSOR_W] = {
     {'W','.','.','.','.','.','.','.','.','.','.','.'},
     {'W','W','.','.','.','.','.','.','.','.','.','.'},

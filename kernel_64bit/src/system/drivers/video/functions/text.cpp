@@ -4,30 +4,28 @@
 #include "system/fonts/font12x12.h"
 #include "system/fonts/font16x16.h"
 #include "system/gui/vars/colors.h"
+
 #include "applications/shell/commands.h"
-#include "libs/libc/libc.h"
 #include "system/drivers/keyboard/driver.h"
+#include "system/drivers/uart/driver.h"
 
-// Wymiary bufora terminala na podstawie standardowej czcionki 8x8
-#define TEXT_COLS 160  // Maksymalna liczba znaków w linii
-#define TEXT_ROWS 80   // Maksymalna liczba linii tekstu w historii
+#include "libs/libc/libc.h"
 
-// Struktura reprezentująca jeden znak na ekranie wraz z jego kolorem
+#define TEXT_COLS 160
+#define TEXT_ROWS 80
+
 typedef struct {
     char ch;
     uint32_t color;
 } TermChar;
 
-// Globalny bufor terminala, który przechowuje aktualną historię tekstu
 static TermChar text_buffer[TEXT_ROWS][TEXT_COLS];
 
-// Wirtualna pozycja kursora w buforze tekstowym
 static size_t text_col = 0;
 static size_t text_row = 0;
 
 uint32_t current_text_color = COLOR_WHITE;
 
-// Zachowujemy te zmienne dla kompatybilności z Twoim OS
 size_t cursor_x = 0;
 size_t cursor_y = 0;
 
@@ -38,14 +36,11 @@ extern char current_path[256];
 extern char user_name[16];
 extern char pc_name[16];
 
-// Funkcja czyszcząca pamięć bufora tekstowego (wywołaj raz przy starcie systemu oraz przy clear_screen)
 void init_text_buffer() 
 {
-    // Resetowanie wirtualnej pozycji kursora na samą górę ekranu
     text_col = 0;
     text_row = 0;
 
-    // Czyszczenie całej macierzy znaków
     for (size_t r = 0; r < TEXT_ROWS; r++) 
     {
         for (size_t c = 0; c < TEXT_COLS; c++) 
@@ -61,7 +56,6 @@ void init_text_buffer()
     print_cmd();
 }
 
-// Funkcja przewijająca tekst w górę, gdy zabraknie miejsca na dole
 static void scroll_text() 
 {
     for (size_t r = 1; r < TEXT_ROWS; r++) 
@@ -71,7 +65,7 @@ static void scroll_text()
             text_buffer[r - 1][c] = text_buffer[r][c];
         }
     }
-    // Wyczyszczenie ostatniej linii
+
     for (size_t c = 0; c <TEXT_COLS; c++) 
     {
         text_buffer[TEXT_ROWS - 1][c].ch = ' ';
@@ -83,8 +77,6 @@ static void scroll_text()
     }
 }
 
-// Rysuje cały zapisany tekst z bufora tekstowego bezpośrednio do backbuffera
-// WYWOŁAJ TO W KAŻDEJ KLATCE!
 void draw_text_buffer() 
 {
     size_t start_y = 0;
@@ -93,15 +85,19 @@ void draw_text_buffer()
     {
         size_t start_x = 0;
         
-        // Sprawdzenie, czy nie wchodzimy na dolny pasek zadań
-        if (start_y + 8 >= (fb->height - 45)) break;
+        if (start_y + 8 >= (fb->height - 45)) 
+        {
+            break;
+        }
 
         for (size_t c = 0; c < TEXT_COLS; c++) 
         {
-            if (start_x + 8 >= fb->width) break;
+            if (start_x + 8 >= fb->width) 
+            {
+                break;
+            }
 
             char ch = text_buffer[r][c].ch;
-            // Rysujemy tylko rzeczywiste znaki (spacje ignorujemy lub nadpisujemy tłem)
             if (ch != ' ' && ch != '\0') 
             {
                 draw_char8(ch, start_x, start_y, text_buffer[r][c].color);
@@ -112,7 +108,6 @@ void draw_text_buffer()
         start_y += 8 + FONT_SPACING_H;
     }
     
-    // Aktualizacja fizycznych pozycji kursora na potrzeby renderowania promptu i pisania
     cursor_x = text_col * (8 + FONT_SPACING_W);
     cursor_y = text_row * (8 + FONT_SPACING_H);
 }
@@ -123,8 +118,7 @@ void print_char8(char c)
     {
         text_col = 0;
         text_row++;
-        
-        // Obliczamy limit linii na podstawie wysokości ekranu i paska dolnego
+
         size_t max_rows = (fb->height - 45) / (8 + FONT_SPACING_H);
         if (text_row >= max_rows || text_row >= TEXT_ROWS) 
         {
@@ -133,14 +127,12 @@ void print_char8(char c)
         return;
     }
 
-    // Maksymalna szerokość w znakach
     size_t max_cols = fb->width / (8 + FONT_SPACING_W);
     if (text_col >= max_cols || text_col >= TEXT_COLS) 
     {
         print_char8('\n');
     }
 
-    // Zapis znaku i koloru do pamięci bufora tekstowego
     text_buffer[text_row][text_col].ch = c;
     text_buffer[text_row][text_col].color = current_text_color;
     
@@ -329,7 +321,6 @@ void print_at16(const char* str, size_t x, size_t y, uint32_t color)
     }
 }
 
-// Backspace usuwa teraz znak bezpośrednio z bufora tekstowego w pamięci
 void delete_last_char() 
 {
     if (text_col > 0) 
@@ -339,14 +330,13 @@ void delete_last_char()
     } else if (text_row > 0) 
     {
         text_row--;
-        // Przeskakujemy na koniec poprzedniej linii
+
         size_t max_cols = fb->width / (8 + FONT_SPACING_W);
         text_col = (max_cols < TEXT_COLS) ? max_cols - 1 : TEXT_COLS - 1;
         text_buffer[text_row][text_col].ch = ' ';
     }
 }
 
-// Czyszczenie aktualnie wpisywanej linii z bufora tekstowego
 void clear_line() 
 {
     size_t start_col = text_col - cmd_idx;
@@ -442,7 +432,7 @@ void print_resolution()
 {
     if (!fb) 
     {
-        print("Framebuffer not available\n");
+        Uart::puts("Framebuffer not available\n");
         return;
     }
     

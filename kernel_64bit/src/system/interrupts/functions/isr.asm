@@ -1,6 +1,5 @@
 bits 64
 
-
 global isr_default
 global isr_divide_error
 global isr_page_fault
@@ -59,7 +58,6 @@ section .text
 
 isr_default:
     cli
-
     push 0
     push 0xDE
 
@@ -71,7 +69,6 @@ isr_default:
 
 isr_divide_error:
     cli
-
     push 0
     push 0
 
@@ -83,7 +80,6 @@ isr_divide_error:
 
 isr_page_fault:
     cli
-
     push 14
 
     jmp isr_common
@@ -117,19 +113,14 @@ isr_common:
 
     PUSH_REGS
 
-
     mov rdi,rsp
-
 
     sub rsp,8
     call isr_handler
     add rsp,8
 
-
     POP_REGS
 
-
     add rsp,16
-
 
     iretq
