@@ -112,12 +112,6 @@ void pmm_init()
 
     bitmap_size = (total_pages + 7) / 8;
 
-    /*
-        Tymczasowo bitmapa statyczna.
-        Później przeniesiemy ją
-        do specjalnie przydzielonej strony.
-    */
-
     static uint8_t bitmap_storage[1024 * 1024];
 
     bitmap = bitmap_storage;
@@ -129,8 +123,6 @@ void pmm_init()
 
         return;
     }
-
-    // Wszystkie strony zajęte na start
 
     for(uint64_t i = 0; i < bitmap_size; i++)
     {
@@ -145,8 +137,6 @@ void pmm_init()
     {
         set_bit(i);
     }
-
-    // Odblokowujemy tylko pamięć oznaczoną przez Limine jako usable
 
     for(uint64_t i = 0; i < memmap_request.response->entry_count; i++)
     {

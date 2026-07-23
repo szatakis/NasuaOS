@@ -70,9 +70,7 @@ void* kmalloc(size_t size)
 
     header->pages = pages;
 
-    return
-        (void*)
-        (start + sizeof(heap_header));
+    return (void*)(start + sizeof(heap_header));
 }
 
 void kfree(void* ptr)

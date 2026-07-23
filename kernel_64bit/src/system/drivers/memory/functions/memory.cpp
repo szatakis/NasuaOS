@@ -8,11 +8,6 @@ static char ram_buffer[32];
 static uint64_t total_ram = 0; 
 static uint64_t used_ram = 0;  
 
-// GCC and Clang reserve the right to generate calls to the following
-// 4 C-linkage functions even if they are not directly called.
-// They must be implemented as the C specification mandates.
-// DO NOT remove or rename these functions, or stuff will eventually break!
-
 extern "C" {
 
     void *memcpy(void *__restrict dest, const void *__restrict src, std::size_t n) 
@@ -94,7 +89,9 @@ void memory_init()
     total_ram = 0;
 
     if (!memmap_request.response)
+    {
         return;
+    }
 
     for (uint64_t i = 0; i < memmap_request.response->entry_count; i++)
     {

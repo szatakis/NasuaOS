@@ -34,16 +34,12 @@
 
 #define IOAPIC_REDTBL_MASKED 0x10000
 
-
-// zewnetrzny obiekt limine z kernel.cpp - potrzebny do przeliczenia
-// adresu fizycznego LAPIC/IOAPIC na adres w higher-half direct map
 extern volatile limine_hhdm_request hhdm_request;
 
 static bool g_apic_active = false;
 static bool g_lapic_mapped = false;
 static bool g_ioapic_mapped = false;
 
-// wypelniane w interrupts_controller_init() na podstawie MADT
 static uint64_t g_ioapic_base_phys = 0;
 static uint32_t g_ioapic_pin_irq0 = 0;
 
@@ -60,13 +56,6 @@ static inline uint64_t hhdm_offset()
     return hhdm_request.response->offset;
 }
 
-// Jawnie mapuje strone MMIO (fizyczny adres urzadzenia) pod
-// odpowiadajacym jej adresem w HHDM. Bez tego, jesli wlasne
-// tablice stron kernela (po vmm_init()) nie obejmuja dziur MMIO
-// firmware, dostep skonczylby sie page faultem, ktory
-// page_fault_handler "naprawi" mapujac tam zwykla, losowa strone
-// RAM zamiast prawdziwego rejestru sprzetowego - LAPIC/IOAPIC
-// nigdy nie zostalyby naprawde skonfigurowane.
 static void map_mmio_once(bool& already_mapped, uint64_t phys_base)
 {
     if(already_mapped)
@@ -237,15 +226,10 @@ void lapic_init()
     Uart::puts("[LAPIC] Initializing...\n");
     log(INFO,"LAPIC","Initializing...");
 
-    // upewnij sie, ze Global Enable w MSR jest ustawiony
     apic_enable();
 
-    // Task Priority Register = 0 -> akceptuj wszystkie priorytety
     *lapic_reg(LAPIC_REG_TPR) = 0;
 
-    // Spurious Interrupt Vector Register:
-    // bit 8 = software enable, wektor = 0xFF (spurious, obslugiwany
-    // jako nie-krytyczny w isr_handler)
     *lapic_reg(LAPIC_REG_SVR) = 0xFF | LAPIC_SVR_ENABLE;
 
     Uart::puts("[LAPIC] Ready\n");
@@ -298,7 +282,6 @@ void ioapic_init()
     }
 
     // IRQ0 (PIT) -> wektor 32, na pin wyznaczony z MADT
-    // (uwzglednia ewentualny Interrupt Source Override)
     ioapic_set_irq((uint8_t)g_ioapic_pin_irq0, 32, lapic_get_id());
 
     Uart::puts("[IOAPIC] IRQ0 -> vector 32 (pin: ");
@@ -322,12 +305,6 @@ void interrupts_controller_init()
 {
     MadtInfo madt = madt_parse();
 
-    // Do trybu APIC potrzebujemy dwoch rzeczy: CPU musi zglaszac
-    // Local APIC (CPUID) ORAZ ACPI MADT musi realnie zawierac wpis
-    // I/O APIC. Sam CPUID.APIC prawie zawsze jest ustawiony (kazdy
-    // x86-64), ale to NIE oznacza, ze w systemie/emulacji jest I/O
-    // APIC - dlatego bez potwierdzenia z MADT bezpiecznie wracamy
-    // do 8259 PIC, zamiast programowac nieistniejace urzadzenie.
     if(apic_available() && madt.valid && madt.has_ioapic)
     {
         Uart::puts("[IRQ] APIC + IOAPIC available (MADT), using LAPIC + IOAPIC\n");
@@ -336,13 +313,8 @@ void interrupts_controller_init()
         g_ioapic_base_phys = madt.ioapic_base;
         g_ioapic_pin_irq0 = madt.irq0_gsi - madt.ioapic_gsi_base;
 
-        // upewnij sie, ze 8259 nie generuje juz przerwan
         pic_disable();
 
-        // Przelacz IMCR z trybu PIC (8259 podlaczony bezposrednio
-        // do LINT0 CPU) na tryb Symmetric I/O (przerwania ida przez
-        // IOAPIC). Na maszynach bez IMCR (typowe np. w QEMU/wiekszosci
-        // nowszych chipsetow) ten zapis jest po prostu ignorowany.
         outb(0x22, 0x70);
         outb(0x23, 0x01);
 

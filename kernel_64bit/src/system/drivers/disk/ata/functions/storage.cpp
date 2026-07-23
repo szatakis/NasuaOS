@@ -43,19 +43,29 @@ static bool ata_identify(uint32_t* sectors)
             : "Nd"((uint16_t)ATA_PORT_COMMAND));
 
         if (status == 0)
+        {
             return false;
+        }
 
         if (status & ATA_SR_ERR)
+        {
             return false;
+        }
 
         if (status & ATA_SR_DF)
+        {
             return false;
+        }
 
         if (!(status & ATA_SR_BSY) && (status & ATA_SR_DRQ))
+        {
             break;
+        }
 
         if (t == ATA_TIMEOUT - 1)
+        {
             return false;
+        }
     }
 
     uint16_t identify[256];
@@ -85,7 +95,6 @@ void storage_init()
     }
     else
     {
-        // Awaryjna wartość jeśli IDENTIFY się nie powiedzie
         total_storage_bytes = 64ULL * 1024 * 1024;
     }
 

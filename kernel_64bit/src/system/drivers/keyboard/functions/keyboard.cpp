@@ -133,16 +133,16 @@ void handle_keyboard()
 {
     uint8_t status = inb(0x64);
 
-    // Brak danych do odczytu
+    // No data
     if (!(status & 1)) 
     {
         return;
     }
 
-    // Bit 5 = dane z drugiego portu (mysz)
+    // Mouse handler
     if (status & 0x20)
     {
-        (void)inb(0x60); // wyrzuć bajt myszy
+        (void)inb(0x60);
         return;
     }
 

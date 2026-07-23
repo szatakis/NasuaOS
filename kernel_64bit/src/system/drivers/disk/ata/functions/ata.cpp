@@ -42,13 +42,19 @@ static bool ata_wait_drq()
         uint8_t status = inb(ATA_PORT_COMMAND);
 
         if (status & ATA_SR_ERR)
+        {
             return false;
+        }
 
         if (status & ATA_SR_DF)
+        {
             return false;
+        }
 
         if (!(status & ATA_SR_BSY) && (status & ATA_SR_DRQ))
+        {
             return true;
+        }
     }
 
     return false;
@@ -70,18 +76,24 @@ void disk_read_sector(uint32_t lba, uint8_t* buffer)
     outb(ATA_PORT_COMMAND, ATA_CMD_READ_PIO);
 
     if (!ata_wait_drq())
+    {
         return;
+    }
 
     uint16_t* ptr = (uint16_t*)buffer;
 
     for (int i = 0; i < 256; i++)
+    {
         ptr[i] = inw(ATA_PORT_DATA);
+    }
 }
 
 void disk_write_sector(uint32_t lba, uint8_t* buffer)
 {
     if (!ata_wait_not_busy())
+    {
         return;
+    }
 
     outb(ATA_PORT_DRV_HEAD, 0xE0 | ((lba >> 24) & 0x0F));
 
@@ -94,12 +106,16 @@ void disk_write_sector(uint32_t lba, uint8_t* buffer)
     outb(ATA_PORT_COMMAND, ATA_CMD_WRITE_PIO);
 
     if (!ata_wait_drq())
+    {
         return;
+    }
 
     uint16_t* ptr = (uint16_t*)buffer;
 
     for (int i = 0; i < 256; i++)
+    {
         outw(ATA_PORT_DATA, ptr[i]);
+    }
 
     outb(ATA_PORT_COMMAND, ATA_CMD_CACHE_FLUSH);
 

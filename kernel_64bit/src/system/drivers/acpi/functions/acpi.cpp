@@ -148,20 +148,22 @@ struct __attribute__((packed)) FADT
 // ===================== //
 // HELPERS               //
 // ===================== //
-
 static void* phys_to_virt(uint64_t addr)
 {
     if (!addr)
+    {
         return nullptr;
+    }
 
 
     if (!hhdm_request.response)
+    {
         return (void*)addr;
+    }
 
 
     return (void*)(addr + hhdm_request.response->offset);
 }
-
 
 
 static bool acpi_sig(const char* a, const char* b)
@@ -169,27 +171,25 @@ static bool acpi_sig(const char* a, const char* b)
     for(int i = 0; i < 4; i++)
     {
         if(a[i] != b[i])
+        {
             return false;
+        }
     }
 
     return true;
 }
 
 
-
 // ===================== //
 // AML PARSER            //
 // ===================== //
-
 static uint16_t parse_aml_element(uint8_t** ptr)
 {
     uint8_t op = **ptr;
     (*ptr)++;
 
-
     switch(op)
     {
-
         // ZeroOp
         case 0x00:
             return 0;
@@ -210,14 +210,10 @@ static uint16_t parse_aml_element(uint8_t** ptr)
             return value;
         }
 
-
         // WordPrefix
         case 0x0B:
         {
-            uint16_t value =
-                (*ptr)[0] |
-                ((*ptr)[1] << 8);
-
+            uint16_t value = (*ptr)[0] | ((*ptr)[1] << 8);
 
             (*ptr)+=2;
 
@@ -229,38 +225,29 @@ static uint16_t parse_aml_element(uint8_t** ptr)
         case 0xFF:
             return 0xFFFF;
 
-
         default:
             return 0;
     }
 }
 
 
-
 // ===================== //
 // FIND _S5_             //
 // ===================== //
-
 static bool parse_s5_from_aml(uint8_t* aml, uint32_t length)
 {
-
     for(uint32_t i = 0; i < length - 5; i++)
     {
-
-        if(
-            aml[i] == '_' &&
-            aml[i+1] == 'S' &&
-            aml[i+2] == '5' &&
-            aml[i+3] == '_'
-        )
+        if(aml[i] == '_' && aml[i+1] == 'S' && aml[i+2] == '5' && aml[i+3] == '_')
         {
-
             uint8_t* ptr = &aml[i+4];
 
 
             // musi być NameOp
             if(*ptr != 0x12)
+            {
                 continue;
+            }
 
 
             ptr++;
@@ -268,7 +255,6 @@ static bool parse_s5_from_aml(uint8_t* aml, uint32_t length)
 
             // PkgLength
             uint8_t lead = *ptr++;
-
             uint8_t extra = (lead >> 6);
 
 
@@ -303,54 +289,56 @@ static void* find_table(ACPISDTHeader* root, const char* name)
 
 
     if(!xsdt && !rsdt)
+    {
         return nullptr;
-
+    }
 
     uint32_t entries;
 
 
     if(xsdt)
+    {
         entries = (root->Length - sizeof(ACPISDTHeader)) / 8;
+    }
     else
+    {
         entries = (root->Length - sizeof(ACPISDTHeader)) / 4;
+    }
 
 
 
-    uint8_t* ptr =
-        (uint8_t*)root + sizeof(ACPISDTHeader);
-
+    uint8_t* ptr = (uint8_t*)root + sizeof(ACPISDTHeader);
 
 
     for(uint32_t i = 0; i < entries; i++)
     {
-
         uint64_t addr;
 
-
         if(xsdt)
+        {
             addr = ((uint64_t*)ptr)[i];
+        }
         else
+        {
             addr = ((uint32_t*)ptr)[i];
-
-
+        }
 
         if(!addr)
+        {
             continue;
+        }
 
-
-
-        ACPISDTHeader* table =
-            (ACPISDTHeader*)phys_to_virt(addr);
-
-
+        ACPISDTHeader* table = (ACPISDTHeader*)phys_to_virt(addr);
 
         if(!table)
+        {
             continue;
-
-
+        }
 
         if(acpi_sig(table->Signature, name))
+        {
             return table;
+        }
     }
 
 
@@ -366,7 +354,6 @@ static void* find_table(ACPISDTHeader* root, const char* name)
 
 bool acpi_init()
 {
-
     if(!rsdp_request.response)
     {
         print_error("ACPI: No RSDP\n");
@@ -374,15 +361,13 @@ bool acpi_init()
     }
 
 
-
-    RSDP* rsdp =
-        (RSDP*)rsdp_request.response->address;
-
+    RSDP* rsdp = (RSDP*)rsdp_request.response->address;
 
 
     if(!rsdp)
+    {
         return false;
-
+    }
 
 
     ACPISDTHeader* root = nullptr;
@@ -391,25 +376,16 @@ bool acpi_init()
     bool xsdt = false;
 
 
-
     if(rsdp->revision >= 2 && rsdp->xsdt_address)
     {
 
-        root =
-            (ACPISDTHeader*)phys_to_virt(
-                rsdp->xsdt_address
-            );
-
+        root = (ACPISDTHeader*)phys_to_virt(rsdp->xsdt_address);
 
         xsdt = true;
     }
     else
     {
-
-        root =
-            (ACPISDTHeader*)phys_to_virt(
-                rsdp->rsdt_address
-            );
+        root =(ACPISDTHeader*)phys_to_virt(rsdp->rsdt_address);
     }
 
 
@@ -420,27 +396,22 @@ bool acpi_init()
         return false;
     }
 
-
-
     print("ACPI: ");
 
     if(xsdt)
+    {
         print("Using XSDT\n");
+    }
     else
+    {
         print("Using RSDT\n");
-
-
-
+    }
 
 
     // ===================== //
     // FIND FACP              //
     // ===================== //
-
-    FADT* facp =
-        (FADT*)find_table(root,"FACP");
-
-
+    FADT* facp = (FADT*)find_table(root,"FACP");
 
     if(!facp)
     {
@@ -448,73 +419,34 @@ bool acpi_init()
         return false;
     }
 
-
-
     print("ACPI: FACP found\n");
-
-
 
     // ===================== //
     // PM1 CONTROL BLOCK      //
     // ===================== //
-
-
-
-    if(
-        facp->header.Length >= 148 &&
-        facp->X_PM1aControlBlock.Address != 0 &&
-        facp->X_PM1aControlBlock.AddressSpace == 0
-    )
+    if(facp->header.Length >= 148 && facp->X_PM1aControlBlock.Address != 0 && facp->X_PM1aControlBlock.AddressSpace == 0)
     {
-
-        PM1a_CNT =
-            (uint32_t)facp->X_PM1aControlBlock.Address;
-
+        PM1a_CNT = (uint32_t)facp->X_PM1aControlBlock.Address;
     }
     else
     {
-
-        PM1a_CNT =
-            facp->PM1aControlBlock;
-
+        PM1a_CNT = facp->PM1aControlBlock;
     }
 
 
-
-
-    if(
-        facp->header.Length >= 160 &&
-        facp->X_PM1bControlBlock.Address != 0 &&
-        facp->X_PM1bControlBlock.AddressSpace == 0
-    )
+    if(facp->header.Length >= 160 && facp->X_PM1bControlBlock.Address != 0 && facp->X_PM1bControlBlock.AddressSpace == 0)
     {
-
-        PM1b_CNT =
-            (uint32_t)facp->X_PM1bControlBlock.Address;
-
+        PM1b_CNT = (uint32_t)facp->X_PM1bControlBlock.Address;
     }
     else
     {
-
-        PM1b_CNT =
-            facp->PM1bControlBlock;
-
+        PM1b_CNT = facp->PM1bControlBlock;
     }
 
 
-
-    PM1a_EVT =
-        facp->PM1aEventBlock;
-
-
-
-    SMI_CMD =
-        facp->SMI_CommandPort;
-
-
-    ACPI_ENABLE =
-        facp->AcpiEnable;
-
+    PM1a_EVT = facp->PM1aEventBlock;
+    SMI_CMD = facp->SMI_CommandPort;
+    ACPI_ENABLE = facp->AcpiEnable;
 
 
     print("ACPI: PM1a=");
@@ -522,20 +454,12 @@ bool acpi_init()
     print("\n");
 
 
-
     // ===================== //
     // DSDT                  //
     // ===================== //
-
-
     uint64_t dsdt_addr;
 
-
-
-    if(
-        facp->header.Length >= 148 &&
-        facp->X_Dsdt != 0
-    )
+    if(facp->header.Length >= 148 && facp->X_Dsdt != 0)
     {
         dsdt_addr = facp->X_Dsdt;
     }
@@ -544,20 +468,13 @@ bool acpi_init()
         dsdt_addr = facp->Dsdt;
     }
 
-
-
-    ACPISDTHeader* dsdt =
-        (ACPISDTHeader*)phys_to_virt(dsdt_addr);
+    ACPISDTHeader* dsdt = (ACPISDTHeader*)phys_to_virt(dsdt_addr);
 
 
 
     if(dsdt)
     {
-
-        uint32_t len =
-            dsdt->Length -
-            sizeof(ACPISDTHeader);
-
+        uint32_t len = dsdt->Length - sizeof(ACPISDTHeader);
 
 
         if(
@@ -574,70 +491,49 @@ bool acpi_init()
     }
 
 
-
-
-
     // ===================== //
     // SSDT SEARCH            //
     // ===================== //
-
-
     uint32_t entries;
 
 
-
     if(xsdt)
-        entries =
-            (root->Length -
-             sizeof(ACPISDTHeader)) / 8;
+    {
+        entries = (root->Length - sizeof(ACPISDTHeader)) / 8;
+    }
     else
-        entries =
-            (root->Length -
-             sizeof(ACPISDTHeader)) / 4;
+    {
+        entries = (root->Length - sizeof(ACPISDTHeader)) / 4;
+    }
 
 
-
-    uint8_t* ptr =
-        (uint8_t*)root +
-        sizeof(ACPISDTHeader);
-
-
+    uint8_t* ptr = (uint8_t*)root + sizeof(ACPISDTHeader);
 
 
     for(uint32_t i = 0; i < entries; i++)
     {
-
         uint64_t addr;
 
-
-
         if(xsdt)
-            addr =
-                ((uint64_t*)ptr)[i];
+        {
+            addr = ((uint64_t*)ptr)[i];
+        }
         else
-            addr =
-                ((uint32_t*)ptr)[i];
+        {
+            addr = ((uint32_t*)ptr)[i];
+        }
 
 
-
-        ACPISDTHeader* table =
-            (ACPISDTHeader*)phys_to_virt(addr);
-
-
+        ACPISDTHeader* table = (ACPISDTHeader*)phys_to_virt(addr);
 
         if(!table)
+        {
             continue;
-
-
+        }
 
         if(acpi_sig(table->Signature,"SSDT"))
         {
-
-            uint32_t len =
-                table->Length -
-                sizeof(ACPISDTHeader);
-
-
+            uint32_t len = table->Length - sizeof(ACPISDTHeader);
 
             if(
                 parse_s5_from_aml(
@@ -647,14 +543,11 @@ bool acpi_init()
                 )
             )
             {
-
                 print("ACPI: _S5 found in SSDT\n");
                 return true;
-
             }
         }
     }
-
 
 
     print_error("ACPI: _S5 not found\n");
@@ -669,14 +562,11 @@ bool acpi_init()
 
 static bool acpi_enable()
 {
-
     if(PM1a_CNT == 0)
     {
         print_error("ACPI: PM1a_CNT missing\n");
         return false;
     }
-
-
 
     // ACPI już aktywne
 
@@ -686,38 +576,27 @@ static bool acpi_enable()
     }
 
 
-
     if(SMI_CMD == 0 || ACPI_ENABLE == 0)
     {
         print_error("ACPI: Cannot enable ACPI\n");
         return false;
     }
 
-
-
     print("ACPI: Enabling ACPI mode\n");
 
 
-
-    outb(
-        (uint16_t)SMI_CMD,
-        ACPI_ENABLE
-    );
-
+    outb((uint16_t)SMI_CMD, ACPI_ENABLE);
 
 
     // czekamy aż BIOS przejmie ACPI
 
     for(int i = 0; i < 300; i++)
     {
-
         if((inw((uint16_t)PM1a_CNT) & SCI_EN) != 0)
         {
             print("ACPI: Enabled\n");
             return true;
         }
-
-
 
         for(int j = 0; j < 1000; j++)
         {
@@ -725,15 +604,10 @@ static bool acpi_enable()
         }
     }
 
-
-
     print_error("ACPI: Enable timeout\n");
 
     return false;
 }
-
-
-
 
 
 // ===================== //
@@ -742,21 +616,14 @@ static bool acpi_enable()
 
 void acpi_shutdown()
 {
-
     print_warn("NasuaOS: Shutting down\n");
-
 
 
     if(!acpi_init())
     {
-
-        print_error(
-            "ACPI: initialization failed\n"
-        );
-
+        print_error("ACPI: initialization failed\n");
 
         asm volatile("cli");
-
 
         while(true)
         {
@@ -765,89 +632,41 @@ void acpi_shutdown()
     }
 
 
-
-
     if(!acpi_enable())
     {
-
-        print_error(
-            "ACPI: cannot enable\n"
-        );
-
-
+        print_error("ACPI: cannot enable\n");
         return;
     }
 
-
-
     asm volatile("cli");
 
-
-
-    // czyścimy eventy
+    // clean events
 
     if(PM1a_EVT)
     {
-        outw(
-            (uint16_t)PM1a_EVT,
-            0xFFFF
-        );
+        outw((uint16_t)PM1a_EVT, 0xFFFF);
     }
 
+    print("ACPI: Sending sleep command\n");
 
 
-    print(
-        "ACPI: Sending sleep command\n"
-    );
+    uint16_t slp_a = (SLP_TYPa << 10) | SLP_EN;
+    uint16_t slp_b = (SLP_TYPb << 10) | SLP_EN;
 
 
-
-    /*
-       SLP_TYP jest 3 bitowym numerem.
-       ACPI wymaga przesunięcia o 10 bitów
-       w PM1 Control Register
-    */
-
-
-    uint16_t slp_a =
-        (SLP_TYPa << 10) |
-        SLP_EN;
-
-
-
-    uint16_t slp_b =
-        (SLP_TYPb << 10) |
-        SLP_EN;
-
-
-
-    outw(
-        (uint16_t)PM1a_CNT,
-        slp_a
-    );
-
-
+    outw((uint16_t)PM1a_CNT, slp_a);
 
     if(PM1b_CNT)
     {
-        outw(
-            (uint16_t)PM1b_CNT,
-            slp_b
-        );
+        outw((uint16_t)PM1b_CNT, slp_b);
     }
 
-
-
-    // jeśli BIOS nie wyłączył komputera
 
     while(true)
     {
         asm volatile("hlt");
     }
 }
-
-
-
 
 
 // ===================== //
@@ -857,20 +676,9 @@ void acpi_shutdown()
 void acpi_reboot()
 {
 
-    print_warn(
-        "NasuaOS: Restarting\n"
-    );
-
-
+    print_warn("NasuaOS: Restarting\n");
 
     asm volatile("cli");
-
-
-
-    /*
-       Najbardziej kompatybilny reset
-       przez keyboard controller
-    */
 
 
     while(inb(0x64) & 0x02)
@@ -880,15 +688,9 @@ void acpi_reboot()
 
 
 
-    outb(
-        0x64,
-        0xFE
-    );
-
-
+    outb(0x64, 0xFE);
 
     // fallback
-
     for(;;)
     {
         asm volatile("hlt");
