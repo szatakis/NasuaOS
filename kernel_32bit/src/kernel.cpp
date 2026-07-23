@@ -286,8 +286,8 @@ void shell()
         {
             print(
                 "Mode: protected mode\n"
-                "Kernel: NasuaOS 32-bit\n"
-                "Kernel 32-bit is basic shell not full os\n\n"
+                "Kernel: NasuaOS 32bit\n"
+                "Kernel 32bit is basic shell not full os\n\n"
             );
         }
         else if(strcmp(buffer,"halt"))
