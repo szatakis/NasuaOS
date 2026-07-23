@@ -1,8 +1,4 @@
-#include "pmm.h"
-
-#include <limine.h>
-#include <stdint.h>
-#include <stddef.h>
+#include "../driver.h"
 
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"

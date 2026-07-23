@@ -1,8 +1,5 @@
-#include "vmm.h"
+#include "../driver.h"
 
-
-#include "paging.h"
-#include "system/drivers/memory/functions/pmm.h"
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"
 

@@ -1,7 +1,6 @@
 #include "page_fault.h"
 
-#include "system/drivers/memory/functions/pmm.h"
-#include "system/drivers/memory/functions/vmm.h"
+#include "system/drivers/memory/driver.h"
 
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"

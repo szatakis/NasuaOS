@@ -4,8 +4,7 @@
 #include <limine.h>
 
 #include "system/interrupts/functions/pic.h"
-
-#include "system/drivers/memory/functions/vmm.h"
+#include "system/drivers/memory/driver.h"
 
 #include "libs/asm/asm.h"
 

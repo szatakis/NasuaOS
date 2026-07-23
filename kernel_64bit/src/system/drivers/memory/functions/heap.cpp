@@ -1,6 +1,4 @@
-#include "heap.h"
-#include "vmm.h"
-#include "pmm.h"
+#include "../driver.h"
 
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"

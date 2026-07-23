@@ -1,7 +1,4 @@
 #include "../driver.h" 
-#include <limine.h>  
-#include <cstdint>
-#include <cstddef>
 
 static char ram_buffer[32];
 
@@ -84,6 +81,7 @@ extern "C" {
     }
 }
 
+
 void memory_init()
 {
     total_ram = 0;
@@ -105,7 +103,6 @@ void memory_init()
 
     used_ram = 0;
 }
-
 
 
 const char* memory_total()
@@ -138,7 +135,6 @@ const char* memory_total()
 
     return ram_buffer;
 }
-
 
 
 uint64_t memory_total_bytes()

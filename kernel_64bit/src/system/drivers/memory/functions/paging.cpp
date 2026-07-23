@@ -1,5 +1,4 @@
-#include "paging.h"
-#include <limine.h>
+#include "../driver.h"
 
 #include "system/drivers/uart/driver.h"
 #include "kernel/include/logger/logger.hpp"
