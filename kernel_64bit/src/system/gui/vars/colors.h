@@ -34,15 +34,13 @@ inline constexpr uint32_t COLOR_NASUA_HIGHLIGHT     = 0xFFFFFFFF;
 inline constexpr uint32_t COLOR_MOUSE               = 0xFFFFFFFF;
 
 // ===== WINDOW ELEMENTS =====
-inline constexpr uint32_t COLOR_TITLEBAR            = 0xFF4A4A4A;
-inline constexpr uint32_t COLOR_TITLEBAR_INACTIVE   = 0xFF6D6D6D;
-
-inline constexpr uint32_t COLOR_WINDOW              = 0xFFC0C0C0;
-inline constexpr uint32_t COLOR_BORDER              = 0xFF000000;
-
-inline constexpr uint32_t COLOR_BUTTON_FACE         = 0xFFC0C0C0;
-inline constexpr uint32_t COLOR_BUTTON_SHADOW       = 0xFF808080;
-inline constexpr uint32_t COLOR_BUTTON_HL           = 0xFFFFFFFF;
+inline constexpr uint32_t COLOR_TITLEBAR          = 0xFF2B3140;
+inline constexpr uint32_t COLOR_TITLEBAR_INACTIVE = 0xFF333A4A;
+inline constexpr uint32_t COLOR_WINDOW            = 0xFF1A1F2C;
+inline constexpr uint32_t COLOR_BORDER            = 0xFF2D3748;
+inline constexpr uint32_t COLOR_BUTTON_FACE       = 0xFF262D3D;
+inline constexpr uint32_t COLOR_BUTTON_SHADOW     = 0xFF11141C;
+inline constexpr uint32_t COLOR_BUTTON_HL         = 0xFF3B445B;
 
 // ===== TERMINAL COLORS =====
 inline constexpr uint32_t COLOR_TERM_INFO           = 0xFF7EC2D6;

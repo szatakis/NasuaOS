@@ -104,8 +104,11 @@ extern "C" void kmain()
     // Main loop
     for (;;) 
     {
-        handle_keyboard();
-
+        while (inb(0x64) & 1) 
+        {
+            handle_keyboard();
+        }
+        
         if(redraw) {
             redraw = false;
 
@@ -116,7 +119,6 @@ extern "C" void kmain()
             update_gui();
             update_windows_gui();
 
-            handle_keyboard();
             handle_mouse();
 
             render_frame();
