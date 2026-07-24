@@ -25,16 +25,12 @@ void pit_init()
 
     uint16_t divisor = PIT_BASE_FREQ / PIT_FREQUENCY;
 
-
     outb(PIT_COMMAND, 0x36);
     io_wait();
-
     outb(PIT_CHANNEL0, divisor & 0xFF);
     io_wait();
-
     outb(PIT_CHANNEL0, (divisor >> 8) & 0xFF);
     io_wait();
-
 
     Uart::puts("[PIT] Ready\n");
     log(INFO,"PIT","Ready");
@@ -56,14 +52,6 @@ uint64_t pit_get_ticks()
 
 void sleep(uint64_t ms)
 {
-    /*
-        PIT 100Hz:
-        1 tick = 10ms
-
-        zamiana:
-        ms / 10
-    */
-
     uint64_t wait_ticks = ms / 10;
 
     if(wait_ticks == 0)
